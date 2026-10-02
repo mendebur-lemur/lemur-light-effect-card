@@ -1,0 +1,19 @@
+{
+  "domain": "lemur_light_effects",
+  "name": "Lemur Light Effect Card",
+  "codeowners": ["@mendebur-lemur"],
+  "config_flow": true,
+  "dependencies": [
+    "http",
+    "frontend",
+    "panel_custom",
+    "websocket_api"
+  ],
+  "documentation": "https://github.com/mendebur-lemur/lemur-light-effect-card",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/mendebur-lemur/lemur-light-effect-card/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "1.0.0"
+}

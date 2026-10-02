@@ -1,0 +1,11 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Lemur Light Effect Card",
+        "description": "Adds the effect card to your dashboards and stores shared favorites, room light selections and custom icons. No settings needed."
+      }
+    },
+    "abort": { "single_instance_allowed": "Already set up." }
+  }
+}

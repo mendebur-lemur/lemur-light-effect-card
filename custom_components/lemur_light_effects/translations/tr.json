@@ -1,0 +1,11 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Lemur Işık Efekt Kartı",
+        "description": "Efekt kartını panellere ekler; ortak favorileri, oda ışık seçimlerini ve özel simgeleri saklar. Ayar gerekmez."
+      }
+    },
+    "abort": { "single_instance_allowed": "Zaten kurulu." }
+  }
+}

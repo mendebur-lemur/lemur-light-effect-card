@@ -1,0 +1,285 @@
+# Lemur Light Effect Card
+
+Türkçe · **[English](README.en.md)**
+
+Hangi marka olursa olsun, efekt destekleyen bütün ışıkları oda oda yöneten bir Home Assistant kartı. Efektler, beyaz tonlar ve renkler tek yerde.
+
+![Lemur Light Effect Card kullanımda](docs/images/tr/demo.gif)
+
+**Hızlı kurulum:** [HACS'ta aç](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-light-effect-card&category=integration) → İndir → Home Assistant'ı yeniden başlat → [entegrasyonu ekle](https://my.home-assistant.io/redirect/config_flow_start/?domain=lemur_light_effects). Adım adım anlatım ve videolar [aşağıda](#kurulum).
+
+- **Odalar Home Assistant alanlarından gelir.** YAML'da ışık listesi yazmana gerek yok. Her odada efektlerin hangi ışıklara gideceğini seçersin, seçim evdeki herkes için ortaktır.
+- **Farklı markalar aynı odada.** Seçili ışıkların bütün efektleri görünür. Kartın altındaki noktalar o efekti kaç ışığın desteklediğini gösterir; dokununca efekt yalnızca destekleyen ışıklara gider. Aynı anlama gelen efektler tek kartta birleşir (örneğin `candle`, `Candle` ve `Candlelight` tek bir "Mum Işığı" olur).
+- **Her odanın kendi sekmeleri, favorileri ve gizlenen efektleri.** Kartta bir efekte basılı tut (masaüstünde sağ tık): favorile, gizle ya da kendi simgeni yükle.
+- **Her efekte özel çizilmiş simgeler.** Yüzlerce efektin her biri için aynı stilde ayrı bir simge var; bilinmeyen adlarda efektin adına en uygun simge otomatik seçilir.
+- **Tek Durdur düğmesi.** Her ışığa kendi kapatma efektini gönderir, ardından ışıkları göz yormayan sakin bir beyaza alır (varsayılan 3200 K, %40).
+- **Işık sekmesi:** parlaklık çubuğu, beyaz tonlar, renk çemberi ve hazır renkler.
+- **Tablet ve telefon düzeni.** Sağa-sola kaydırınca oda, yukarı-aşağı kaydırınca kategori değişir. Dokunuşlar anında tepki verir.
+- **Dört hazır buton kartı:** telefon ekranı, telefonda tam ekran, tam ekran ve boyutu ayarlanabilen pencere. Hiçbiri browser_mod gerektirmez.
+- **Kendi efektlerini oluştur.** Işıkları sürükleyip bir efekte kat, her birinin ne açacağını seç: efekti desteklemeyen ışık renk ya da beyaz açar, istediğin ışık kendi listesinden başka bir efekt oynatır.
+- **Kenar menüde kontrol paneli** (*Lemur Işık Efekt Kartı*): odalar, ışıklar, sekmeler ve efektler sürükle-bırak ile düzenlenir.
+- **Geniş ayarlar:** karo boyutu, renkli ya da sade simgeler, siyah (OLED) ya da tema arka planı, gece modu, açılış sekmesi, oda simgeleri ve daha fazlası. Efektler ve favoriler tek tıkla Home Assistant scripti olur.
+- Türkçe ve İngilizce arayüz.
+
+## İçindekiler
+
+- [Kurulum](#kurulum)
+  - [1. HACS ile indir](#1-hacs-ile-indir)
+  - [2. Entegrasyonu ekle](#2-entegrasyonu-ekle)
+  - [3. Kontrol panelinde odalarını düzenle](#3-kontrol-panelinde-odalarını-düzenle)
+  - [4. Kartı panona ekle](#4-kartı-panona-ekle)
+- [Hazır buton kartları](#hazır-buton-kartları)
+- [Güncelleme](#güncelleme)
+- [Ultimate Light Effect Card'dan geçiş](#ultimate-light-effect-carddan-geçiş)
+- [Sorun giderme](#sorun-giderme)
+- [Ekran görüntüleri](#ekran-görüntüleri)
+- [Kontrol paneli](#kontrol-paneli)
+  - [Ayarlar](#ayarlar)
+  - [Efekt oluştur](#efekt-oluştur)
+- [Kart seçenekleri](#kart-seçenekleri)
+
+## Kurulum
+
+Gerekenler: Home Assistant 2024.1 ya da daha yeni bir sürüm ve [HACS](https://hacs.xyz/docs/use/). Başka kart, tema ya da eklenti gerekmez.
+
+### 1. HACS ile indir
+
+En kolay yol bu düğme. Home Assistant adresini bir kez sorar, sonra depoyu doğrudan HACS'ta açar:
+
+[![HACS'ta aç](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-light-effect-card&category=integration)
+
+1. Açılan pencerede **Ekle**'ye bas (depo HACS'a eklenir).
+2. Sağ alttaki **İndir** düğmesine bas, sürümü seçme penceresinde tekrar **İndir**.
+3. **Ayarlar → Sistem → sağ üstteki ⏻ → Home Assistant'ı yeniden başlat**. Ayarlar sayfasında "Yeniden başlatma gerekli" uyarısı da çıkar, oradan da yapabilirsin.
+
+<details>
+<summary>Düğme çalışmazsa: elle ekleme</summary>
+
+1. Sol menüden **HACS**'ı aç.
+2. Sağ üstteki **⋮** menüsü → **Özel depolar** (*Custom repositories*).
+3. **Depo** alanına şu adresi yapıştır:
+   `https://github.com/mendebur-lemur/lemur-light-effect-card`
+4. **Tür** olarak **Entegrasyon** (*Integration*) seç ve **Ekle**'ye bas. Pencereyi kapat.
+5. HACS'ın arama kutusuna **Lemur Light Effect Card** yaz, sonuca tıkla.
+6. **İndir** → **İndir**, ardından Home Assistant'ı yeniden başlat.
+
+</details>
+
+### 2. Entegrasyonu ekle
+
+[![Entegrasyonu ekle](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=lemur_light_effects)
+
+Düğmeyi kullanmıyorsan: **Ayarlar → Cihazlar ve hizmetler → Entegrasyon ekle** → "Işık" ya da "Lemur" yaz → **Lemur Light Effect Card** → **Gönder** → **Bitir**. Soru sorulmaz, evdeki ışıklar kendiliğinden bulunur.
+
+![Entegrasyonu ekleme](docs/images/tr/adim-1.gif)
+
+### 3. Kontrol panelinde odalarını düzenle
+
+Sol menüde **Lemur Işık Efekt Kartı** belirir (yalnızca yöneticiler görür). İlk açılışta her oda ışıklarına göre otomatik dolar; hiçbir şeye dokunmadan da kullanabilirsin. İstersen:
+
+- Efektleri sekmeler arasında sürükle, **Favoriler**'e bırakırsan yıldızlanır, **Gizli**'ye bırakırsan kartta görünmez.
+- Bir ışığa tıkla: başka odaya taşı, kartta gizle ya da **Efektlerde kullan**'ı aç/kapat.
+- Hata yaparsan **Geri al** (ya da Ctrl+Z).
+
+![Kontrol paneli](docs/images/tr/adim-2.gif)
+
+### 4. Kartı panona ekle
+
+1. Panonu aç, sağ üstteki **✏️ (Düzenle)** düğmesine bas.
+2. Bir bölümdeki **+** düğmesine bas, arama kutusuna **Lemur** yaz.
+3. İstediğin kartı seç (aşağıdaki [hazır buton kartlarından](#hazır-buton-kartları) biri ya da kartın kendisi), **Kaydet** → sağ üstte **Bitti**.
+
+Kart kendini kaydeder; *Kaynaklar* (*Resources*) menüsüne bir şey eklemene gerek yok. Videoda **Tam ekran butonu** ekleniyor:
+
+![Kartı panoya ekleme](docs/images/tr/adim-3.gif)
+
+YAML ile eklemek istersen kartın kendisi:
+
+```yaml
+type: custom:lemur-light-effect-card
+```
+
+## Hazır buton kartları
+
+Panoda küçük bir buton olarak durur, dokununca efekt ekranını açar. Dördü de browser_mod ya da başka bir eklenti olmadan çalışır; telefonun geri tuşu, Esc tuşu ve ✕ ile kapanır. Kart seçicide **Lemur Işık Efekt Kartı · …** adıyla görünürler.
+
+![Dört buton kartı](docs/images/tr/adim-4.gif)
+
+| Kart | Ne açar | Kimin için |
+|---|---|---|
+| **Telefon butonu** (`custom:lemur-phone-button`) | Telefona göre düzenlenmiş ekran. Telefonda bütün ekranı kaplar, geniş ekranda ortada telefon boyutunda bir pencere olur. | Telefondan hızlı kullanım |
+| **Telefon tam ekran butonu** (`custom:lemur-phone-fullscreen-button`) | Telefon düzeni. Telefonda tarayıcının tam ekran modunu da açar (adres çubuğu ve sistem çubukları gizlenir), geniş ekranda ortada telefon boyutunda bir pencere olur. | Telefonda en geniş görünüm |
+| **Tam ekran butonu** (`custom:lemur-fullscreen-button`) | Bütün ekranı kaplayan efekt ekranı. Tarayıcının kendi tam ekran modunu da açar, adres çubuğu ve menüler gizlenir. | Duvar tableti, tablet ve telefon |
+| **Pencere butonu** (`custom:lemur-window-button`) | Boyutu, konumu ve köşeleri ayarlanabilen bir pencere. İçerik pencere boyutuna göre orantılı ölçeklenir. | Masaüstü, büyük ekranlar, özel düzenler |
+
+Bütün seçenekler görsel düzenleyicide var. YAML örnekleri:
+
+```yaml
+type: custom:lemur-phone-button
+name: Işıklar
+```
+
+```yaml
+type: custom:lemur-phone-fullscreen-button
+name: Işıklar
+style: tile
+color: purple
+color_icon: aurora
+```
+
+```yaml
+type: custom:lemur-fullscreen-button
+name: Işık efektleri
+browser_fullscreen: true
+```
+
+```yaml
+type: custom:lemur-window-button
+name: Işık efektleri
+popup_width: 1100
+popup_height: 700
+popup_position: center
+popup_radius: 24
+popup_blur: true
+popup_scale: true
+aspect: 16/10
+```
+
+| Seçenek | Hangi kartta | Varsayılan | Açıklama |
+|---|---|---|---|
+| `name` | hepsi | Lemur Işık Efekt Kartı | Butondaki başlık |
+| `subtitle` | hepsi | yanan ışık sayısı | Butondaki alt yazı |
+| `hash` | hepsi | `isik-telefon` / `isik-mobil` / `isik-efektleri` / `isik-pencere` | Açıkken adrese eklenen `#...`. Bu adrese giden her bağlantı (başka bir buton, bildirim, otomasyon) ekranı açar. |
+| `browser_fullscreen` | tam ekran, telefon tam ekran | `true` | Tarayıcının tam ekran modunu da aç (telefon tam ekran butonunda yalnızca telefonda) |
+| `popup_width` / `popup_height` | pencere | `min(1280px,94vw)` / `min(800px,88vh)` | Pencere boyutu. Sayı yazarsan piksel sayılır; `90vw`, `70%` gibi CSS değerleri de olur. |
+| `popup_position` | pencere | `center` | `center` (ortada) ya da `bottom` (alttan açılır) |
+| `popup_radius` | pencere | `24` | Köşe yuvarlaklığı (px) |
+| `popup_blur` | pencere | `true` | Arkadaki panoyu bulanıklaştır |
+| `popup_scale` | pencere | `true` | İçeriği pencereye göre orantılı ölçekle. `false` olursa kart pencereyi normal boyutta doldurur. |
+| `aspect` | pencere | `16/10` | Ölçeklemede kullanılan en-boy oranı |
+| `style` | hepsi | `row` | Buton biçimi: `row` (yatay: simge, başlık, alt yazı), `tile` (kutu: büyük simge, altında başlık), `icon` (sadece simge) |
+| `color` | hepsi | turuncu-mor geçiş | Buton rengi: Home Assistant renk adı (`blue`, `purple`, `primary` …) ya da `#hex` |
+| `color_icon` | hepsi | – | Efekt simgelerinden renkli bir simge (örn. `aurora`, `fire`, `party`); görsel düzenleyicide listeden seçilir |
+| `icon` | hepsi | – | Home Assistant simgesi (örn. `mdi:lightbulb-group`); `color_icon` seçiliyse o önceliklidir |
+
+Biçim, renk ve simge kartın görsel düzenleyicisindeki **Görünüm** bölümünden seçilir:
+
+![Buton görünümleri: yatay, kutu, renkli kutu, sadece simge](docs/images/tr/buttons.png)
+
+Bu kartlara [kart seçeneklerinin](#kart-seçenekleri) hepsi de yazılabilir (örneğin `areas`, `kelvin`, `accent`); açılan ekrana aktarılır.
+
+## Güncelleme
+
+Yeni sürüm çıkınca HACS'ta ve **Ayarlar** sayfasında güncelleme bildirimi görünür.
+
+1. **HACS → Lemur Light Effect Card → ⋮ → Yeniden indir** (ya da bildirimdeki **Güncelle**).
+2. Home Assistant'ı yeniden başlat.
+3. Tarayıcıyı **Ctrl+F5** ile (telefonda uygulamayı kapatıp açarak) yenile; yoksa eski kart önbellekten gelebilir.
+
+Odaların, sekmelerin, favorilerin ve simgelerin güncellemede silinmez.
+
+## Ultimate Light Effect Card'dan geçiş
+
+Bu proje daha önce *Ultimate Light Effect Card* adıyla yayınlanıyordu. Onu kullandıysan:
+
+1. Lemur Light Effect Card'ı yukarıdaki gibi kur ve entegrasyonu ekle. İlk eklemede eski odaların, sekmelerin, favorilerin, kendi efektlerin, ayarların ve yüklediğin simgeler kendiliğinden aktarılır.
+2. Panolarındaki kart türlerini değiştir: `custom:ultimate-light-effect-card` → `custom:lemur-light-effect-card`, `custom:ulec-mobile-button` → `custom:lemur-phone-button`, `custom:ulec-phone-fullscreen-button` → `custom:lemur-phone-fullscreen-button`, `custom:ulec-fullscreen-card` → `custom:lemur-fullscreen-button`, `custom:ulec-popup-button` → `custom:lemur-window-button`.
+3. Eski entegrasyonu **Ayarlar → Cihazlar ve hizmetler**'den sil, HACS'tan da kaldır ve Home Assistant'ı yeniden başlat.
+
+## Sorun giderme
+
+- **Kart seçicide "Lemur" aratınca kartlar çıkmıyor ya da "Özel öğe yok" hatası var.** Entegrasyonun eklendiğinden ([adım 2](#2-entegrasyonu-ekle)) ve Home Assistant'ın yeniden başlatıldığından emin ol, sonra tarayıcıyı Ctrl+F5 ile yenile.
+- **Sol menüde Lemur Işık Efekt Kartı yok.** Panel yalnızca yönetici kullanıcılara görünür. Kart herkes için çalışır.
+- **Bir ışık efekt listesini daraltıyor ya da efektler eksik görünüyor.** Örneğin Matter ile eklenmiş ya da yalnızca beyaz tonları olan bir ışık. Kontrol panelinde o ışığa tıkla ve **Efektlerde kullan**'ı kapat. Işık renk, beyaz ton ve parlaklık için çalışmaya devam eder, efekt listesine karışmaz.
+- **Bir ışık hiç görünmüyor.** Işığın Home Assistant'ta bir alana atanmış olması gerekir; alanı olmayan ışıklar panelde **Diğer** odasında toplanır, oradan istediğin odaya sürükleyebilirsin. Kartta gizlediğin ışıklar panelde **Kartta gizli** bölümündedir.
+- **Tam ekran açılmıyor, sadece pencere oluyor.** Bazı tarayıcılar (örneğin iPhone'daki Safari) web sayfalarının tam ekran olmasına izin vermez; o zaman ekran yine bütün sayfayı kaplar ama adres çubuğu kalır.
+- **Hâlâ çözülmedi mi?** [Sorun bildir](https://github.com/mendebur-lemur/lemur-light-effect-card/issues); Home Assistant sürümünü ve tarayıcıyı yazarsan hızlı bakarız.
+
+## Ekran görüntüleri
+
+| Tablet | Telefon |
+|---|---|
+| ![Bir odanın efektleri, kategorilere ayrılmış](docs/images/tr/card.png) | ![Telefon düzeni](docs/images/tr/card-mobile.png) |
+| ![Işık sekmesi: beyaz tonlar, renk çemberi, hazır renkler](docs/images/tr/card-light.png) | |
+
+## Kontrol paneli
+
+Entegrasyonu kurunca Home Assistant'ın sol menüsüne **Lemur Işık Efekt Kartı** sayfası eklenir (yalnızca yöneticiler görür). Panel, kartın düzenleme modudur: üstte odalar, seçili odanın hemen altında o odanın ışıkları, solda sekmeler, sağda efektler. Her şey sürükle-bırak ile taşınır ve evdeki bütün kartlara uygulanır.
+
+- **Odalar ve ışıklar:** Odalar Home Assistant alanlarından gelir. Bir ışığı başka bir odaya sürükleyebilir ya da "Işık ekle" ile seçebilirsin. "Kartta gizli"ye bıraktığın ışıklar kartta görünmez; segmentler, gösterge LED'leri ve ekranlar oraya otomatik düşer. Odaları ve "Tüm Ev"i sürükleyerek sıralarsın; Tüm Ev'i kendi şeridinden kapatabilirsin.
+- **Efektlerde kullan:** Bir ışığa tıklayınca açılan menüden ışığın efektlerde kullanılıp kullanılmayacağını seçersin. Kapalı ışıklar yalnızca renk, beyaz ton ve parlaklık için kullanılır, odanın efekt listesini daraltmaz.
+- **Her odanın kendi sekmeleri:** Bir odadaki sekmeler ve içlerindeki efektler yalnızca o odaya aittir. İlk açılışta her oda ışıklarına göre otomatik dolar. Efektleri sekmeler arasında sürükle, Favoriler'e bırakınca efekt yıldızlanır, Gizli'ye bırakınca o odada kartta görünmez. "Sekme ekle" boş sekme, hazır gruplar ve diğer odaların sekmelerini sunar; bir sekmeyi üstteki başka bir odaya sürüklersen kopyalanır.
+- **Tüm efektler:** Odanın bütün efektleri tek ızgarada, hangi sekmede olduklarıyla birlikte. Ara, seç (Shift ile aralık), istediğin sekmeye sürükle. Bir efektin "⋯" düğmesinden her ışıktaki adını görür, kendi simgeni yüklersin.
+- **Geri al:** Her değişiklik geri alınabilir (düğme ya da Ctrl+Z). "⋯" menüsünde odayı otomatik düzene döndürme, odayı kartta gizleme ve sekmeleri başka odalara kopyalama var.
+- **Sekme adı ve simgesi:** Bir sekmeye tıklayıp adını değiştirebilir, renkli efekt simgelerinden ya da sade simgelerden birini seçebilirsin (arama kutusuyla).
+- **Oda simgesi:** "⋯" menüsünden her odaya (Tüm Ev ve Diğer dahil) istediğin simgeyi verebilirsin.
+- **Script olarak kaydet:** Bir efektin "⋯" menüsünden ya da Favoriler sekmesinin başındaki düğmeden, efekti oynatan Home Assistant scriptleri oluşturulur; otomasyonlarda ve sesli asistanda kullanılabilir.
+
+### Ayarlar
+
+Sol alttaki **Ayarlar** penceresi evdeki bütün kartlara uygulanır:
+
+![Ayarlar](docs/images/tr/ayarlar.gif)
+
+- *Görünüm:* karo boyutu (otomatik, küçük, orta, büyük), renkli ya da sade (tek renk) simgeler, arka plan (koyu, siyah OLED, Home Assistant teması), efekt adları, renk çizgisi ve destek noktaları aç/kapat.
+- *Alt çubuk:* Durdur ve Rastgele düğmelerini gizleme.
+- *Davranış:* kapalı bir ışığa efekt seçilince hangi parlaklıkta açılacağı, kart açılınca hangi sekmenin geleceği (otomatik, Favoriler, son kullanılan, Işık), uzun basma süresi ve titreşim.
+- *Durdur sonrası* beyaz ton ve parlaklık.
+- *Gece modu:* seçtiğin saatler arasında parlaklık üst sınırı (efektler, Durdur ve parlaklık çubuğu bu sınırı aşmaz).
+- *Odalar ve ışıklar:* Home Assistant ışık gruplarını gösterme, bir ışığın efektli sayılması için gereken en az efekt sayısı.
+- *Her şeyi sıfırla:* onay sorulduktan sonra bütün düzeni, sekmeleri, favorileri, simgeleri ve kendi efektlerini siler.
+
+### Efekt oluştur
+
+Panelde **Tüm efektler**'in hemen altındaki **Efekt oluştur** ile kendi efektini yaparsın:
+
+1. **Yeni efekt**'e bas, ad ve simge seç.
+2. İstersen bir **temel efekt** seç (örneğin Film). Bu efekti destekleyen ışıklar onu oynatır.
+3. Solda evdeki **bütün ışıklar** odalara göre listelenir. Efekte katmak istediklerini sağdaki **Bu efektteki ışıklar** alanına sürükle (ya da + ile ekle, "Hepsini ekle" ile bütün odayı al).
+4. Sağdaki her ışık için ne açacağını seç: **Otomatik** (temel efekti destekliyorsa onu, desteklemiyorsa üstte seçtiğin rengi ya da beyazı), kendi listesinden başka bir **efekt**, **renk**, **beyaz** ton ya da **kapat**; renk ve beyazda parlaklıkla birlikte.
+
+Kaydedince kartta **Efektlerim** sekmesinde normal bir efekt gibi görünür; dokununca sadece eklediğin ışıklar kendine düşeni yapar. Oluşturduğun efektleri listeden sürükleyip istediğin sekmeye de taşıyabilirsin.
+
+![Efekt oluştur](docs/images/tr/efekt-olustur.gif)
+
+| Oda düzeni | Tüm efektler |
+|---|---|
+| ![Oda düzeni](docs/images/tr/panel-editor.png) | ![Tüm efektler](docs/images/tr/panel-all-effects.png) |
+| **Ayarlar** | **Efekt oluştur** |
+| ![Ayarlar](docs/images/tr/panel-settings.png) | ![Efekt oluştur](docs/images/tr/panel-create.png) |
+
+## Kart seçenekleri
+
+Bütün seçenekler görsel düzenleyicide de var. Kontrol panelindeki ayarlar bunların varsayılanını belirler; karta yazdığın değer önceliklidir.
+
+| Seçenek | Varsayılan | Açıklama |
+|---|---|---|
+| `areas` | ışığı olan tüm alanlar | Gösterilecek alan ID'leri, bu sırayla |
+| `exclude` | – | Dışarıda bırakılacak ışıklar |
+| `entities` | – | Yalnızca bu ışıkları kullan (alan taramasını geçersiz kılar) |
+| `kelvin` / `brightness` | `3200` / `40` | **Durdur** ve güç düğmesinin geçeceği beyaz |
+| `all_home` | `true` | "Tüm Ev" sekmesini göster |
+| `min_effects` | `3` | Bir ışığın efekt listesine girmesi için gereken en az efekt sayısı |
+| `language` | `auto` | `auto`, `tr`, `en` |
+| `height` / `mobile_height` | `80vh` / `80vh` | Kart yüksekliği |
+| `mobile` | otomatik (< 640 px) | Telefon (`true`) ya da tablet (`false`) düzenini zorla |
+| `close` | `false` | Kapatma düğmesi göster (başka bir eklentinin açılır penceresi içinde kullanıyorsan) |
+| `accent` | `#F0A93B` | Vurgu rengi |
+| `include_groups` | `false` | Işık gruplarını da listele |
+
+Gizli, kategori atanmış ve grup ışıkları otomatik atlanır.
+
+Ortak veriler (oda sekmeleri, favoriler, oda seçimleri, gizlenen efektler, son efekt, simgeler) `.storage/lemur_light_effects` içinde, yüklenen simgeler `config/lemur_light_effects_icons/` klasöründe tutulur. Entegrasyon olmadan kartı düz kaynak olarak da yükleyebilirsin (`/lemur_light_effects/lemur-light-effect-card.js` ya da `/local` altındaki bir kopya); bu durumda veriler yalnızca o tarayıcıda saklanır.
+
+## Efektler nasıl gruplanıyor?
+
+Panelde henüz düzenlenmemiş bir odada efekt adları sadeleştirilip küçük bir eş anlamlılar tablosuyla eşleştirilir, sonra anahtar kelimelere göre Doğa, Gök & Uzay, Ev Hali, Renk & Sanat, Eğlence ve Diğer kategorilerine ayrılır. Yaygın sahne adlarının Türkçe karşılıkları ve renkleri hazır bir tablodan gelir. "off", "none", "stop" ya da "solid" gibi adlar *efekt yok* sayılır.
+
+## Geliştirme
+
+```bash
+python3 build.py          # src/ klasörünü custom_components/.../frontend/ içine paketler
+pytest                    # entegrasyon testleri (pytest-homeassistant-custom-component)
+```
+
+Lisans: MIT

@@ -1,0 +1,285 @@
+# Lemur Light Effect Card
+
+**[Türkçe](README.md)** · English
+
+A Home Assistant dashboard card for light effects, white tones and colors that works with **any light brand**: Govee, Philips Hue, WLED, Yeelight, LIFX, Tuya and anything else that exposes `effect_list`.
+
+![Lemur Light Effect Card in action](docs/images/demo.gif)
+
+**Quick install:** [open in HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-light-effect-card&category=integration) → Download → restart Home Assistant → [add the integration](https://my.home-assistant.io/redirect/config_flow_start/?domain=lemur_light_effects). Step-by-step guide with videos [below](#install).
+
+- **Rooms come from Home Assistant areas.** No YAML light lists. Pick which lights in a room receive effects, and the choice is shared by the whole household.
+- **Mixed brands in one room.** Every effect from every selected light is shown. Dots under a tile show how many lights support it, and tapping it sends the effect only to those lights. Equivalent effects are merged (Hue `candle`, WLED `Candle` and Govee `Candlelight` become one tile).
+- **Every room has its own tabs, favorites and hidden effects.** Long-press an effect on the card (right-click on desktop) to favorite it, hide it, or upload your own icon.
+- **A hand-drawn icon for every effect.** Hundreds of effects each have their own icon in one consistent style; for unknown names the closest match is picked from the effect name.
+- **One Stop button for every brand.** It sends each light's own "off" effect, then a calm white (default 3200 K, 40 %) instead of full-bright white.
+- **Light tab** with a brightness bar, white tones, a color wheel and swatches.
+- **Tablet and phone layouts.** Swipe left or right to change rooms, and up or down to change categories. Updates are optimistic, so taps feel instant.
+- **Four ready-made button cards:** phone screen, phone full screen, full screen and a resizable window. None of them needs browser_mod.
+- **Create your own effects.** Drag lights into an effect and choose what each opens: lights without the effect switch to a colour or white, any light can play another effect from its own list.
+- **Control panel in the sidebar** (*Lemur Light Effect Card*): arrange rooms, lights, tabs and effects by drag and drop.
+- **Plenty of settings:** tile size, colour or simple icons, black (OLED) or theme background, night mode, start tab, room icons and more. Effects and favorites become Home Assistant scripts in one click.
+- Turkish and English.
+
+## Contents
+
+- [Install](#install)
+  - [1. Download with HACS](#1-download-with-hacs)
+  - [2. Add the integration](#2-add-the-integration)
+  - [3. Arrange your rooms in the control panel](#3-arrange-your-rooms-in-the-control-panel)
+  - [4. Add the card to a dashboard](#4-add-the-card-to-a-dashboard)
+- [Ready-made button cards](#ready-made-button-cards)
+- [Updating](#updating)
+- [Moving from Ultimate Light Effect Card](#moving-from-ultimate-light-effect-card)
+- [Troubleshooting](#troubleshooting)
+- [Screenshots](#screenshots)
+- [Control panel](#control-panel)
+  - [Settings](#settings)
+  - [Create effect](#create-effect)
+- [Card options](#card-options)
+
+## Install
+
+You need Home Assistant 2024.1 or newer and [HACS](https://hacs.xyz/docs/use/). No other cards, themes or add-ons are required.
+
+### 1. Download with HACS
+
+The easiest way is this button. It asks for your Home Assistant address once, then opens the repository in HACS:
+
+[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-light-effect-card&category=integration)
+
+1. Press **Add** in the dialog (the repository is added to HACS).
+2. Press **Download** at the bottom right, then **Download** again in the version dialog.
+3. **Settings → System → ⏻ at the top right → Restart Home Assistant**. A "Restart required" notice also appears on the Settings page; you can restart from there too.
+
+<details>
+<summary>If the button doesn't work: add it manually</summary>
+
+1. Open **HACS** from the sidebar.
+2. **⋮** menu at the top right → **Custom repositories**.
+3. Paste this address into **Repository**:
+   `https://github.com/mendebur-lemur/lemur-light-effect-card`
+4. Choose **Integration** as **Type** and press **Add**. Close the dialog.
+5. Type **Lemur Light Effect Card** into the HACS search box and open the result.
+6. **Download** → **Download**, then restart Home Assistant.
+
+</details>
+
+### 2. Add the integration
+
+[![Add integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=lemur_light_effects)
+
+Without the button: **Settings → Devices & services → Add integration** → type "Light" or "Lemur" → **Lemur Light Effect Card** → **Submit** → **Finish**. There are no questions; your lights are found automatically.
+
+![Adding the integration](docs/images/adim-1.gif)
+
+### 3. Arrange your rooms in the control panel
+
+**Lemur Light Effect Card** appears in the sidebar (admins only). On first open every room is filled automatically from its lights, so you can use it without touching anything. If you like:
+
+- Drag effects between tabs. Dropping on **Favorites** stars an effect, dropping on **Hidden** hides it in the card.
+- Click a light to move it to another room, hide it in the card, or switch **Use for effects** on or off.
+- Made a mistake? **Undo** (or Ctrl+Z).
+
+![Control panel](docs/images/adim-2.gif)
+
+### 4. Add the card to a dashboard
+
+1. Open your dashboard and press the **✏️ (Edit)** button at the top right.
+2. Press **+** in a section and type **Lemur** into the search box.
+3. Pick a card (one of the [ready-made button cards](#ready-made-button-cards) below, or the card itself), press **Save**, then **Done** at the top right.
+
+The card registers itself; you don't need to add anything under *Resources*. The video adds the **Full screen button**:
+
+![Adding the card to a dashboard](docs/images/adim-3.gif)
+
+To add the card itself in YAML:
+
+```yaml
+type: custom:lemur-light-effect-card
+```
+
+## Ready-made button cards
+
+These sit on the dashboard as a small button and open the effects screen when tapped. All four work without browser_mod or any other add-on, and close with the phone's back button, Esc or ✕. In the card picker they are listed as **Lemur Light Effect Card · …**.
+
+![The four button cards](docs/images/adim-4.gif)
+
+| Card | What it opens | Best for |
+|---|---|---|
+| **Phone button** (`custom:lemur-phone-button`) | A screen laid out for phones. Fills the whole screen on a phone, and becomes a phone-sized window in the middle on wider screens. | Quick use from a phone |
+| **Phone full screen button** (`custom:lemur-phone-fullscreen-button`) | The phone layout. On a phone it also turns on the browser's full screen mode (address and system bars hidden); on wider screens it is a phone-sized window in the middle. | The most room on a phone |
+| **Full screen button** (`custom:lemur-fullscreen-button`) | The effects screen over the whole display. Also turns on the browser's own full screen mode, hiding the address bar and menus. | Wall tablets, tablets and phones |
+| **Window button** (`custom:lemur-window-button`) | A window whose size, position and corners you choose. The content scales proportionally with the window. | Desktop, large screens, custom layouts |
+
+Every option is in the visual editor. YAML examples:
+
+```yaml
+type: custom:lemur-phone-button
+name: Lights
+```
+
+```yaml
+type: custom:lemur-phone-fullscreen-button
+name: Lights
+style: tile
+color: purple
+color_icon: aurora
+```
+
+```yaml
+type: custom:lemur-fullscreen-button
+name: Light effects
+browser_fullscreen: true
+```
+
+```yaml
+type: custom:lemur-window-button
+name: Light effects
+popup_width: 1100
+popup_height: 700
+popup_position: center
+popup_radius: 24
+popup_blur: true
+popup_scale: true
+aspect: 16/10
+```
+
+| Option | Card | Default | Description |
+|---|---|---|---|
+| `name` | all | Lemur Light Effect Card | Button title |
+| `subtitle` | all | number of lights on | Button subtitle |
+| `hash` | all | `isik-telefon` / `isik-mobil` / `isik-efektleri` / `isik-pencere` | The `#...` added to the address while open. Any link to that address (another button, a notification, an automation) opens the screen. |
+| `browser_fullscreen` | full screen, phone full screen | `true` | Also turn on the browser's full screen mode (on the phone full screen button: only on phones) |
+| `popup_width` / `popup_height` | window | `min(1280px,94vw)` / `min(800px,88vh)` | Window size. Plain numbers are pixels; CSS values such as `90vw` or `70%` work too. |
+| `popup_position` | window | `center` | `center` or `bottom` (slides up from the bottom) |
+| `popup_radius` | window | `24` | Corner radius (px) |
+| `popup_blur` | window | `true` | Blur the dashboard behind the window |
+| `popup_scale` | window | `true` | Scale the content to the window. With `false` the card fills the window at normal size. |
+| `aspect` | window | `16/10` | Aspect ratio used for scaling |
+| `style` | all | `row` | Button style: `row` (icon, title, subtitle), `tile` (big icon, title below), `icon` (icon only) |
+| `color` | all | orange-purple gradient | Button colour: a Home Assistant colour name (`blue`, `purple`, `primary` …) or `#hex` |
+| `color_icon` | all | – | A colour icon from the effect icons (e.g. `aurora`, `fire`, `party`); picked from a list in the visual editor |
+| `icon` | all | – | A Home Assistant icon (e.g. `mdi:lightbulb-group`); `color_icon` wins if both are set |
+
+Style, colour and icon are picked in the **Appearance** section of the card's visual editor:
+
+![Button styles: row, tile, coloured tile, icon only](docs/images/buttons.png)
+
+Every [card option](#card-options) can be added to these cards too (for example `areas`, `kelvin`, `accent`); it is passed on to the screen they open.
+
+## Updating
+
+When a new version is out, an update notice appears in HACS and on the **Settings** page.
+
+1. **HACS → Lemur Light Effect Card → ⋮ → Redownload** (or **Update** in the notice).
+2. Restart Home Assistant.
+3. Refresh the browser with **Ctrl+F5** (on a phone, close and reopen the app); otherwise the old card may come from the cache.
+
+Your rooms, tabs, favorites and icons are kept across updates.
+
+## Moving from Ultimate Light Effect Card
+
+This project was published earlier as *Ultimate Light Effect Card*. If you used it:
+
+1. Install Lemur Light Effect Card as above and add the integration. On the first add, your rooms, tabs, favorites, own effects, settings and uploaded icons are copied over automatically.
+2. Change the card types on your dashboards: `custom:ultimate-light-effect-card` → `custom:lemur-light-effect-card`, `custom:ulec-mobile-button` → `custom:lemur-phone-button`, `custom:ulec-phone-fullscreen-button` → `custom:lemur-phone-fullscreen-button`, `custom:ulec-fullscreen-card` → `custom:lemur-fullscreen-button`, `custom:ulec-popup-button` → `custom:lemur-window-button`.
+3. Delete the old integration under **Settings → Devices & services**, remove it from HACS and restart Home Assistant.
+
+## Troubleshooting
+
+- **Nothing shows up when you search "Lemur" in the card picker, or you see "Custom element doesn't exist".** Make sure the integration has been added ([step 2](#2-add-the-integration)) and Home Assistant has been restarted, then refresh the browser with Ctrl+F5.
+- **No Lemur Light Effect Card in the sidebar.** The panel is visible to admin users only. The card works for everyone.
+- **One light narrows the effect list, or effects seem to be missing.** For example a light added through Matter, or one that only has white tones. Click that light in the control panel and turn **Use for effects** off. It keeps working for color, white tone and brightness, but no longer affects the effect list.
+- **A light doesn't show up at all.** It needs to be assigned to an area in Home Assistant; lights without an area are collected in the **Unassigned** room in the panel, and you can drag them to any room from there. Lights you hid in the card are under **Hidden in card** in the panel.
+- **Full screen doesn't turn on, it only fills the page.** Some browsers (such as Safari on iPhone) don't let web pages go full screen. The screen still covers the whole page, but the address bar stays.
+- **Still stuck?** [Open an issue](https://github.com/mendebur-lemur/lemur-light-effect-card/issues) and include your Home Assistant version and browser.
+
+## Screenshots
+
+| Tablet | Phone |
+|---|---|
+| ![Effects of a room, grouped by category](docs/images/card.png) | ![Phone layout](docs/images/card-mobile.png) |
+| ![Light tab: white tones, color wheel, swatches](docs/images/card-light.png) | |
+
+## Control panel
+
+Installing the integration adds an **Lemur Light Effect Card** page to the Home Assistant sidebar (admins only). The panel is the card in edit mode: rooms on top, the selected room's lights right below it, tabs on the left and effects on the right. Everything moves by drag and drop and applies to every card in the house.
+
+- **Rooms and lights:** rooms come from Home Assistant areas. Drag a light onto another room or pick it with "Add light". Lights dropped on "Hidden in card" never show; segments, indicator LEDs and screens land there automatically. Drag rooms and "Whole home" to reorder them; Whole home can be turned off from its own strip.
+- **Use for effects:** the menu that opens when you click a light decides whether that light is used for effects. Lights with it off are used only for color, white tone and brightness, and don't narrow the room's effect list.
+- **Every room has its own tabs:** the tabs of a room and the effects in them belong to that room only. On first open every room is filled automatically from its lights. Drag effects between tabs; dropping on Favorites stars an effect, dropping on Hidden hides it in that room. "Add tab" offers an empty tab, ready-made groups and the tabs of other rooms; dragging a tab onto another room copies it.
+- **All effects:** every effect of the room in one grid, labelled with the tab it is in. Search, select (Shift for a range) and drag onto any tab. An effect's "⋯" button shows what each light calls it and lets you upload your own icon.
+- **Undo:** every change can be undone (button or Ctrl+Z). The "⋯" menu resets a room to the automatic layout, hides a room in the card, or copies its tabs to other rooms.
+- **Tab name and icon:** click a tab to rename it and pick one of the colour effect icons or a simple icon (with a search box).
+- **Room icon:** give any room (Whole home and Unassigned too) its own icon from the "⋯" menu.
+- **Save as script:** from an effect's "⋯" menu, or the button at the top of the Favorites tab, Home Assistant scripts are created that play the effect; use them in automations and voice assistants.
+
+### Settings
+
+The **Settings** window at the bottom left applies to every card at home:
+
+![Settings](docs/images/ayarlar.gif)
+
+- *Appearance:* tile size (automatic, small, medium, large), colour or simple one-colour icons, background (dark, black OLED, Home Assistant theme), effect names, colour line and support dots on/off.
+- *Bottom bar:* hide the Stop and Random buttons.
+- *Behaviour:* the brightness a light that is off comes on at when an effect is picked, which tab the card opens on (automatic, Favorites, last used, Light), long press time and vibration.
+- *After Stop:* white tone and brightness.
+- *Night mode:* a brightness ceiling between two times (effects, Stop and the brightness bar never go above it).
+- *Rooms and lights:* show Home Assistant light groups, the minimum number of effects a light needs.
+- *Reset everything:* after a confirmation, deletes the whole layout, tabs, favorites, icons and your own effects.
+
+### Create effect
+
+In the panel, **Create effect** right below **All effects** lets you make your own effect:
+
+1. Press **New effect** and pick a name and an icon.
+2. Optionally pick a **base effect** (for example Movie). Lights that have it play it.
+3. On the left, **every light** at home is listed by room. Drag the ones you want into **Lights in this effect** on the right (or add with +, or "Add all" for a whole room).
+4. For each light on the right, choose what it does: **Automatic** (the base effect if it has it, otherwise the colour or white chosen above), another **effect** from its own list, a **colour**, a **white** tone or **turn off**; colour and white come with a brightness.
+
+Once saved it shows in the card under **My effects** like any other effect; one tap and only the lights you added do their part. You can also drag your effects from the list onto any tab.
+
+![Create effect](docs/images/efekt-olustur.gif)
+
+| Room layout | All effects |
+|---|---|
+| ![Room layout](docs/images/panel-editor.png) | ![All effects](docs/images/panel-all-effects.png) |
+| **Settings** | **Create effect** |
+| ![Settings](docs/images/panel-settings.png) | ![Create effect](docs/images/panel-create.png) |
+
+## Card options
+
+All options are available in the visual editor. The control panel settings set their defaults; a value written on the card wins.
+
+| Option | Default | Description |
+|---|---|---|
+| `areas` | all areas with lights | Area IDs to show, in this order |
+| `exclude` | – | Lights to leave out |
+| `entities` | – | Use only these lights (overrides area discovery filters) |
+| `kelvin` / `brightness` | `3200` / `40` | What **Stop** and the power button switch to |
+| `all_home` | `true` | Show a "Whole home" tab |
+| `min_effects` | `3` | A light needs at least this many effects to be offered effects |
+| `language` | `auto` | `auto`, `tr`, `en` |
+| `height` / `mobile_height` | `80vh` / `80vh` | Card height |
+| `mobile` | auto (< 640 px) | Force the phone (`true`) or tablet (`false`) layout |
+| `close` | `false` | Show a close button (when used inside another add-on's popup) |
+| `accent` | `#F0A93B` | Accent color |
+| `include_groups` | `false` | Also list light groups |
+
+Hidden, entity-category and light-group entities are skipped automatically.
+
+The integration stores the shared data (room tabs, favorites, room selections, hidden effects, last effect, icons) in `.storage/lemur_light_effects`. Uploaded icons are saved in `config/lemur_light_effects_icons/`. Without the integration, you can load the card as a plain resource (`/lemur_light_effects/lemur-light-effect-card.js` or a copy under `/local`). Its data is then saved only in that browser.
+
+## How effects are grouped
+
+In a room you have not arranged in the panel yet, names are normalized and matched against a small synonym table, then sorted into Nature, Sky & Space, Home, Color & Art, Fun and Other using keyword rules. For common scene names, a curated table adds Turkish names and colors. Effects named like "off", "none", "stop" or "solid" are treated as *no effect*.
+
+## Development
+
+```bash
+python3 build.py          # bundles src/ into custom_components/.../frontend/
+pytest                    # integration tests (pytest-homeassistant-custom-component)
+```
+
+License: MIT

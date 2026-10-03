@@ -202,7 +202,7 @@ Bu proje daha önce *Ultimate Light Effect Card* adıyla yayınlanıyordu. Onu k
 
 | Tablet | Telefon |
 |---|---|
-| ![Bir odanın efektleri, kategorilere ayrılmış](docs/images/tr/card.png) | ![Telefon düzeni](docs/images/tr/card-mobile.png) |
+| ![Bir odanın efektleri, kategorilere ayrılmış](docs/images/tr/card.png) | ![Telefon düzeni](docs/images/tr/telefon.gif) |
 | ![Işık sekmesi: beyaz tonlar, renk çemberi, hazır renkler](docs/images/tr/card-light.png) | |
 
 ## Kontrol paneli

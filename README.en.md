@@ -202,7 +202,7 @@ This project was published earlier as *Ultimate Light Effect Card*. If you used 
 
 | Tablet | Phone |
 |---|---|
-| ![Effects of a room, grouped by category](docs/images/card.png) | ![Phone layout](docs/images/card-mobile.png) |
+| ![Effects of a room, grouped by category](docs/images/card.png) | ![Phone layout](docs/images/telefon.gif) |
 | ![Light tab: white tones, color wheel, swatches](docs/images/card-light.png) | |
 
 ## Control panel

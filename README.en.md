@@ -31,7 +31,6 @@ A Home Assistant dashboard card for light effects, white tones and colors that w
   - [4. Add the card to a dashboard](#4-add-the-card-to-a-dashboard)
 - [Ready-made button cards](#ready-made-button-cards)
 - [Updating](#updating)
-- [Moving from Ultimate Light Effect Card](#moving-from-ultimate-light-effect-card)
 - [Troubleshooting](#troubleshooting)
 - [Screenshots](#screenshots)
 - [Control panel](#control-panel)
@@ -180,14 +179,6 @@ When a new version is out, an update notice appears in HACS and on the **Setting
 3. Refresh the browser with **Ctrl+F5** (on a phone, close and reopen the app); otherwise the old card may come from the cache.
 
 Your rooms, tabs, favorites and icons are kept across updates.
-
-## Moving from Ultimate Light Effect Card
-
-This project was published earlier as *Ultimate Light Effect Card*. If you used it:
-
-1. Install Lemur Light Effect Card as above and add the integration. On the first add, your rooms, tabs, favorites, own effects, settings and uploaded icons are copied over automatically.
-2. Change the card types on your dashboards: `custom:ultimate-light-effect-card` → `custom:lemur-light-effect-card`, `custom:ulec-mobile-button` → `custom:lemur-phone-button`, `custom:ulec-phone-fullscreen-button` → `custom:lemur-phone-fullscreen-button`, `custom:ulec-fullscreen-card` → `custom:lemur-fullscreen-button`, `custom:ulec-popup-button` → `custom:lemur-window-button`.
-3. Delete the old integration under **Settings → Devices & services**, remove it from HACS and restart Home Assistant.
 
 ## Troubleshooting
 

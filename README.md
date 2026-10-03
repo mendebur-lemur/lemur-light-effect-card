@@ -31,7 +31,6 @@ Hangi marka olursa olsun, efekt destekleyen bütün ışıkları oda oda yönete
   - [4. Kartı panona ekle](#4-kartı-panona-ekle)
 - [Hazır buton kartları](#hazır-buton-kartları)
 - [Güncelleme](#güncelleme)
-- [Ultimate Light Effect Card'dan geçiş](#ultimate-light-effect-carddan-geçiş)
 - [Sorun giderme](#sorun-giderme)
 - [Ekran görüntüleri](#ekran-görüntüleri)
 - [Kontrol paneli](#kontrol-paneli)
@@ -180,14 +179,6 @@ Yeni sürüm çıkınca HACS'ta ve **Ayarlar** sayfasında güncelleme bildirimi
 3. Tarayıcıyı **Ctrl+F5** ile (telefonda uygulamayı kapatıp açarak) yenile; yoksa eski kart önbellekten gelebilir.
 
 Odaların, sekmelerin, favorilerin ve simgelerin güncellemede silinmez.
-
-## Ultimate Light Effect Card'dan geçiş
-
-Bu proje daha önce *Ultimate Light Effect Card* adıyla yayınlanıyordu. Onu kullandıysan:
-
-1. Lemur Light Effect Card'ı yukarıdaki gibi kur ve entegrasyonu ekle. İlk eklemede eski odaların, sekmelerin, favorilerin, kendi efektlerin, ayarların ve yüklediğin simgeler kendiliğinden aktarılır.
-2. Panolarındaki kart türlerini değiştir: `custom:ultimate-light-effect-card` → `custom:lemur-light-effect-card`, `custom:ulec-mobile-button` → `custom:lemur-phone-button`, `custom:ulec-phone-fullscreen-button` → `custom:lemur-phone-fullscreen-button`, `custom:ulec-fullscreen-card` → `custom:lemur-fullscreen-button`, `custom:ulec-popup-button` → `custom:lemur-window-button`.
-3. Eski entegrasyonu **Ayarlar → Cihazlar ve hizmetler**'den sil, HACS'tan da kaldır ve Home Assistant'ı yeniden başlat.
 
 ## Sorun giderme
 

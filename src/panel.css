@@ -341,3 +341,18 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 /* v1.1: update notice */
 .warn.upd{display:flex;align-items:center;gap:12px;background:rgba(240,169,59,.12);border-color:rgba(240,169,59,.45);color:#F7D9A6}
 .warn.upd span{flex:1}
+/* filling in an effect */
+.fh{display:flex;flex-direction:column;gap:2px;min-width:0;max-width:640px}
+.fh b{font-size:15px}
+.fh small{color:var(--mu);font-size:12.5px}
+.fsup{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 16px 10px}
+.fsup>small{color:var(--mu);font-size:12.5px;margin-right:4px}
+.fchip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px 0 4px;border-radius:999px;background:var(--s2);border:1px solid var(--ln);font-size:12.5px}
+.fchip .dot{width:22px;height:22px}
+.fall{background:var(--s1);border:1px solid var(--ln2);border-radius:12px;margin:0 16px 10px;padding:10px 12px}
+.fall .tx{display:flex;flex-direction:column;margin-right:auto}
+.fall .tx small{color:var(--mu);font-size:12px}
+.fmiss{padding:0 16px 16px;overflow:auto;min-height:0;flex:1}
+.fmiss .crm{margin:10px 2px 6px}
+.where.fl{color:var(--ac)}
+.where.fl svg{width:13px;height:13px}

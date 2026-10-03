@@ -229,3 +229,7 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .upd span{flex:1}
 .upd button{background:var(--acc);color:var(--acc-tx);border:0;border-radius:10px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer}
 .m .upd{margin:0 12px 10px}
+.flm{position:absolute;right:9px;top:8px;width:14px;height:14px;color:var(--mut);display:grid;line-height:0}
+.flm svg{width:100%;height:100%}
+.bx.play .flm{color:rgba(255,255,255,.85)}
+.nodots .flm{display:none}

@@ -37,6 +37,7 @@ Hangi marka olursa olsun, efekt destekleyen bütün ışıkları oda oda yönete
 - [Kontrol paneli](#kontrol-paneli)
   - [Ayarlar](#ayarlar)
   - [Efekt oluştur](#efekt-oluştur)
+  - [Eksik ışıkları tamamla](#eksik-ışıkları-tamamla)
 - [Otomasyonlar, scriptler ve sesli asistan](#otomasyonlar-scriptler-ve-sesli-asistan)
 - [Kart seçenekleri](#kart-seçenekleri)
 
@@ -250,6 +251,18 @@ Kaydedince kartta **Efektlerim** sekmesinde normal bir efekt gibi görünür; do
 | ![Oda düzeni](docs/images/tr/panel-editor.png) | ![Tüm efektler](docs/images/tr/panel-all-effects.png) |
 | **Ayarlar** | **Efekt oluştur** |
 | ![Ayarlar](docs/images/tr/panel-settings.png) | ![Efekt oluştur](docs/images/tr/panel-create.png) |
+
+### Eksik ışıkları tamamla
+
+Bir efekti odadaki ışıkların yalnızca bir kısmı destekliyorsa, desteklemeyen ışıklara ne yapacaklarını söyleyebilirsin. Efekt böylece yarım kalmaz, bütün odayı kaplar.
+
+1. Kartta efekte sağ tıkla (telefonda basılı tut) ve **Eksik ışıkları tamamla**'ya bas. Kontrol paneli o efektin tamamlama ekranıyla açılır. Aynı ekrana paneldeki efektin ⋯ menüsünden de girilir.
+2. Üstte efekti destekleyen ışıklar, altta desteklemeyenler oda oda listelenir.
+3. **Hepsi için** satırında bir seçim yap: **renk**, **beyaz**, ışığın kendi listesinden başka bir **efekt**, **kapat** ya da **dokunma**. İstediğin ışığı ayrıca değiştirebilirsin. Sonra **Kaydet**.
+
+Efekti açınca destekleyen ışıklar efekti oynatır, diğerleri senin seçtiğini yapar. Tamamlanan efekt kartta tam efekt gibi görünür, köşesinde küçük bir ✓ olur. Efekt seçimi varlıkları ve `lemur_light_effects.play` servisi de aynı kuralı kullanır. Bu ekran yalnızca yönetici hesabında açılır.
+
+Kartta **Bazı ışıklarda** bölümündeki efektler, en çok ışıkta çalışandan en aza doğru sıralanır.
 
 ## Otomasyonlar, scriptler ve sesli asistan
 

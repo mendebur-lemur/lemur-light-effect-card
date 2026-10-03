@@ -200,6 +200,15 @@ def custom_action(c: dict[str, Any], hass: HomeAssistant, eid: str, cap_ok: bool
     return fb if isinstance(fb, dict) and fb.get("mode") not in (None, "skip", "auto") else None
 
 
+def fill_action(settings: dict[str, Any], key: str, eid: str) -> dict[str, Any] | None:
+    """What a light that lacks an effect does when that effect plays (settings.fill)."""
+    f = (settings.get("fill") or {}).get(key)
+    if not isinstance(f, dict):
+        return None
+    a = (f.get("lights") or {}).get(eid) or f.get("all")
+    return a if isinstance(a, dict) and a.get("mode") not in (None, "skip", "auto") else None
+
+
 def units(hass: HomeAssistant, data: dict[str, Any], room: dict[str, Any]) -> dict[str, dict[str, Any]]:
     """Everything a room can play: key -> {label, names: {light: name or action}, custom}."""
     settings = data.get("settings") or {}
@@ -215,6 +224,13 @@ def units(hass: HomeAssistant, data: dict[str, Any], room: dict[str, Any]) -> di
                 continue
             u = out.setdefault(k, {"key": k, "label": pretty(nm), "names": {}, "custom": None})
             u["names"][eid] = nm
+    # lights that lack an effect do what the fill setting says
+    for k, u in out.items():
+        for eid in ids:
+            if eid not in u["names"]:
+                a = fill_action(settings, k, eid)
+                if a:
+                    u["names"][eid] = a
     for c in custom_list(settings):
         k = "u:" + str(c["id"])
         if k in hid:
@@ -272,6 +288,14 @@ def playing(hass: HomeAssistant, data: dict[str, Any], room: dict[str, Any], us:
         if isinstance(lk, str) and lk.startswith("u:") and lk in us:
             keys.add(lk)
             continue
+        a = us[lk]["names"].get(eid) if isinstance(lk, str) and lk in us else None
+        if isinstance(a, dict):
+            # filled in for this effect: trust it unless the light now plays something else
+            e = st.attributes.get("effect")
+            idle = not (isinstance(e, str) and e.strip()) or bool(OFF_RE.match(e.strip()))
+            if (e == a.get("fx")) if a.get("mode") == "fx" else idle:
+                keys.add(lk)
+                continue
         e = st.attributes.get("effect")
         if isinstance(e, str) and e.strip() and not OFF_RE.match(e.strip()):
             m = parse_list(st.attributes.get("effect_list"))[0]

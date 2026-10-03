@@ -1,7 +1,7 @@
 """Constants for Lemur Light Effect Card."""
 
 DOMAIN = "lemur_light_effects"
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 STORAGE_KEY = DOMAIN
 STORAGE_VERSION = 1
 SIGNAL_UPDATE = f"{DOMAIN}_update"

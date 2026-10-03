@@ -37,6 +37,7 @@ A Home Assistant dashboard card for light effects, white tones and colors that w
 - [Control panel](#control-panel)
   - [Settings](#settings)
   - [Create effect](#create-effect)
+  - [Fill in the missing lights](#fill-in-the-missing-lights)
 - [Automations, scripts and voice assistants](#automations-scripts-and-voice-assistants)
 - [Card options](#card-options)
 
@@ -250,6 +251,18 @@ Once saved it shows in the card under **My effects** like any other effect; one 
 | ![Room layout](docs/images/panel-editor.png) | ![All effects](docs/images/panel-all-effects.png) |
 | **Settings** | **Create effect** |
 | ![Settings](docs/images/panel-settings.png) | ![Create effect](docs/images/panel-create.png) |
+
+### Fill in the missing lights
+
+When only some of the lights in a room have an effect, you can tell the others what to do. The effect then covers the whole room instead of half of it.
+
+1. Right-click the effect on the card (long-press on a phone) and press **Fill in the missing lights**. The control panel opens on that effect. The effect's ⋯ menu in the panel leads to the same screen.
+2. Lights with the effect are listed at the top, lights without it below, room by room.
+3. Pick something in **For all**: a **colour**, a **white** tone, another **effect** from the light's own list, **turn off** or **leave as is**. Change any light on its own if you like, then **Save**.
+
+When the effect plays, lights with it play it and the others do what you chose. A filled-in effect looks like a full effect on the card, with a small ✓ in its corner. Effect select entities and the `lemur_light_effects.play` action follow the same rule. Only admin accounts can open this screen.
+
+In the card's **On some lights** section, effects that play on the most lights come first.
 
 ## Automations, scripts and voice assistants
 

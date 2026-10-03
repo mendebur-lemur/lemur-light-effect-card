@@ -54,7 +54,11 @@ const P_TXT = {
     sBackup: 'Yedek', bkDown: 'Yedeği indir', bkDownS: 'Odalar, sekmeler, favoriler, kendi efektlerin, ayarlar ve simgeler tek dosyada',
     bkUp: 'Yedekten geri yükle', bkUpS: 'Bir yedek dosyası seç; şu anki düzenin yerine geçer', bkQ: 'Yedek geri yüklensin mi?',
     bkW: '{d} tarihli yedek. Şu anki odalar, sekmeler, favoriler, kendi efektlerin, ayarlar ve simgeler bu yedekle değiştirilir.',
-    bkYes: 'Geri yükle', bkOk: 'Yedek geri yüklendi', bkErr: 'Bu dosya bir Lemur yedeği değil', bkSaved: 'Yedek indirildi', bkBusy: 'Yedek hazırlanıyor…'
+    bkYes: 'Geri yükle', bkOk: 'Yedek geri yüklendi', bkErr: 'Bu dosya bir Lemur yedeği değil', bkSaved: 'Yedek indirildi', bkBusy: 'Yedek hazırlanıyor…',
+    fillT: 'Eksik ışıkları tamamla', fillHead: '{x} · eksikleri tamamla', fillS: 'Bu efekti desteklemeyen ışıklar ne yapsın? Seçtiklerin efektle birlikte açılır, efekt böylece bütün odayı kaplar.',
+    fillSup: 'Destekleyen ışıklar', fillMiss: 'Desteklemeyen ışıklar', fillAll: 'Hepsi için', fillAllS: 'Ayrıca seçmediğin her ışık bunu yapar',
+    fillNone: 'Bu efekti evdeki bütün ışıklar destekliyor; tamamlanacak ışık yok.', fillSaved: '“{x}” tamamlandı', fillDel: 'Tamamlamayı kaldır', fillDeleted: '“{x}” için tamamlama kaldırıldı',
+    m_def: 'Hepsi için seçilen', fillOn: 'Tamamlanmış', fillTag: 'tamamlandı', fillNoEff: 'efekti var ama efektlerde kullanılmıyor'
   },
   en: {
     title: 'Lemur Light Effect Card', undo: 'Undo', undoK: 'Undo (Ctrl+Z)', more: 'More', settings: 'Settings', settingsS: 'Appearance, behaviour, night mode, your own effects',
@@ -108,7 +112,11 @@ const P_TXT = {
     sBackup: 'Backup', bkDown: 'Download backup', bkDownS: 'Rooms, tabs, favorites, your own effects, settings and icons in one file',
     bkUp: 'Restore a backup', bkUpS: 'Pick a backup file; it replaces the current setup', bkQ: 'Restore this backup?',
     bkW: 'Backup from {d}. The current rooms, tabs, favorites, your own effects, settings and icons are replaced by it.',
-    bkYes: 'Restore', bkOk: 'Backup restored', bkErr: 'This file is not a Lemur backup', bkSaved: 'Backup downloaded', bkBusy: 'Preparing the backup…'
+    bkYes: 'Restore', bkOk: 'Backup restored', bkErr: 'This file is not a Lemur backup', bkSaved: 'Backup downloaded', bkBusy: 'Preparing the backup…',
+    fillT: 'Fill in the missing lights', fillHead: '{x} · fill in the missing lights', fillS: 'What should lights without this effect do? What you pick comes on together with the effect, so it covers the whole room.',
+    fillSup: 'Lights with it', fillMiss: 'Lights without it', fillAll: 'For all', fillAllS: 'Every light you do not set on its own does this',
+    fillNone: 'Every light at home has this effect; nothing to fill in.', fillSaved: '“{x}” filled in', fillDel: 'Remove filling in', fillDeleted: 'Filling in removed for “{x}”',
+    m_def: 'What “For all” says', fillOn: 'Filled in', fillTag: 'filled in', fillNoEff: 'has it but is not used for effects'
   }
 };
 const PI = {
@@ -141,6 +149,7 @@ const PI = {
 // room icons offered in the panel (any mdi: name can be typed too)
 const ROOM_ICONS = ['mdi:sofa', 'mdi:sofa-outline', 'mdi:bed', 'mdi:bed-king', 'mdi:bed-single', 'mdi:desk', 'mdi:laptop', 'mdi:monitor', 'mdi:silverware-fork-knife', 'mdi:stove', 'mdi:fridge', 'mdi:coffee', 'mdi:shower', 'mdi:bathtub', 'mdi:toilet', 'mdi:television', 'mdi:gamepad-variant', 'mdi:teddy-bear', 'mdi:baby-carriage', 'mdi:wardrobe', 'mdi:washing-machine', 'mdi:garage', 'mdi:car', 'mdi:tree', 'mdi:flower', 'mdi:balcony', 'mdi:door', 'mdi:stairs', 'mdi:home', 'mdi:home-floor-1', 'mdi:home-floor-2', 'mdi:home-roof', 'mdi:dumbbell', 'mdi:book-open-variant', 'mdi:music', 'mdi:lamp', 'mdi:ceiling-light', 'mdi:led-strip-variant', 'mdi:lightbulb-group', 'mdi:fireplace', 'mdi:pool', 'mdi:paw'];
 const rgbHex = a => '#' + (Array.isArray(a) ? a : [255, 140, 60]).map(v => Math.max(0, Math.min(255, +v || 0)).toString(16).padStart(2, '0')).join('');
+const hsl2rgb = (h, s, l) => { s /= 100; l /= 100; const k = n => (n + h / 30) % 12, a = s * Math.min(l, 1 - l), f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1))); return [f(0), f(8), f(4)].map(v => Math.round(v * 255)); };
 const hexRgb = h => [1, 3, 5].map(i => parseInt(String(h).slice(i, i + 2), 16) || 0);
 const slug = s => String(s).toLocaleLowerCase('tr').replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ş/g, 's').replace(/ü/g, 'u').normalize('NFKD').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'x';
 const pi = (n, c = 's') => `<svg class="${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${PI[n]}</svg>`;
@@ -159,7 +168,15 @@ class LemurLightEffectsPanel extends HTMLElement {
     this._tm = e => { if (this._dd && this._dd.on) e.preventDefault(); };
     this._kd = e => this._key(e);
   }
+  _fillFromUrl() {
+    let k = null, r = null; try { const q = new URLSearchParams(location.search); k = q.get('fill'); r = q.get('room'); } catch (e) {}
+    if (!k || !this._hass) return;
+    try { history.replaceState(history.state, '', location.pathname); } catch (e) {}
+    this._fillOpen(k, r);
+  }
   connectedCallback() {
+    this._lc = this._lc || (() => setTimeout(() => this._fillFromUrl(), 50)); window.addEventListener('location-changed', this._lc);
+    setTimeout(() => this._fillFromUrl(), 200);
     STORE.L.add(this._onStore);
     window.addEventListener('pointermove', this._pm, { passive: false });
     window.addEventListener('pointerup', this._pu); window.addEventListener('pointercancel', this._pu);
@@ -168,6 +185,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     this._render();
   }
   disconnectedCallback() {
+    window.removeEventListener('location-changed', this._lc);
     STORE.L.delete(this._onStore);
     window.removeEventListener('pointermove', this._pm); window.removeEventListener('pointerup', this._pu);
     window.removeEventListener('pointercancel', this._pu); window.removeEventListener('touchmove', this._tm);
@@ -438,14 +456,17 @@ class LemurLightEffectsPanel extends HTMLElement {
         ${RES.tabs.map(tb).join('')}<button class="addt" data-addtab>${pi('plus', 's16')}${esc(t('addTab'))}</button></div>
         <div class="tb hidt ${tid === '_hid' ? 'on' : ''}" data-tabsel="_hid" data-z="tab|_hid"><span class="ti">${pi('eyeoff')}</span><b>${esc(t('hid'))}</b><em>${RES.hid.length}</em></div></div>`;
       const favT = RES.tabs.find(x => x.fav), favS = new Set(favT ? favT.fx : []);
+      const FILL = S.fill || {};
       const tileH = (k, o) => {
         const u = U.get(k); if (!u) return '';
+        if (FILL[k] && !(o && o.where)) o = Object.assign({}, o, { where: `<small class="where fl">${pi('sparkles')}${esc(t('fillTag'))}</small>` });
         return `<div class="fx ${this._pick.has(k) ? 'sel' : ''} ${o && o.hd ? 'hd' : ''}" style="--l:${grad(fxInfo(u.rep).hues, 80, 60, '90deg')}" data-d="fx|${esc(k)}" data-label="${esc(this._label(u))}" ${o && o.n ? `data-n="${esc(o.n)}"` : ''}>
           ${favS.has(k) && !(o && o.inFav) ? `<span class="st">${pi('star')}</span>` : ''}<span class="fi">${this._ico(u, 96)}</span><span class="nm">${esc(this._label(u))}</span>${o && o.where || ''}
           <button class="fm" data-fxm="${esc(k)}" title="${esc(t('fxMenu'))}">${pi('more', 's16')}</button></div>`;
       };
       let grid;
-      if (tid === '_mine') grid = this._mineHtml();
+      if (this._fill) grid = this._fillHtml();
+      else if (tid === '_mine') grid = this._mineHtml();
       else if (!L.length && rid !== '_all') grid = `<div class="grid"><div class="emp">${pi('bulb')}<span>${esc(t('noLightE'))}</span><button class="addl" data-addlight>${pi('plus', 's16')}${esc(t('addLight'))}</button></div></div>`;
       else if (tid === '_light') grid = `<div class="fxh"><b>${esc(t('light'))}</b></div><div class="grid"><div class="emp">${pi('bulb')}<span>${esc(t('lightE'))}</span></div></div>`;
       else if (!U.size) grid = `<div class="grid"><div class="emp">${pi('sparkles')}<span>${esc(t('noFxRoom'))}</span></div></div>`;
@@ -639,6 +660,63 @@ class LemurLightEffectsPanel extends HTMLElement {
         <div class="cezone" data-z="cz|in"><div class="ceht"><b>${esc(t('inFx'))}</b><em>${inIds.length}</em><small>${esc(t('inFxS'))}</small></div>${inIds.map(row).join('') || `<div class="emp">${pi('drag')}<span>${esc(t('dropL'))}</span></div>`}</div>
       </div>`;
   }
+  // ---- fill in an effect: what lights without it do (settings.fill[key]) ----
+  _fillOpen(k, room) {
+    const M = this._model(); this._M = M;
+    const has = r => this._effects(this._lightsOf(M, r)).has(k);
+    if (room && M.order.includes(room) && has(room)) this._room = room;
+    if (!this._room || !has(this._room)) { const r = M.order.find(x => x !== '_all' && has(x)) || (has('_all') ? '_all' : null); if (r) this._room = r; }
+    const cur = (this._set().fill || {})[k];
+    const hue = (fxInfo((this._allFx().get(k)) || k).hues || [30])[0], rgb = hsl2rgb(hue, 85, 58);
+    this._fill = { k, cfg: cur ? clone(cur) : { all: { mode: 'color', rgb, br: 60 }, lights: {} } };
+    this._ce = null; this._view = 'edit'; this._closePop(); this._render();
+  }
+  _fillHtml() {
+    const t = (x, v) => this._t(x, v), F = this._fill, k = F.k, c = F.cfg, H = this._hass, M = this._M, A = this._allFx(), rep = A.get(k) || k;
+    const u = { k, rep, names: {} }, lname = this._label(u), saved = !!(this._set().fill || {})[k];
+    const rooms = M.order.filter(r => r !== '_all' && (M.by[r] || []).length);
+    const hasIt = id => { const l = H.states[id] && H.states[id].attributes.effect_list; return Array.isArray(l) && parseList(l).m.has(k); };
+    const sup = [], miss = [];
+    rooms.forEach(r => M.by[r].forEach(id => { (hasIt(id) && this._fxOn(id) ? sup : miss).push([r, id]); }));
+    const fxOf = id => { const l = H.states[id] && H.states[id].attributes.effect_list; return Array.isArray(l) ? [...parseList(l).m.values()].sort((a, b) => a.localeCompare(b, this._l())) : []; };
+    const act = (who, a, light) => {
+      const all = who === '_all', m = (a && a.mode) || (all ? 'skip' : 'auto'), hasFx = light && fxOf(light).length;
+      const modes = [...(all ? [] : ['auto']), ...(hasFx ? ['fx'] : []), 'color', 'white', 'off', 'skip'];
+      let h = `<select data-fm="${esc(who)}">${modes.map(x => `<option value="${x}" ${x === m ? 'selected' : ''}>${esc(x === 'auto' ? t('m_def') : t('m_' + x))}</option>`).join('')}</select>`;
+      if (m === 'fx' && hasFx) h += `<select data-ffx="${esc(who)}">${fxOf(light).map(n => `<option ${a.fx === n ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>`;
+      if (m === 'color') h += `<input type="color" data-frgb="${esc(who)}" value="${rgbHex(a.rgb)}">`;
+      if (m === 'white') h += `<select data-fk="${esc(who)}">${KELV.map(([kk]) => `<option value="${kk}" ${+(a.k || 2700) === kk ? 'selected' : ''}>${kk}K</option>`).join('')}</select>`;
+      if (m === 'color' || m === 'white') h += `<label class="cbr" title="${esc(t('bri'))}">☀<input type="number" min="1" max="100" data-fbr="${esc(who)}" value="${esc(a.br || '')}">%</label>`;
+      return `<div class="act">${h}</div>`;
+    };
+    const row = ([r, id]) => { const a = (c.lights || {})[id] || { mode: 'auto' }; return `<div class="clr">${this._lightDot(id)}<span class="tx"><b>${esc(this._name(id))}</b><small>${esc(this._roomName(r))}${hasIt(id) ? ' · ' + esc(t('fillNoEff')) : this._fxOn(id) ? '' : ' · ' + esc(t('lOnly'))}</small></span>${act(id, a, id)}</div>`; };
+    const byRoom = {}; miss.forEach(x => (byRoom[x[0]] = byRoom[x[0]] || []).push(x));
+    return `<div class="ceh">
+        <button class="btn ic" data-fillclose title="${esc(t('back'))}">${pi('undo', 's16')}</button>
+        <span class="cei">${this._ico(u, 46)}</span>
+        <div class="fh"><b>${esc(t('fillHead', { x: lname }))}</b><small>${esc(t('fillS'))}</small></div>
+        <span class="grow"></span>
+        ${saved ? `<button class="btn danger sm" data-filldel>${pi('trash', 's16')}${esc(t('fillDel'))}</button>` : ''}
+        <button class="btn pri" data-fillsave ${miss.length ? '' : 'disabled'}>${esc(t('save'))}</button>
+      </div>
+      <div class="fsup"><small>${esc(t('fillSup'))}</small>${sup.map(([r, id]) => `<span class="fchip">${this._lightDot(id)}${esc(this._name(id))}</span>`).join('') || '–'}</div>
+      ${miss.length ? `<div class="cefb fall"><span class="tx"><b>${esc(t('fillAll'))}</b><small>${esc(t('fillAllS'))}</small></span>${act('_all', c.all || { mode: 'skip' }, null)}</div>
+      <div class="fmiss"><div class="ceht"><b>${esc(t('fillMiss'))}</b><em>${miss.length}</em></div>${Object.keys(byRoom).map(r => `<div class="crm">${esc(this._roomName(r))}</div>${byRoom[r].map(row).join('')}`).join('')}</div>`
+        : `<div class="grid"><div class="emp">${pi('sparkles')}<span>${esc(t('fillNone'))}</span></div></div>`}`;
+  }
+  _fillSlot(who) { const c = this._fill.cfg; if (who === '_all') return c.all || (c.all = { mode: 'skip' }); c.lights = c.lights || {}; return c.lights[who] || (c.lights[who] = { mode: 'auto' }); }
+  _fillSave() {
+    const F = this._fill, c = clone(F.cfg), L = {};
+    Object.entries(c.lights || {}).forEach(([id, a]) => { if (a && a.mode && a.mode !== 'auto') L[id] = a; });
+    const out = { all: c.all && c.all.mode !== 'skip' ? c.all : null, lights: L };
+    const FL = Object.assign({}, this._set().fill || {}), nm = this._label({ rep: this._allFx().get(F.k) || F.k });
+    if (!out.all && !Object.keys(L).length) delete FL[F.k]; else FL[F.k] = out;
+    this._fill = null; this._snap(); this._save({ fill: Object.keys(FL).length ? FL : null }, this._t('fillSaved', { x: nm }));
+  }
+  _fillDelete() {
+    const F = this._fill, FL = Object.assign({}, this._set().fill || {}), nm = this._label({ rep: this._allFx().get(F.k) || F.k }); delete FL[F.k];
+    this._fill = null; this._snap(); this._save({ fill: Object.keys(FL).length ? FL : null }, this._t('fillDeleted', { x: nm }));
+  }
   _ceMove(ids, into) {
     const c = this._ce; if (!c) return this._render(); c.lights = c.lights || {};
     ids.forEach(id => { if (into) { if (!c.lights[id]) c.lights[id] = { mode: 'auto' }; } else delete c.lights[id]; });
@@ -810,6 +888,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     this._popAt(el, `<div class="fxd">${this._ico(u, 52)}<div><b>${esc(this._label(u))}</b><small>${esc(u.rep)}</small></div></div>
       <div class="t">${esc(t('namesOn'))}</div><div class="names">${Object.entries(u.names).map(([id, n]) => `<span><b>${esc(this._name(id))}</b> · ${esc(this._actTxt(n))}</span>`).join('')}</div><hr>
       ${u.custom ? `<button class="it" data-ceedit="${esc(u.custom.id)}">${pi('pen', 's16')}${esc(t('editMine'))}</button>` : ''}
+      ${u.custom ? '' : `<button class="it" data-fillopen="${esc(k)}">${pi('sparkles', 's16')}${esc(t('fillT'))}${(this._set().fill || {})[k] ? ` <small>· ${esc(t('fillOn'))}</small>` : ''}</button>`}
       <button class="it" data-script="${esc(k)}">${pi('script', 's16')}${esc(t('script'))}</button>
       ${favT ? `<button class="it" data-fxfav="${esc(k)}">${pi('star', 's16')}${esc(isFav ? t('remFav') : t('addFav'))}</button>` : ''}
       <button class="it" data-fxhide="${esc(k)}">${pi(hid ? 'eye' : 'eyeoff', 's16')}${esc(hid ? t('showFx') : t('hideFx'))}</button>
@@ -909,6 +988,10 @@ class LemurLightEffectsPanel extends HTMLElement {
       if ((x = g('[data-cerem]'))) return this._ceMove([x.dataset.cerem], false);
       if ((x = g('[data-ceaddr]'))) return this._ceMove((this._M.by[x.dataset.ceaddr] || []).slice(), true);
       if ((x = g('[data-cenew]'))) return this._ceOpen(null);
+      if ((x = g('[data-fillopen]'))) return this._fillOpen(x.dataset.fillopen);
+      if (g('[data-fillclose]')) { this._fill = null; return this._render(); }
+      if (g('[data-fillsave]')) return this._fillSave();
+      if (g('[data-filldel]')) return this._fillDelete();
       if ((x = g('[data-ceedit]'))) return this._ceOpen(x.dataset.ceedit);
       // reset
       if (g('[data-resetask]')) { this._view = 'reset'; return this._render(); }
@@ -931,7 +1014,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       if ((x = g('[data-roff]'))) { this._closePop(); return this._roomVis(x.dataset.roff || this._room); }
       if (g('.dlg')) return;
       // rooms and lights
-      if ((x = g('[data-room]')) && !g('button')) { this._ce = null; this._room = x.dataset.room; this._tab[this._room] = '_allfx'; this._pick.clear(); this._q = ''; return this._render(); }
+      if ((x = g('[data-room]')) && !g('button')) { this._ce = null; this._fill = null; this._room = x.dataset.room; this._tab[this._room] = '_allfx'; this._pick.clear(); this._q = ''; return this._render(); }
       if ((x = g('[data-addroom]'))) return this._addRoomPop(x);
       if ((x = g('[data-pickroom]'))) { this._extra = x.dataset.pickroom; this._room = this._extra; this._closePop(); return this._render(); }
       if ((x = g('[data-addlight]'))) return this._addLightPop(x);
@@ -978,7 +1061,7 @@ class LemurLightEffectsPanel extends HTMLElement {
         if (src) { this._copyTab(src, this._room); this._toast(t('tabAdded', { t: this._tabName(src) })); }
         return;
       }
-      if ((x = g('[data-tabsel]')) && !g('button')) { if (x.dataset.tabsel !== '_mine') this._ce = null; this._tab[this._room] = x.dataset.tabsel; this._pick.clear(); this._q = ''; return this._render(); }
+      if ((x = g('[data-tabsel]')) && !g('button')) { this._fill = null; if (x.dataset.tabsel !== '_mine') this._ce = null; this._tab[this._room] = x.dataset.tabsel; this._pick.clear(); this._q = ''; return this._render(); }
       // effects
       if ((x = g('[data-fxm]'))) { ev.stopPropagation(); return this._fxPop(x, x.dataset.fxm); }
       if ((x = g('[data-fxfav]'))) {
@@ -1022,6 +1105,14 @@ class LemurLightEffectsPanel extends HTMLElement {
       if (x.id === 'bkf') {
         const f = x.files && x.files[0]; x.value = ''; if (!f) return;
         const rd = new FileReader(); rd.onload = () => { let b = null; try { b = JSON.parse(rd.result); } catch (e) {} if (!b || b.format !== 'lemur-light-effects-backup' || !b.data) return this._toast(this._t('bkErr'), false); this._bk = b; this._view = 'restore'; this._render(); }; rd.readAsText(f); return;
+      }
+      if (this._fill) {
+        const d = x.dataset, F = this._fill;
+        if (d.fm) { const nv = x.value, light = d.fm === '_all' ? null : d.fm; const v = nv === 'auto' || nv === 'skip' || nv === 'off' ? { mode: nv } : this._ceDefault(nv, light); if (nv === 'color' && d.fm !== '_all' && F.cfg.all && F.cfg.all.rgb) v.rgb = F.cfg.all.rgb.slice(); if (d.fm === '_all') F.cfg.all = v; else { F.cfg.lights = F.cfg.lights || {}; F.cfg.lights[d.fm] = v; } return this._render(); }
+        if (d.ffx) { this._fillSlot(d.ffx).fx = x.value; return; }
+        if (d.frgb) { this._fillSlot(d.frgb).rgb = hexRgb(x.value); return; }
+        if (d.fk) { this._fillSlot(d.fk).k = +x.value; return; }
+        if (d.fbr) { const v = Math.max(1, Math.min(100, Math.round(+x.value || 0))); const sl = this._fillSlot(d.fbr); if (x.value === '' || !v) delete sl.br; else sl.br = v; return; }
       }
       if (this._ce) {
         const c = this._ce, d = x.dataset;

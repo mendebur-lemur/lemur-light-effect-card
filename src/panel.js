@@ -49,6 +49,7 @@ const P_TXT = {
     save: 'Kaydet', del: 'Sil', bri: 'Parlaklık', ceNameErr: 'Bir ad yaz', ceSaved: '“{x}” kaydedildi', ceHint: 'Kartta “Efektlerim” sekmesinde görünür.',
     m_auto: 'Otomatik', m_fx: 'Efekt', m_color: 'Renk', m_white: 'Beyaz', m_off: 'Kapat', m_skip: 'Dokunma', supBase: 'temel efekti oynatır', noBase: 'temel efekt yok', autoIs: 'otomatik: {x}',
     upd: 'Yeni sürüm yüklendi ({v}). Ekranı yenile.', reload: 'Yenile',
+    pvB: 'Önizleme', pvT: 'Açıkken tıkladığın efekt ışıklarda hemen çalar', pvOn: 'Önizleme açık', pvWhere: 'tıkladığın efekt şu odanın ışıklarında çalar:', pvNow: 'şu an: {x}', pvBack: 'Eski haline dön', pvKeep: 'Böyle bırak', pvBackT: 'Işıklar önizlemeden önceki haline döndü', pvKeepT: 'Son efekt çalmaya devam ediyor', pvErr: 'Önizleme çalışmadı: {e}', pvNoRoom: 'Önizleme için bir oda seç',
     fade: 'Geçiş süresi', fadeS: 'Renk, beyaz, parlaklık ve kapatma yumuşak geçsin (destekleyen ışıklarda)', fadeNo: 'Yok',
     showRecent: 'Son kullanılanlar sekmesi', showRecentS: 'Odada son oynatılan efektler, Favoriler’in yanında',
     sBackup: 'Yedek', bkDown: 'Yedeği indir', bkDownS: 'Odalar, sekmeler, favoriler, kendi efektlerin, ayarlar ve simgeler tek dosyada',
@@ -107,6 +108,7 @@ const P_TXT = {
     save: 'Save', del: 'Delete', bri: 'Brightness', ceNameErr: 'Type a name', ceSaved: '“{x}” saved', ceHint: 'It shows in the card under “My effects”.',
     m_auto: 'Automatic', m_fx: 'Effect', m_color: 'Colour', m_white: 'White', m_off: 'Turn off', m_skip: 'Leave as is', supBase: 'plays the base effect', noBase: 'no base effect', autoIs: 'automatic: {x}',
     upd: 'A new version is installed ({v}). Reload the page.', reload: 'Reload',
+    pvB: 'Preview', pvT: 'While it is on, the effect you click plays on the lights right away', pvOn: 'Preview on', pvWhere: 'the effect you click plays on the lights of:', pvNow: 'now: {x}', pvBack: 'Put lights back', pvKeep: 'Keep it', pvBackT: 'The lights are back as they were before the preview', pvKeepT: 'The last effect keeps playing', pvErr: 'Preview did not work: {e}', pvNoRoom: 'Pick a room for the preview',
     fade: 'Transition', fadeS: 'Colour, white, brightness and turning off change softly (lights that support it)', fadeNo: 'None',
     showRecent: 'Recently used tab', showRecentS: 'Effects played lately in the room, next to Favorites',
     sBackup: 'Backup', bkDown: 'Download backup', bkDownS: 'Rooms, tabs, favorites, your own effects, settings and icons in one file',
@@ -144,7 +146,8 @@ const PI = {
   upload: '<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>',
   script: '<path d="M8 4h9a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7"/><path d="M8 4a2 2 0 0 0-2 2v12a2 2 0 0 1-2 2"/><path d="M10 9h6M10 13h6"/>',
   wand: '<path d="M4 20L15 9"/><path d="M15 4v3M19 8h-3M18.5 4.5l-2 2"/>',
-  download: '<path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>'
+  download: '<path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>',
+  play: '<path fill="currentColor" stroke="none" d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/>'
 };
 // room icons offered in the panel (any mdi: name can be typed too)
 const ROOM_ICONS = ['mdi:sofa', 'mdi:sofa-outline', 'mdi:bed', 'mdi:bed-king', 'mdi:bed-single', 'mdi:desk', 'mdi:laptop', 'mdi:monitor', 'mdi:silverware-fork-knife', 'mdi:stove', 'mdi:fridge', 'mdi:coffee', 'mdi:shower', 'mdi:bathtub', 'mdi:toilet', 'mdi:television', 'mdi:gamepad-variant', 'mdi:teddy-bear', 'mdi:baby-carriage', 'mdi:wardrobe', 'mdi:washing-machine', 'mdi:garage', 'mdi:car', 'mdi:tree', 'mdi:flower', 'mdi:balcony', 'mdi:door', 'mdi:stairs', 'mdi:home', 'mdi:home-floor-1', 'mdi:home-floor-2', 'mdi:home-roof', 'mdi:dumbbell', 'mdi:book-open-variant', 'mdi:music', 'mdi:lamp', 'mdi:ceiling-light', 'mdi:led-strip-variant', 'mdi:lightbulb-group', 'mdi:fireplace', 'mdi:pool', 'mdi:paw'];
@@ -185,6 +188,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     this._render();
   }
   disconnectedCallback() {
+    if (this._pv) this._pvEnd(true, true);
     window.removeEventListener('location-changed', this._lc);
     STORE.L.delete(this._onStore);
     window.removeEventListener('pointermove', this._pm); window.removeEventListener('pointerup', this._pu);
@@ -399,6 +403,34 @@ class LemurLightEffectsPanel extends HTMLElement {
     this._save({ hidden_areas: [...H] }, this._t(was ? 'roomOnT' : 'roomOffT'));
   }
 
+  // ---- preview: tapped effects play on the room's lights; the integration remembers and restores them ----
+  _pvWs(m) { return this._hass.connection.sendMessagePromise(Object.assign({ type: 'lemur_light_effects/preview' }, m)); }
+  async _pvRoom(room) {
+    if (!room || room === '_hidden') { if (this._pv) await this._pvEnd(true); else this._toast(this._t('pvNoRoom'), false); return; }
+    const was = this._pv;
+    this._pv = { room, key: null }; this._render();
+    try { await this._pvWs({ action: 'start', room }); }
+    catch (e) { this._pv = was && was.room !== room ? null : was; this._render(); this._toast(this._t('pvErr', { e: (e && e.message) || e }), false); }
+  }
+  _pvPlay(k) {
+    if (!this._pv) return;
+    this._pv.key = k; this._render();
+    // quick clicks in a row: only the last one goes to the lights
+    clearTimeout(this._pvT);
+    this._pvT = setTimeout(async () => {
+      const pv = this._pv; if (!pv || pv.key !== k) return;
+      try { await this._pvWs({ action: 'play', room: pv.room, effect: k }); }
+      catch (e) { this._toast(this._t('pvErr', { e: (e && e.message) || e }), false); }
+    }, 250);
+  }
+  async _pvEnd(restore, quiet) {
+    if (!this._pv) return;
+    clearTimeout(this._pvT); this._pv = null;
+    if (!quiet) this._render();
+    try { await this._pvWs({ action: 'end', restore: !!restore }); if (!quiet) this._toast(this._t(restore ? 'pvBackT' : 'pvKeepT'), false); }
+    catch (e) { if (!quiet) this._toast(this._t('pvErr', { e: (e && e.message) || e }), false); }
+  }
+
   // ---- render ----
   _render() {
     if (!this._hass) return;
@@ -456,11 +488,11 @@ class LemurLightEffectsPanel extends HTMLElement {
         ${RES.tabs.map(tb).join('')}<button class="addt" data-addtab>${pi('plus', 's16')}${esc(t('addTab'))}</button></div>
         <div class="tb hidt ${tid === '_hid' ? 'on' : ''}" data-tabsel="_hid" data-z="tab|_hid"><span class="ti">${pi('eyeoff')}</span><b>${esc(t('hid'))}</b><em>${RES.hid.length}</em></div></div>`;
       const favT = RES.tabs.find(x => x.fav), favS = new Set(favT ? favT.fx : []);
-      const FILL = S.fill || {};
+      const FILL = S.fill || {}, pvK = this._pv && this._pv.room === rid ? this._pv.key : null;
       const tileH = (k, o) => {
         const u = U.get(k); if (!u) return '';
         if (FILL[k] && !(o && o.where)) o = Object.assign({}, o, { where: `<small class="where fl">${pi('sparkles')}${esc(t('fillTag'))}</small>` });
-        return `<div class="fx ${this._pick.has(k) ? 'sel' : ''} ${o && o.hd ? 'hd' : ''}" style="--l:${grad(fxInfo(u.rep).hues, 80, 60, '90deg')}" data-d="fx|${esc(k)}" data-label="${esc(this._label(u))}" ${o && o.n ? `data-n="${esc(o.n)}"` : ''}>
+        return `<div class="fx ${this._pick.has(k) ? 'sel' : ''} ${o && o.hd ? 'hd' : ''} ${pvK === k ? 'pvon' : ''}" style="--l:${grad(fxInfo(u.rep).hues, 80, 60, '90deg')}" data-d="fx|${esc(k)}" data-label="${esc(this._label(u))}" ${o && o.n ? `data-n="${esc(o.n)}"` : ''}>
           ${favS.has(k) && !(o && o.inFav) ? `<span class="st">${pi('star')}</span>` : ''}<span class="fi">${this._ico(u, 96)}</span><span class="nm">${esc(this._label(u))}</span>${o && o.where || ''}
           <button class="fm" data-fxm="${esc(k)}" title="${esc(t('fxMenu'))}">${pi('more', 's16')}</button></div>`;
       };
@@ -485,13 +517,16 @@ class LemurLightEffectsPanel extends HTMLElement {
       }
       body = `<div class="lcol">${tabs}${setb}</div><div class="fxp">${grid}</div>`;
     }
+    const pv = this._pv, pvU = pv && pv.key ? U.get(pv.key) : null;
     const top = `<div class="top"><span class="mb"></span><span class="lg">${pi('sparkles', 's16')}</span><h1>${esc(t('title'))}</h1><span class="grow"></span>
+      <button class="pvb ${pv ? 'on' : ''}" data-pv title="${esc(t('pvT'))}" aria-pressed="${pv ? 'true' : 'false'}">${pi('play', 's16')}<span class="l">${esc(t('pvB'))}</span><i class="sw2"><i></i></i></button>
       <button class="btn ic" data-undo title="${esc(t('undoK'))}" ${this._undo.length ? '' : 'disabled'}>${pi('undo', 's16')}</button>
       ${hidR ? '' : `<button class="btn ic" data-more title="${esc(t('more'))}">${pi('more', 's16')}</button>`}
       <button class="btn ic gear" data-settings title="${esc(t('settings'))}">${pi('cog', 's16')}</button></div>`;
     const pk = [...this._pick].filter(k => U.has(k));
     const selb = pk.length ? `<div class="selb"><b>${esc(t('selN', { n: pk.length }))}</b><span>${esc(t('selHint'))}</span><button class="btn ic" style="border:0;background:none" data-clr title="${esc(t('clear'))}">${pi('x', 's16')}</button></div>` : '';
-    R.innerHTML = `<style>${PANEL_CSS}</style><div class="app ${this._narrow ? 'narrow' : ''}">${top}
+    R.innerHTML = `<style>${PANEL_CSS}</style><div class="app ${this._narrow ? 'narrow' : ''} ${pv ? 'pv' : ''}">${top}
+      ${pv ? `<div class="pvbar"><span class="pvd"></span><span class="tx"><b>${esc(t('pvOn'))}</b> · ${esc(t('pvWhere'))} <b>${esc(this._roomName(pv.room))}</b>${pvU ? ` · ${esc(t('pvNow', { x: this._label(pvU) }))}` : ''}</span><button class="btn sm" data-pvend="1">${pi('undo', 's16')}${esc(t('pvBack'))}</button><button class="btn sm" data-pvend="0">${esc(t('pvKeep'))}</button></div>` : ''}
       ${STORE.mode === 'local' ? `<div class="warn">${esc(t('local'))}</div>` : ''}${STORE.stale ? `<div class="warn upd"><span>${esc(t('upd', { v: STORE.stale }))}</span><button class="btn sm pri" data-reload>${esc(t('reload'))}</button></div>` : ''}
       <div class="rblock">${rooms}${strip}</div><div class="body">${body}</div>${selb}
       ${this._view === 'settings' ? this._settingsHtml() : this._view === 'reset' ? this._resetHtml() : this._view === 'restore' ? this._restoreHtml() : ''}
@@ -976,6 +1011,8 @@ class LemurLightEffectsPanel extends HTMLElement {
       if (this._noClick && Date.now() - this._noClick < 350) return;
       const g = s => ev.target.closest(s); let x;
       const inPop = g('.pop'); if (!inPop) this._closePop();
+      if (g('[data-pv]')) return this._pv ? this._pvEnd(true) : this._pvRoom(this._room);
+      if ((x = g('[data-pvend]'))) return this._pvEnd(x.dataset.pvend === '1');
       if (g('[data-undo]')) return this._undoIt();
       if (g('[data-settings]')) { this._view = 'settings'; return this._render(); }
       // own effects editor
@@ -997,7 +1034,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       if (g('[data-resetask]')) { this._view = 'reset'; return this._render(); }
       if ((x = g('[data-closereset]')) && (x.classList.contains('btn') || !g('.dlg'))) { this._view = 'settings'; return this._render(); }
       if (g('[data-resetyes]')) return this._resetAll();
-      if (g('[data-reload]')) { try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.update())); } catch (e) {} setTimeout(() => location.reload(), 150); return; }
+      if (g('[data-reload]')) { try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.update())); } catch (e) {} Promise.resolve(window.__LEMUR_HEAL && window.__LEMUR_HEAL()).finally(() => setTimeout(() => location.reload(), 150)); return; }
       if (g('[data-bkdown]')) return this._backupDown();
       if (g('[data-bkup]')) { const f = R.getElementById('bkf'); if (f) f.click(); return; }
       if ((x = g('[data-closerestore]')) && (x.classList.contains('btn') || !g('.dlg'))) { this._bk = null; this._view = 'settings'; return this._render(); }
@@ -1014,7 +1051,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       if ((x = g('[data-roff]'))) { this._closePop(); return this._roomVis(x.dataset.roff || this._room); }
       if (g('.dlg')) return;
       // rooms and lights
-      if ((x = g('[data-room]')) && !g('button')) { this._ce = null; this._fill = null; this._room = x.dataset.room; this._tab[this._room] = '_allfx'; this._pick.clear(); this._q = ''; return this._render(); }
+      if ((x = g('[data-room]')) && !g('button')) { this._ce = null; this._fill = null; this._room = x.dataset.room; this._tab[this._room] = '_allfx'; this._pick.clear(); this._q = ''; if (this._pv) this._pvRoom(this._room); return this._render(); }
       if ((x = g('[data-addroom]'))) return this._addRoomPop(x);
       if ((x = g('[data-pickroom]'))) { this._extra = x.dataset.pickroom; this._room = this._extra; this._closePop(); return this._render(); }
       if ((x = g('[data-addlight]'))) return this._addLightPop(x);
@@ -1084,6 +1121,8 @@ class LemurLightEffectsPanel extends HTMLElement {
       if ((x = g('[data-lmenu]')) && !inPop) return this._lightPop(x, x.dataset.lmenu);
       if ((x = g('[data-d]')) && !g('button,input') && !inPop) {
         const v = x.dataset.d, i = v.indexOf('|'), type = v.slice(0, i), id = v.slice(i + 1); if (type !== 'fx') return;
+        // preview on: a click plays the effect instead of selecting it
+        if (this._pv) return this._pvPlay(id);
         const vis = [...x.parentElement.querySelectorAll(':scope > [data-d]')].filter(el => el.style.display !== 'none' && el.dataset.d.startsWith(type + '|')).map(el => el.dataset.d.slice(i + 1));
         [...this._pick].forEach(k => { if ((type === 'light') !== k.startsWith('light.')) this._pick.delete(k); });
         if (ev.shiftKey && this._last && vis.includes(this._last)) { const a = vis.indexOf(this._last), b = vis.indexOf(id); vis.slice(Math.min(a, b), Math.max(a, b) + 1).forEach(q => this._pick.add(q)); }

@@ -141,7 +141,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if not hass.data.get(f"{DOMAIN}_static"):
         await _register_static(hass, data.icon_dir)
         add_extra_js_url(hass, f"{URL_BASE}/{CARD_FILE}?v={VERSION}")
-        for handler in (ws_get, ws_set, ws_last, ws_icon_upload, ws_icon_delete, ws_subscribe, ws_info):
+        for handler in (ws_get, ws_set, ws_last, ws_icon_upload, ws_icon_delete, ws_subscribe, ws_info, ws_preview):
             websocket_api.async_register_command(hass, handler)
         _register_services(hass)
         hass.data[f"{DOMAIN}_static"] = True
@@ -328,6 +328,43 @@ def ws_subscribe(hass, connection, msg):
 def ws_info(hass, connection, msg):
     """Version of the integration, so an outdated card in a browser cache can ask for a reload."""
     connection.send_result(msg["id"], {"version": VERSION})
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "lemur_light_effects/preview",
+        vol.Required("action"): vol.In(["start", "play", "end"]),
+        vol.Optional("room"): cv.string,
+        vol.Optional("effect"): cv.string,
+        vol.Optional("restore", default=True): bool,
+    }
+)
+@websocket_api.require_admin
+@websocket_api.async_response
+async def ws_preview(hass, connection, msg):
+    """Control panel preview: start (remember the lights), play (an effect right away), end (put them back or keep)."""
+    data = _data(hass)
+    if data is None:
+        connection.send_error(msg["id"], "not_loaded", "Lemur Light Effect Card is not loaded")
+        return
+    rt = data.runtime
+    try:
+        if msg["action"] == "end":
+            await rt.preview_end(msg["restore"])
+            connection.send_result(msg["id"], {"room": None})
+            return
+        room = engine.find_room(hass, data.data.get("settings") or {}, msg.get("room") or "")
+        if not room:
+            connection.send_error(msg["id"], "unknown_room", f"Unknown room: {msg.get('room')}")
+            return
+        if msg["action"] == "start":
+            await rt.preview_start(room)
+            connection.send_result(msg["id"], {"room": room["id"]})
+            return
+        u = await rt.preview_play(room, msg.get("effect") or "")
+        connection.send_result(msg["id"], {"room": room["id"], "effect": u["key"], "lights": list(u["names"])})
+    except ValueError as err:
+        connection.send_error(msg["id"], "preview_failed", str(err))
 
 
 PLAY_SCHEMA = vol.Schema(

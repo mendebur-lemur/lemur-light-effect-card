@@ -11,8 +11,10 @@ css = mincss("card.css")
 pcss = mincss("panel.css")
 parts = [(src / f).read_text() for f in ("icons.js", "icons2.js", "govee.js", "card.js", "editor.js", "presets.js", "panel.js", "i18n_more.js")]
 body = "\n".join(parts).replace("const CARD_VERSION = '0.1.0';", f"const CARD_VERSION = '{version}';")
+heal = (src / "heal.js").read_text().replace("__VERSION__", version)
 out = f"""/*! Lemur Light Effect Card v{version} | MIT */
 (() => {{
+{heal}
 if (customElements.get('lemur-light-effect-card')) return;
 const CSS = {json.dumps(css, ensure_ascii=False)};
 const PANEL_CSS = {json.dumps(pcss, ensure_ascii=False)};
@@ -24,6 +26,7 @@ customElements.define('lemur-fullscreen-button', LemurFullscreenButton);
 customElements.define('lemur-phone-button', LemurPhoneButton);
 customElements.define('lemur-window-button', LemurWindowButton);
 customElements.define('lemur-phone-fullscreen-button', LemurPhoneFullButton);
+window.__LEMUR_CARD_VER = CARD_VERSION;
 window.customCards = window.customCards || [];
 // names are read when the card picker opens, so they follow the user's Home Assistant language (not the browser's)
 {{ const doc = 'https://github.com/mendebur-lemur/lemur-light-effect-card';

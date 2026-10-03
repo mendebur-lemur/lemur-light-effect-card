@@ -930,7 +930,7 @@ class LemurLightEffectCard extends HTMLElement {
       if (k && g('[data-icup]')) { const f = R.getElementById('icf'); if (f) f.click(); return; }
       const lc = g('[data-id]'); if (lc) { const id = lc.dataset.id, nx = I.includes(id) ? I.filter(x => x !== id) : [...I, id]; this._saveSel(room.lights.filter(x => nx.includes(x))); return; }
       if (g('[data-all]')) { this._saveSel(room.lights.slice()); return; }
-      if (g('[data-reload]')) { try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.update())); } catch (e) {} setTimeout(() => location.reload(), 150); return; }
+      if (g('[data-reload]')) { try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.update())); } catch (e) {} Promise.resolve(window.__LEMUR_HEAL && window.__LEMUR_HEAL()).finally(() => setTimeout(() => location.reload(), 150)); return; }
       const rm = g('[data-room]'); if (rm) { this._st.room = rm.dataset.room; this._st.rpick = false; this._st.q = ''; return this._render(); }
       const ct = g('[data-cat]'); if (ct) { const mc = R.querySelector('.mchips'); this._mcx = mc ? mc.scrollLeft : 0; this._st.q = ''; this._st.cat = ct.dataset.cat; this._st.catAuto = false; try { localStorage.setItem('lemur-tab-' + room.id, ct.dataset.cat); } catch (e) {} this._render(); const s = R.querySelector('.scroll'); if (s) s.scrollTop = 0; return; }
       if (g('[data-rand]')) { if (!all.length) return; const full = all.filter(u => !this._part(u, IF)), P = full.length ? full : all; return this._play(P[Math.floor(Math.random() * P.length)].k, I, IF); }

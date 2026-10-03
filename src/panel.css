@@ -356,3 +356,24 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .fmiss .crm{margin:10px 2px 6px}
 .where.fl{color:var(--ac)}
 .where.fl svg{width:13px;height:13px}
+
+/* preview: a switch in the top bar, a bar under it while it is on, clicked effects play */
+.pvb{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 9px 0 11px;border-radius:var(--r3);border:1px solid var(--ln2);background:var(--s2);font-size:13px;font-weight:500;color:var(--tx);white-space:nowrap}
+.pvb:hover{border-color:var(--ln3)}
+.pvb>svg{color:var(--ac)}
+.pvb .sw2{position:relative;width:30px;height:18px;border-radius:9px;background:var(--s5);flex:none;transition:background .15s}
+.pvb .sw2 i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .15s}
+.pvb.on{background:var(--acs);border-color:var(--acl)}
+.pvb.on .sw2{background:var(--ac)}.pvb.on .sw2 i{left:14px}
+.narrow .pvb .l{display:none}
+.pvbar{display:flex;align-items:center;gap:10px;background:var(--acs);border:1px solid var(--acl);color:#F7D9A6;padding:7px 8px 7px 14px;border-radius:var(--r2);font-size:13px;flex:none;flex-wrap:wrap}
+.pvbar .tx{flex:1;min-width:200px}
+.pvbar b{color:var(--tx)}
+.pvbar .btn{height:30px}
+.pvd{width:9px;height:9px;border-radius:50%;background:var(--ac);flex:none;animation:pvp 1.6s ease-out infinite}
+@keyframes pvp{0%{box-shadow:0 0 0 0 rgba(242,169,59,.55)}100%{box-shadow:0 0 0 9px rgba(242,169,59,0)}}
+.app.pv .fx{cursor:pointer}
+.app.pv .fx:hover{box-shadow:0 0 0 1.5px var(--acl),0 4px 14px rgba(0,0,0,.35)}
+.fx.pvon{box-shadow:0 0 0 2px var(--ac),0 6px 22px rgba(242,169,59,.28)!important}
+.fx.pvon::before{content:"";position:absolute;top:9px;left:calc(50% - 4.5px);width:9px;height:9px;border-radius:50%;background:var(--ac);animation:pvp 1.6s ease-out infinite}
+@media (prefers-reduced-motion:reduce){.pvd,.fx.pvon::before{animation:none}}

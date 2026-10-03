@@ -716,9 +716,16 @@ class LemurLightEffectCard extends HTMLElement {
   // ---- render ----
   _render(keep) {
     if (!this._hass || !this._c || !this.shadowRoot) return;
-    const R = this.shadowRoot, st = this._st, rooms = this._rooms(), room = this._room();
+    const R = this.shadowRoot, st = this._st, rooms = this._rooms();
+    // "start where I left off": the last room on this device too, once the shared settings have loaded
+    if (!this._roomInit && STORE.mode) {
+      this._roomInit = true;
+      if (!this._raw.room && (this._c.start_tab || 'last') === 'last') { let r = null; try { r = localStorage.getItem('lemur-room'); } catch (e) {} if (r && rooms.some(x => x.id === r)) st.room = r; }
+    }
+    const room = this._room();
     if (!rooms.length) { R.innerHTML = `<style>${CSS}</style><div class="wrap empty-card"><div class="empty">${esc(this._t('noLights'))}</div></div>`; this._lastSig = this._sig(); return; }
     st.room = room.id;
+    if (this._roomInit) try { localStorage.setItem('lemur-room', room.id); } catch (e) {}
     this._lastSig = this._sig();
     const lang = this._lang(), t = (k, v) => this._t(k, v);
     const RES = this._resolve(room);
@@ -743,7 +750,7 @@ class LemurLightEffectCard extends HTMLElement {
     // on a phone the tab stays put (bottom bar) even before anything was played in the room
     if (rec.length || (this._mob && this._c.show_recent !== false)) { TB.recent = { id: 'recent', recent: 1, fx: rec.map(u => u.k) }; by.recent = rec; tabs.splice(favT ? tabs.indexOf(favT.id) + 1 : 1, 0, 'recent'); }
     if (!st.cat || !tabs.includes(st.cat) || st.catAuto) {
-      const sv = this._c.start_tab, firstFx = tabs.find(k => k !== 'light' && !(TB[k] && TB[k].fav)) || 'light';
+      const sv = this._c.start_tab || 'last', firstFx = tabs.find(k => k !== 'light' && !(TB[k] && TB[k].fav)) || 'light';
       let lt = null; if (sv === 'last') try { lt = localStorage.getItem('lemur-tab-' + room.id); } catch (e) {}
       st.cat = sv === 'light' ? 'light' : sv === 'fav' && favT ? favT.id : sv === 'last' && lt && tabs.includes(lt) ? lt : fav.length && favT ? favT.id : firstFx;
       st.catAuto = true;

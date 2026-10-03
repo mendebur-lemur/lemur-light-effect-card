@@ -30,7 +30,7 @@ const P_TXT = {
     showBar: 'Renk çizgisi', showBarS: 'Karoların altındaki renkli çizgi', showDots: 'Destek noktaları', showDotsS: 'Efekti kaç ışığın desteklediğini gösteren noktalar',
     sButtons: 'Alt çubuk', showStop: 'Durdur düğmesi', showRandom: 'Rastgele düğmesi', showRandomS: 'Geniş düzende görünür',
     sBehave: 'Davranış', fxOn: 'Kapalı ışıkta efekt seçilince', fxOnS: 'Işık bu parlaklıkta açılır', fxOnOff: 'Işığın kendi ayarı',
-    startTab: 'Kart açılınca', stAuto: 'Otomatik', stFav: 'Favoriler', stLast: 'Son kullanılan', stLight: 'Işık',
+    startTab: 'Kart açılınca', startTabS: '“Son kullanılan”: o cihazda en son açtığın oda ve sekme', stAuto: 'Otomatik', stFav: 'Favoriler', stLast: 'Son kullanılan', stLight: 'Işık',
     lp: 'Uzun basma süresi', lpS: 'Efekt menüsünü açmak için basılı tutma süresi', haptic: 'Titreşim', hapticS: 'Dokununca ve basılı tutunca (destekleyen telefonlarda)',
     sRooms: 'Odalar ve ışıklar', groups: 'Işık gruplarını da göster', groupsS: 'Home Assistant’taki ışık grupları ayrı bir ışık gibi listelenir',
     sNight: 'Gece modu', night: 'Gece modu', nightS: 'Bu saatler arasında parlaklık üst sınırı uygulanır (efektler, Durdur, parlaklık)', from: 'Başlangıç', to: 'Bitiş', nightMax: 'En fazla parlaklık',
@@ -89,7 +89,7 @@ const P_TXT = {
     showBar: 'Colour line', showBarS: 'The coloured line under tiles', showDots: 'Support dots', showDotsS: 'Dots showing how many lights support an effect',
     sButtons: 'Bottom bar', showStop: 'Stop button', showRandom: 'Random button', showRandomS: 'Shown in the wide layout',
     sBehave: 'Behaviour', fxOn: 'When an effect is picked for a light that is off', fxOnS: 'The light comes on at this brightness', fxOnOff: 'Light’s own setting',
-    startTab: 'When the card opens', stAuto: 'Automatic', stFav: 'Favorites', stLast: 'Last used', stLight: 'Light',
+    startTab: 'When the card opens', startTabS: '“Last used”: the room and tab you last had open on that device', stAuto: 'Automatic', stFav: 'Favorites', stLast: 'Last used', stLight: 'Light',
     lp: 'Long press time', lpS: 'How long to hold to open the effect menu', haptic: 'Vibration', hapticS: 'On tap and long press (on phones that support it)',
     sRooms: 'Rooms and lights', groups: 'Also show light groups', groupsS: 'Light groups from Home Assistant are listed like a light',
     sNight: 'Night mode', night: 'Night mode', nightS: 'Between these times brightness is capped (effects, Stop, brightness)', from: 'From', to: 'To', nightMax: 'Maximum brightness',
@@ -570,7 +570,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       ${row(t('showRandom'), t('showRandomS'), sw('show_random', true))}
       <div class="sh2">${esc(t('sBehave'))}</div>
       ${row(t('fxOn'), t('fxOnS'), seg('fx_on_brightness', S.fx_on_brightness || 0, [[0, t('fxOnOff')], [30, '%30'], [50, '%50'], [80, '%80'], [100, '%100']]))}
-      ${row(t('startTab'), '', seg('start_tab', S.start_tab || 'auto', [['auto', t('stAuto')], ['fav', t('stFav')], ['last', t('stLast')], ['light', t('stLight')]]))}
+      ${row(t('startTab'), t('startTabS'), seg('start_tab', S.start_tab || 'last', [['auto', t('stAuto')], ['fav', t('stFav')], ['last', t('stLast')], ['light', t('stLight')]]))}
       ${row(t('lp'), t('lpS'), seg('long_press', S.long_press || 550, [[300, '0,3 sn'], [450, '0,45 sn'], [550, '0,55 sn'], [800, '0,8 sn']]))}
       ${row(t('haptic'), t('hapticS'), sw('haptics', true))}
       ${row(t('fade'), t('fadeS'), seg('transition', S.transition || 0, [[0, t('fadeNo')], ['0.5', '0,5 ' + t('sec')], [1, '1 ' + t('sec')], [2, '2 ' + t('sec')], [5, '5 ' + t('sec')]]))}
@@ -1046,7 +1046,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       if ((x = g('[data-k]'))) return this._save({ kelvin: +x.dataset.k });
       if ((x = g('[data-lang]'))) return this._save({ language: x.dataset.lang === 'auto' ? null : x.dataset.lang });
       if ((x = g('[data-min]'))) return this._save({ min_effects: +x.dataset.min });
-      if ((x = g('[data-sv]'))) { const v = x.dataset.sv, i = v.indexOf('|'), key = v.slice(0, i), raw = v.slice(i + 1), num = /^\d+(\.\d+)?$/.test(raw) ? +raw : raw; const def = { tile_size: 'auto', icon_style: 'color', bg: 'dark', start_tab: 'auto', long_press: 550, fx_on_brightness: 0, night_max: 30, transition: 0 }[key]; return this._save({ [key]: num === def ? null : num }); }
+      if ((x = g('[data-sv]'))) { const v = x.dataset.sv, i = v.indexOf('|'), key = v.slice(0, i), raw = v.slice(i + 1), num = /^\d+(\.\d+)?$/.test(raw) ? +raw : raw; const def = { tile_size: 'auto', icon_style: 'color', bg: 'dark', start_tab: 'last', long_press: 550, fx_on_brightness: 0, night_max: 30, transition: 0 }[key]; return this._save({ [key]: num === def ? null : num }); }
       if ((x = g('[data-sw]'))) { const [key, d] = x.dataset.sw.split('|'), def = d === '1', S = this._set(), cur = S[key] == null ? def : !!S[key], nv = !cur; return this._save({ [key]: nv === def ? null : nv }); }
       if ((x = g('[data-roff]'))) { this._closePop(); return this._roomVis(x.dataset.roff || this._room); }
       if (g('.dlg')) return;

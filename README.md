@@ -218,7 +218,7 @@ Sol alttaki **Ayarlar** penceresi evdeki bütün kartlara uygulanır:
 
 - *Görünüm:* karo boyutu (otomatik, küçük, orta, büyük), renkli ya da sade (tek renk) simgeler, arka plan (koyu, siyah OLED, Home Assistant teması), efekt adları, renk çizgisi ve destek noktaları aç/kapat.
 - *Alt çubuk:* Durdur ve Rastgele düğmelerini gizleme.
-- *Davranış:* kapalı bir ışığa efekt seçilince hangi parlaklıkta açılacağı, kart açılınca hangi sekmenin geleceği (otomatik, Favoriler, son kullanılan, Işık), uzun basma süresi, titreşim, geçiş süresi (renk, beyaz, parlaklık ve kapatma yumuşak geçer) ve **Son kullanılanlar** sekmesi (odada son oynatılan 12 efekt, Favoriler'in altında).
+- *Davranış:* kapalı bir ışığa efekt seçilince hangi parlaklıkta açılacağı, kart açılınca hangi sekmenin geleceği (son kullanılan, otomatik, Favoriler, Işık; varsayılan "son kullanılan": o cihazda en son açık olan oda ve sekme), uzun basma süresi, titreşim, geçiş süresi (renk, beyaz, parlaklık ve kapatma yumuşak geçer) ve **Son kullanılanlar** sekmesi (odada son oynatılan 12 efekt, Favoriler'in altında).
 - *Durdur sonrası* beyaz ton ve parlaklık.
 - *Gece modu:* seçtiğin saatler arasında parlaklık üst sınırı (efektler, Durdur ve parlaklık çubuğu bu sınırı aşmaz).
 - *Odalar ve ışıklar:* Home Assistant ışık gruplarını gösterme, bir ışığın efektli sayılması için gereken en az efekt sayısı.

@@ -218,7 +218,7 @@ The **Settings** window at the bottom left applies to every card at home:
 
 - *Appearance:* tile size (automatic, small, medium, large), colour or simple one-colour icons, background (dark, black OLED, Home Assistant theme), effect names, colour line and support dots on/off.
 - *Bottom bar:* hide the Stop and Random buttons.
-- *Behaviour:* the brightness a light that is off comes on at when an effect is picked, which tab the card opens on (automatic, Favorites, last used, Light), long press time, vibration, transition (colour, white, brightness and turning off change softly) and the **Recently used** tab (the last 12 effects played in the room, below Favorites).
+- *Behaviour:* the brightness a light that is off comes on at when an effect is picked, which tab the card opens on (last used, automatic, Favorites, Light; the default "last used" is the room and tab you last had open on that device), long press time, vibration, transition (colour, white, brightness and turning off change softly) and the **Recently used** tab (the last 12 effects played in the room, below Favorites).
 - *After Stop:* white tone and brightness.
 - *Night mode:* a brightness ceiling between two times (effects, Stop and the brightness bar never go above it).
 - *Rooms and lights:* show Home Assistant light groups, the minimum number of effects a light needs.

@@ -14,7 +14,7 @@ A Home Assistant dashboard card for light effects, white tones and colors that w
 - **A hand-drawn icon for every effect.** Hundreds of effects each have their own icon in one consistent style; for unknown names the closest match is picked from the effect name.
 - **One Stop button for every brand.** It sends each light's own "off" effect, then a calm white (default 3200 K, 40 %) instead of full-bright white.
 - **Light tab** with a brightness bar, white tones, a color wheel and swatches.
-- **Tablet and phone layouts.** Swipe left or right to change rooms, and up or down to change categories. Updates are optimistic, so taps feel instant.
+- **Tablet and phone layouts.** On a phone everything sits under your thumb: a room box at the top (every room and how many lights are on, one tap away), what is playing with a Stop button right below it, and at the bottom a wide brightness bar and the Favorites / Recently played / All effects / White & colour tabs. The All effects tab has search. Swipe left or right to change rooms. Updates are optimistic, so taps feel instant.
 - **Four ready-made button cards:** phone screen, phone full screen, full screen and a resizable window. None of them needs browser_mod.
 - **Create your own effects.** Drag lights into an effect and choose what each opens: lights without the effect switch to a colour or white, any light can play another effect from its own list.
 - **Control panel in the sidebar** (*Lemur Light Effect Card*): arrange rooms, lights, tabs and effects by drag and drop.

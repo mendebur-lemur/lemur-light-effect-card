@@ -14,7 +14,7 @@ Hangi marka olursa olsun, efekt destekleyen bütün ışıkları oda oda yönete
 - **Her efekte özel çizilmiş simgeler.** Yüzlerce efektin her biri için aynı stilde ayrı bir simge var; bilinmeyen adlarda efektin adına en uygun simge otomatik seçilir.
 - **Tek Durdur düğmesi.** Her ışığa kendi kapatma efektini gönderir, ardından ışıkları göz yormayan sakin bir beyaza alır (varsayılan 3200 K, %40).
 - **Işık sekmesi:** parlaklık çubuğu, beyaz tonlar, renk çemberi ve hazır renkler.
-- **Tablet ve telefon düzeni.** Sağa-sola kaydırınca oda, yukarı-aşağı kaydırınca kategori değişir. Dokunuşlar anında tepki verir.
+- **Tablet ve telefon düzeni.** Telefonda her şey başparmak altında: üstte oda kutusu (bütün odalar ve kaç ışığın açık olduğu bir dokunuşta), hemen altında ne çaldığı ve Durdur, altta kalın bir parlaklık çubuğu ve Favoriler / Son çalınan / Tüm efektler / Beyaz & renk sekmeleri. Tüm efektler sekmesinde arama var. Sağa-sola kaydırınca oda değişir. Dokunuşlar anında tepki verir.
 - **Dört hazır buton kartı:** telefon ekranı, telefonda tam ekran, tam ekran ve boyutu ayarlanabilen pencere. Hiçbiri browser_mod gerektirmez.
 - **Kendi efektlerini oluştur.** Işıkları sürükleyip bir efekte kat, her birinin ne açacağını seç: efekti desteklemeyen ışık renk ya da beyaz açar, istediğin ışık kendi listesinden başka bir efekt oynatır.
 - **Kenar menüde kontrol paneli** (*Lemur Işık Efekt Kartı*): odalar, ışıklar, sekmeler ve efektler sürükle-bırak ile düzenlenir.

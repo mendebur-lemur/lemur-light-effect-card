@@ -56,7 +56,11 @@ const I18N = {
     err: 'Hata: {e}', toColor: '{r} → renk', localMode: 'Paylaşım için entegrasyonu kur (şu an sadece bu cihaza kaydediliyor)',
     close: 'Kapat', kel: ['Akkor', 'Sıcak', 'Yumuşak', 'Nötr', 'Gün ışığı', 'Soğuk'],
     upd: 'Yeni sürüm yüklendi ({v}). Ekranı yenile.', reload: 'Yenile', recent: 'Son kullanılanlar',
-    fillB: 'Eksik ışıkları tamamla', fillE: 'Tamamlamayı düzenle', filled: 'Desteklemeyen ışıklar senin seçtiğin gibi tamamlanıyor', fillLbl: 'tamamlandı'
+    fillB: 'Eksik ışıkları tamamla', fillE: 'Tamamlamayı düzenle', filled: 'Desteklemeyen ışıklar senin seçtiğin gibi tamamlanıyor', fillLbl: 'tamamlandı',
+    mRoom: 'Oda', mChange: 'Değiştir', mLit: '{a}/{b} ışık açık', mAllOff: 'ışıklar kapalı', mPick: 'Oda seç', mLights: 'Işıkları seç',
+    mPlaying: 'çalıyor · {n} ışıkta', mMixed: 'Farklı efektler çalıyor', mIdle: 'Efekt çalmıyor · bir efekte dokun', mLight: 'Işık: {x}', mOff: 'Işıklar kapalı',
+    mBright: 'Parlaklık', mRecent: 'Son çalınan', mAll: 'Tüm efektler', mLightTab: 'Beyaz & renk', mSearch: 'Efekt ara', mCount: '{n} efekt',
+    mNoRes: 'Sonuç yok', recEmpty: 'Bu odada henüz efekt çalınmadı. Çaldığın efektler burada sıralanır.', mSelFirst: 'Önce ışık seç: üstteki oda kutusu → Işıkları seç'
   },
   en: {
     light: 'Light', fav: 'Favorites', allHome: 'Whole home', unassigned: 'Unassigned', lights: '{n} lights', off: 'Off', playing: 'Playing',
@@ -73,7 +77,11 @@ const I18N = {
     err: 'Error: {e}', toColor: '{r} → color', localMode: 'Install the integration to share (saved on this device only)',
     close: 'Close', kel: ['Incandescent', 'Warm', 'Soft', 'Neutral', 'Daylight', 'Cool'],
     upd: 'A new version is installed ({v}). Reload the page.', reload: 'Reload', recent: 'Recently used',
-    fillB: 'Fill in the missing lights', fillE: 'Edit how it is filled in', filled: 'Lights without it do what you chose', fillLbl: 'filled in'
+    fillB: 'Fill in the missing lights', fillE: 'Edit how it is filled in', filled: 'Lights without it do what you chose', fillLbl: 'filled in',
+    mRoom: 'Room', mChange: 'Change', mLit: '{a} of {b} lights on', mAllOff: 'lights off', mPick: 'Choose a room', mLights: 'Choose lights',
+    mPlaying: 'playing · on {n} lights', mMixed: 'Different effects playing', mIdle: 'No effect playing · tap one', mLight: 'Light: {x}', mOff: 'Lights are off',
+    mBright: 'Brightness', mRecent: 'Recently played', mAll: 'All effects', mLightTab: 'White & colour', mSearch: 'Search effects', mCount: '{n} effects',
+    mNoRes: 'No results', recEmpty: 'Nothing played in this room yet. Effects you play show up here.', mSelFirst: 'Choose lights first: room box at the top → Choose lights'
   }
 };
 const GROUPS = ['mine', 'nature', 'sky', 'home', 'color', 'fun', 'other'];
@@ -108,6 +116,13 @@ const BULB = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 const HOME = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>';
 const PW = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4v8"/><path d="M6.6 7.2a8 8 0 1 0 10.8 0"/></svg>';
 const EQ = '<b class="eq"><i></i><i></i><i></i></b>';
+// phone layout: bottom tab bar icons
+const M_CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>';
+const M_GRID = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="2"/></svg>';
+const M_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>';
+const M_DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9.5l6 6 6-6"/></svg>';
+const M_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const M_SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>';
 const grad = (p, S, L, d) => {
   p = p && p.length ? p.slice() : null;
   if (!p) return `linear-gradient(${d},hsl(220 10% ${L - 4}%),hsl(220 10% ${L - 12}%))`;
@@ -404,7 +419,11 @@ class LemurLightEffectCard extends HTMLElement {
     if (first) { this._render(); this._loadRoutes(); return; }
     if (this._sig() !== this._lastSig) this._kick();
   }
-  _kick() { if (this._drag || (this._touch && Date.now() - this._touchT < 3000)) this._pend = true; else this._render(true); }
+  _kick() {
+    // while someone types in the phone search field, background updates wait (a re-render would close the keyboard)
+    const ae = this.shadowRoot && this.shadowRoot.activeElement;
+    if (this._drag || (this._touch && Date.now() - this._touchT < 3000) || (ae && ae.id === 'mq')) this._pend = true; else this._render(true);
+  }
   _lang() { const l = this._c.language; if (l && l !== 'auto') return I18N[l] ? l : 'en'; const h = this._hass; return pickLang((h && ((h.locale && h.locale.language) || h.language)) || navigator.language); }
   _t(k, v) { let s = (I18N[this._lang()] || I18N.en)[k]; if (s == null) s = I18N.en[k] || k; if (v) for (const x in v) s = s.split('{' + x + '}').join(v[x]); return s; }
   _pc(v) { return this._lang() === 'tr' ? '%' + v : v + '%'; }
@@ -721,7 +740,8 @@ class LemurLightEffectCard extends HTMLElement {
     const tabs = ['light', ...RES.tabs.filter(tb => tb.fav || by[tb.id].length).map(tb => tb.id)];
     // recently used: what was played in this room lately, newest first
     const rec = this._c.show_recent === false ? [] : ((STORE.d.recent || {})[room.id] || []).map(k => U.get(k)).filter(Boolean).slice(0, 12);
-    if (rec.length) { TB.recent = { id: 'recent', recent: 1, fx: rec.map(u => u.k) }; by.recent = rec; tabs.splice(favT ? tabs.indexOf(favT.id) + 1 : 1, 0, 'recent'); }
+    // on a phone the tab stays put (bottom bar) even before anything was played in the room
+    if (rec.length || (this._mob && this._c.show_recent !== false)) { TB.recent = { id: 'recent', recent: 1, fx: rec.map(u => u.k) }; by.recent = rec; tabs.splice(favT ? tabs.indexOf(favT.id) + 1 : 1, 0, 'recent'); }
     if (!st.cat || !tabs.includes(st.cat) || st.catAuto) {
       const sv = this._c.start_tab, firstFx = tabs.find(k => k !== 'light' && !(TB[k] && TB[k].fav)) || 'light';
       let lt = null; if (sv === 'last') try { lt = localStorage.getItem('lemur-tab-' + room.id); } catch (e) {}
@@ -750,9 +770,9 @@ class LemurLightEffectCard extends HTMLElement {
     const tabBtn = tabs.map(k => `<button class="ct ${st.cat === k ? 'on' : ''}" data-cat="${esc(k)}">${this._tabIco(k, mob ? 32 : Math.round(iszA * .62))}<span>${esc(tname(k))}</span></button>`).join('');
     let body;
     if (st.cat === 'light') body = this._isik(IA);
-    else if (!IA.length) body = `<div class="empty">${esc(t('selectFirst'))}</div>`;
+    else if (!IA.length) body = `<div class="empty">${esc(t(mob ? 'mSelFirst' : 'selectFirst'))}</div>`;
     else if (!n && !hasCu) body = `<div class="empty">${esc(t('noCap'))}</div>`;
-    else if (st.cat === 'recent') body = `<div class="bgrid">${rec.map(box).join('')}</div>`;
+    else if (st.cat === 'recent') body = rec.length ? `<div class="bgrid">${rec.map(box).join('')}</div>` : `<div class="empty">${esc(t('recEmpty'))}</div>`;
     else if (TB[st.cat] && TB[st.cat].fav) body = fav.length ? `<div class="bgrid">${fav.map(box).join('')}</div>` : `<div class="empty">${esc(t('favEmpty'))}</div>`;
     else {
       const L0 = (by[st.cat] || []).slice(), L = TB[st.cat] && TB[st.cat].auto ? L0.sort(cmp) : L0, full = L.filter(u => !this._part(u, IF)),
@@ -768,19 +788,54 @@ class LemurLightEffectCard extends HTMLElement {
     const nowHtml = sz => curU ? `${this._ico(curU, sz)}<div><small>${esc(t('playing'))}</small><b>${esc(lab(curU))}</b></div>` : any ? `<div><small>${esc(t('playing'))}</small><b>${esc(t('mixed'))}</b></div>` : nowTx;
     const upd = STORE.stale ? `<div class="upd"><span>${esc(t('upd', { v: STORE.stale }))}</span><button data-reload>${esc(t('reload'))}</button></div>` : '';
     const isik = st.cat === 'light', X = this._c.close ? `<button class="x" data-close aria-label="${esc(t('close'))}">✕</button>` : '';
+    // ---- phone layout: room box, what is playing, tab title or search, effects, brightness, tabs at the bottom ----
+    let M = null;
+    if (mob) {
+      const favId = favT ? favT.id : null, fxTabs = tabs.filter(k => k !== 'light' && k !== 'recent' && k !== favId);
+      if (fxTabs.includes(st.cat)) st.mfx = st.cat;
+      const mtab = st.cat === 'light' ? 'light' : st.cat === 'recent' ? 'recent' : st.cat === favId ? 'fav' : 'fx';
+      if (mtab !== 'fx') st.q = '';
+      const litOf = r => { const on = r.lights.filter(id => (this._hass.states[id] || {}).state === 'on').length; return on ? t('mLit', { a: on, b: r.lights.length }) : t('mAllOff'); };
+      const top = `<div class="mtop"><button class="mroom" data-rpick><span class="rl"><small>${esc(t('mRoom'))} · ${esc(litOf(room))}</small><b>${esc(room.name)}</b></span><span class="rc">${esc(t('mChange'))}${M_DOWN}</span></button>${X}</div>`;
+      // what the room is doing right now
+      const stopB = this._c.show_stop === false ? '' : `<button class="mbt" data-stop>■ ${esc(t('stop'))}</button>`;
+      const randB = this._c.show_random === false || !all.length ? '' : `<button class="mbt" data-rand>⤨ ${esc(t('random'))}</button>`;
+      let stat;
+      if (curU) { const on = IA.filter(id => this._now(id) === cur).length, h = fxInfo(curU.rep).hues; stat = `<div class="mst on" style="--g:${grad(h, 50, 26, '90deg')}">${this._ico(curU, 36)}<div class="mt"><b>${esc(lab(curU))}</b><small>${esc(t('mPlaying', { n: on }))}</small></div>${stopB}</div>`; }
+      else if (any) stat = `<div class="mst"><span class="mi">${M_GRID}</span><div class="mt"><b>${esc(t('mMixed'))}</b></div>${stopB}</div>`;
+      else if (LL.on) stat = `<div class="mst"><i class="nsw" style="background:${LL.fill}"></i><div class="mt"><b>${esc(t('mLight', { x: (LL.k ? LL.k + 'K' : (LL.rgb || LL.hs) ? t('color') : t('mixed')) + ' · ' + this._pc(LL.br) }))}</b></div>${randB}</div>`;
+      else stat = `<div class="mst idle"><span class="mi">${BULB}</span><div class="mt"><b>${esc(IA.length && !anyOn ? t('mOff') : t('mIdle'))}</b></div>${randB}</div>`;
+      // tab title, or search + groups on the "all effects" tab
+      const cnt = k => (k === 'recent' ? rec : by[k] || []).length;
+      let head;
+      if (mtab === 'fx') {
+        head = `<label class="msr">${M_SEARCH}<input id="mq" type="search" placeholder="${esc(t('mSearch'))}" value="${esc(st.q || '')}" autocomplete="off" enterkeyhint="search"></label>
+          <div class="mchips">${fxTabs.map(k => `<button class="mchip ${!st.q && st.cat === k ? 'on' : ''}" data-cat="${esc(k)}">${this._tabIco(k, 22)}<span>${esc(tname(k))}</span><em>${cnt(k)}</em></button>`).join('')}</div>`;
+      } else head = `<div class="mhd"><b>${esc(mtab === 'light' ? t('mLightTab') : mtab === 'recent' ? t('mRecent') : tname(st.cat))}</b>${mtab === 'light' ? '' : `<small>${esc(t('mCount', { n: cnt(st.cat) }))}</small>`}</div>`;
+      // search over every effect of the room
+      const find = q => {
+        q = String(q || '').trim().toLocaleLowerCase(lang); if (!q) return null;
+        const L = all.filter(u => (lab(u) + ' ' + (u.rep || '') + ' ' + Object.values(u.names).filter(x => typeof x === 'string').join(' ')).toLocaleLowerCase(lang).includes(q)).sort(cmp);
+        return L.length ? `<div class="bgrid">${L.map(box).join('')}</div>` : `<div class="empty">${esc(t('mNoRes'))}</div>`;
+      };
+      this._mFind = find;
+      // bottom: a wide brightness bar and the tabs
+      const mt = [favId ? ['fav', favId, t('fav'), STAR] : null, tabs.includes('recent') ? ['recent', 'recent', t('mRecent'), M_CLOCK] : null, fxTabs.length ? ['fx', null, t('mAll'), M_GRID] : null, ['light', 'light', t('mLightTab'), BULB]].filter(Boolean);
+      const foot = `${isik ? '' : `<div class="mfoot"><div class="bigbar mbb ${LL.on ? '' : 'off'}" data-hbar><i class="bf" style="width:${LL.on ? LL.br : 0}%;background:${LL.on ? 'var(--acc)' : 'transparent'}"></i><span class="btx">${M_SUN}${esc(t('mBright'))}</span><span class="mbv" id="bbv">${LL.on ? this._pc(LL.br) : esc(t('off'))}</span></div><button class="mpw ${anyOn ? 'on' : ''}" data-pw aria-label="${esc(anyOn ? t('turnOff') : t('light'))}">${PW}</button></div>`}
+        <nav class="mtabs" style="grid-template-columns:repeat(${mt.length},1fr)">${mt.map(([id, cat, nm, ic]) => `<button class="${mtab === id ? 'on' : ''}" data-mtab="${id}" ${cat ? `data-tcat="${esc(cat)}"` : ''}>${ic}<span>${esc(nm)}</span></button>`).join('')}</nav>`;
+      const roomsSheet = `<div class="shade" data-rclose></div><div class="sheet rsh" role="dialog"><div class="rsh-h"><b>${esc(t('mPick'))}</b><button class="x2" data-rclose>✕</button></div>
+        <div class="rlist">${rooms.map(r => { const lit = r.lights.some(id => (this._hass.states[id] || {}).state === 'on'); return `<button class="rrow ${r.id === room.id ? 'on' : ''}" data-room="${esc(r.id)}"><span class="dot ${lit ? 'lit' : ''}"></span><span class="rt"><b>${esc(r.name)}</b><small>${esc(t('lights', { n: r.lights.length }))} · ${esc(litOf(r))}</small></span>${r.id === room.id ? `<span class="ck">${M_CHECK}</span>` : ''}</button>`; }).join('')}</div>
+        <div class="racts"><button data-panel>${BULB}<span>${esc(t('mLights'))}</span></button><button class="warn" data-off ${anyOn ? '' : 'disabled'}>${PW}<span>${esc(t('turnOff'))}</span></button></div></div>`;
+      this._mBody = body;
+      M = { top: top, head: stat + head, search: mtab === 'fx' ? find(st.q) : null, foot, rooms: roomsSheet };
+    }
     const sc = R.querySelector('.scroll'), y = sc ? sc.scrollTop : 0, rl = R.querySelector('.crail'), ry = rl ? rl.scrollTop : 0;
     const vars = (this._c.height ? `--lemur-height:${this._c.height};` : '') + (this._c.mobile_height ? `--lemur-mh:${this._c.mobile_height};` : '') + (this._c.accent ? `--lemur-accent:${this._c.accent};` : '');
     R.innerHTML = `<style>${CSS}</style><div class="wrap ${mob ? 'm' : ''} ${this._c.safe_area ? 'sa' : this._c.safe_area === false ? 'nosa' : ''} ${this._look()}" style="${esc(vars)}">${mob ? '' : `<div class="glow ${glowSoft ? 'soft' : ''}" style="background:${glowBg}"></div>`}
-      ${mob ? `<div class="mrooms">${rooms.map(r => roomBtn(r, true)).join('')}${X}</div>` : `<div class="top"><div class="rooms">${rooms.map(r => roomBtn(r)).join('')}</div>${X}</div>`}
-      ${upd}${mob ? `<div class="cstrip">${tabBtn}</div>` : `<div class="mid"><section class="pn cp"><nav class="crail">${tabBtn}</nav></section><section class="pn fxp">`}
-      <div class="scroll">${body}</div>${mob ? '' : '</section></div>'}
-      ${mob ? `${st.brOpen && !isik ? `<div class="mbr"><span>☀</span><input type="range" id="br" min="1" max="100" value="${br}"><span id="brv">${br}%</span></div>` : ''}<div class="cbar mbar">
-        <button class="lstack" data-panel>${lstack(3)}<em>${IA.length}</em></button>
-        <div class="now">${nowHtml(34)}</div>
-        ${isik ? '' : `<button class="act ${st.brOpen ? 'on' : ''}" data-brt>☀</button>`}
-        ${this._c.show_stop === false ? '' : `<button class="act" data-stop ${any ? '' : 'disabled'} aria-label="${esc(t('stop'))}">■</button>`}
-        <button class="act offb" data-off ${anyOn ? '' : 'disabled'} aria-label="${esc(t('turnOff'))}">${PW}</button>
-      </div>` : `<div class="cbar">
+      ${mob ? M.top : `<div class="top"><div class="rooms">${rooms.map(r => roomBtn(r)).join('')}</div>${X}</div>`}
+      ${upd}${mob ? M.head : `<div class="mid"><section class="pn cp"><nav class="crail">${tabBtn}</nav></section><section class="pn fxp">`}
+      <div class="scroll">${mob && M.search ? M.search : body}</div>${mob ? '' : '</section></div>'}
+      ${mob ? `${M.foot}` : `<div class="cbar">
         <button class="lstack" data-panel>${lstack(4)}<b>${esc(t('lights', { n: IA.length }))}</b></button>
         <div class="now">${nowHtml(40)}</div>
         ${isik ? '<span class="flex"></span>' : `<div class="slider"><span>☀</span><input type="range" id="br" min="1" max="100" value="${br}"><span id="brv">${br}%</span></div>`}
@@ -788,12 +843,11 @@ class LemurLightEffectCard extends HTMLElement {
         ${this._c.show_stop === false ? '' : `<button class="act" data-stop ${any ? '' : 'disabled'}>■<span class="at"> ${esc(t('stop'))}</span></button>`}
         <button class="act offb" data-off ${anyOn ? '' : 'disabled'}>${PW}<span class="at"> ${esc(t('turnOff'))}</span></button>
       </div>`}
-      ${st.panel ? this._panel(room, IA) : ''}${st.sheet ? this._sheet(st.sheet, IF) : ''}
+      ${st.panel ? this._panel(room, IA) : ''}${st.sheet ? this._sheet(st.sheet, IF) : ''}${mob && st.rpick ? M.rooms : ''}
       <div class="toast"></div></div>`;
     if (keep) { const n2 = R.querySelector('.scroll'); if (n2) n2.scrollTop = y; }
+    const mc = R.querySelector('.mchips'), mca = mc && mc.querySelector('.on'); if (mc) mc.scrollLeft = mca ? mca.offsetLeft - 12 : (this._mcx || 0);
     const rl2 = R.querySelector('.crail'); if (rl2) rl2.scrollTop = ry;
-    const cs = R.querySelector('.cstrip'), ca = cs && cs.querySelector('.on'); if (ca) cs.scrollLeft = ca.offsetLeft - (cs.clientWidth - ca.offsetWidth) / 2;
-    const mr = R.querySelector('.mrooms'), ma = mr && mr.querySelector('.on'); if (ma) mr.scrollLeft = ma.offsetLeft - (mr.clientWidth - ma.offsetWidth) / 2;
     this._bind(all);
   }
   // appearance chosen in the control panel (settings) or on the card
@@ -849,7 +903,18 @@ class LemurLightEffectCard extends HTMLElement {
       if (g('[data-close]')) return this._close();
       if (g('[data-sclose]')) { this._st.sheet = null; return this._render(true); }
       if (g('[data-pclose]')) { this._st.panel = false; return this._render(true); }
-      if (g('[data-panel]')) { this._st.panel = true; return this._render(true); }
+      if (g('[data-panel]')) { this._st.panel = true; this._st.rpick = false; return this._render(true); }
+      if (g('[data-rpick]')) { this._st.rpick = true; return this._render(true); }
+      if (g('[data-rclose]')) { this._st.rpick = false; return this._render(true); }
+      const mtb = g('[data-mtab]');
+      if (mtb) {
+        const id = mtb.dataset.mtab, T = this._tabs || [];
+        let c = mtb.dataset.tcat || null;
+        if (id === 'fx') c = T.includes(this._st.mfx) ? this._st.mfx : T.find(k => k !== 'light' && k !== 'recent' && !(this._tb[k] && this._tb[k].fav));
+        if (!c) return;
+        this._st.q = ''; this._st.cat = c; this._st.catAuto = false; try { localStorage.setItem('lemur-tab-' + room.id, c); } catch (e) {}
+        this._render(); const s = R.querySelector('.scroll'); if (s) s.scrollTop = 0; return;
+      }
       const k = this._st.sheet;
       if (k && g('[data-favt]')) { this._st.sheet = null; this._editRoom(cfg => { let f = cfg.tabs.find(x => x.fav); if (!f) { f = { id: 'fav', fav: 1, fx: [] }; cfg.tabs.unshift(f); } const i = f.fx.indexOf(k); if (i >= 0) f.fx.splice(i, 1); else f.fx.push(k); }); return; }
       if (k && g('[data-hide]')) { const u = this._U.get(k); this._st.sheet = null; this._editRoom(cfg => { cfg.tabs.forEach(x => { x.fx = x.fx.filter(q => q !== k); }); cfg.hid = [...(cfg.hid || []).filter(q => q !== k), k]; }); if (u) this._toast(t('hidden', { x: this._label(u) })); return; }
@@ -866,8 +931,8 @@ class LemurLightEffectCard extends HTMLElement {
       const lc = g('[data-id]'); if (lc) { const id = lc.dataset.id, nx = I.includes(id) ? I.filter(x => x !== id) : [...I, id]; this._saveSel(room.lights.filter(x => nx.includes(x))); return; }
       if (g('[data-all]')) { this._saveSel(room.lights.slice()); return; }
       if (g('[data-reload]')) { try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.update())); } catch (e) {} setTimeout(() => location.reload(), 150); return; }
-      const rm = g('[data-room]'); if (rm) { this._st.room = rm.dataset.room; return this._render(); }
-      const ct = g('[data-cat]'); if (ct) { this._st.cat = ct.dataset.cat; this._st.catAuto = false; try { localStorage.setItem('lemur-tab-' + room.id, ct.dataset.cat); } catch (e) {} this._render(); const s = R.querySelector('.scroll'); if (s) s.scrollTop = 0; return; }
+      const rm = g('[data-room]'); if (rm) { this._st.room = rm.dataset.room; this._st.rpick = false; this._st.q = ''; return this._render(); }
+      const ct = g('[data-cat]'); if (ct) { const mc = R.querySelector('.mchips'); this._mcx = mc ? mc.scrollLeft : 0; this._st.q = ''; this._st.cat = ct.dataset.cat; this._st.catAuto = false; try { localStorage.setItem('lemur-tab-' + room.id, ct.dataset.cat); } catch (e) {} this._render(); const s = R.querySelector('.scroll'); if (s) s.scrollTop = 0; return; }
       if (g('[data-rand]')) { if (!all.length) return; const full = all.filter(u => !this._part(u, IF)), P = full.length ? full : all; return this._play(P[Math.floor(Math.random() * P.length)].k, I, IF); }
       if (g('[data-stop]')) return this._stop(I);
       if (g('[data-off]')) return this._off(I);
@@ -875,9 +940,18 @@ class LemurLightEffectCard extends HTMLElement {
       const wk = g('[data-wk]'); if (wk) { const kk = +wk.dataset.wk; return this._set(I, { color_temp_kelvin: kk }, `${room.name} → ${kk}K`); }
       const rg = g('[data-rgb]'); if (rg) return this._set(I, { rgb_color: rg.dataset.rgb.split(',').map(Number) }, t('toColor', { r: room.name }));
       const wh = g('[data-wheel]'); if (wh) { const r = wh.getBoundingClientRect(), dx = ev.clientX - r.left - r.width / 2, dy = ev.clientY - r.top - r.height / 2; const h = Math.round((Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360), sat = Math.round(Math.min(1, Math.hypot(dx, dy) / (r.width / 2)) * 100); return this._set(I, { hs_color: [h, Math.max(15, sat)] }, t('toColor', { r: room.name })); }
-      if (g('[data-brt]')) { this._st.brOpen = !this._st.brOpen; return this._render(true); }
       const fx = g('[data-fx]'); if (fx) return this._play(fx.dataset.fx, I, IF);
     };
+    const mq = R.getElementById('mq');
+    if (mq) {
+      // typing only swaps the results, so the keyboard stays up
+      mq.oninput = () => {
+        this._st.q = mq.value; const html = this._mFind && this._mFind(mq.value), sc = R.querySelector('.scroll');
+        R.querySelectorAll('.mchip').forEach(b => b.classList.toggle('on', !mq.value.trim() && b.dataset.cat === this._st.cat));
+        if (sc) { sc.innerHTML = html || this._mBody || ''; sc.scrollTop = 0; }
+      };
+      mq.onblur = () => setTimeout(() => { if (this._pend && !this._drag) { this._pend = false; this._render(true); } }, 300);
+    }
     const icf = R.getElementById('icf');
     if (icf) icf.onchange = async () => {
       const f = icf.files && icf.files[0], k = this._st.sheet; if (!f || !k) return;
@@ -901,7 +975,7 @@ class LemurLightEffectCard extends HTMLElement {
         if (ax >= 60 && ax > ay * 1.5) {
           const RM = this._rooms(), i = RM.findIndex(r => r.id === this._st.room), j = i + (dx < 0 ? 1 : -1);
           if (i < 0 || j < 0 || j >= RM.length) return;
-          this._swiped = Date.now(); this._st.room = RM[j].id; this._render();
+          this._swiped = Date.now(); this._st.room = RM[j].id; this._st.q = ''; this._render();
           const s2 = R.querySelector('.mid') || R.querySelector('.scroll'); if (s2 && s2.animate) s2.animate([{ transform: `translateX(${dx < 0 ? 40 : -40}px)`, opacity: .35 }, { transform: 'none', opacity: 1 }], { duration: 220, easing: 'ease-out' });
           return;
         }

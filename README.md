@@ -19,7 +19,8 @@ Hangi marka olursa olsun, efekt destekleyen bütün ışıkları oda oda yönete
 - **Kendi efektlerini oluştur.** Işıkları sürükleyip bir efekte kat, her birinin ne açacağını seç: efekti desteklemeyen ışık renk ya da beyaz açar, istediğin ışık kendi listesinden başka bir efekt oynatır.
 - **Kenar menüde kontrol paneli** (*Lemur Işık Efekt Kartı*): odalar, ışıklar, sekmeler ve efektler sürükle-bırak ile düzenlenir.
 - **Geniş ayarlar:** karo boyutu, renkli ya da sade simgeler, siyah (OLED) ya da tema arka planı, gece modu, açılış sekmesi, oda simgeleri ve daha fazlası. Efektler ve favoriler tek tıkla Home Assistant scripti olur.
-- Türkçe ve İngilizce arayüz.
+- **Otomasyon ve sesli asistan:** her oda için efekt seçimi varlığı ve `lemur_light_effects.play` servisi.
+- Türkçe, İngilizce, Almanca, İspanyolca ve Fransızca arayüz.
 
 ## İçindekiler
 
@@ -36,6 +37,7 @@ Hangi marka olursa olsun, efekt destekleyen bütün ışıkları oda oda yönete
 - [Kontrol paneli](#kontrol-paneli)
   - [Ayarlar](#ayarlar)
   - [Efekt oluştur](#efekt-oluştur)
+- [Otomasyonlar, scriptler ve sesli asistan](#otomasyonlar-scriptler-ve-sesli-asistan)
 - [Kart seçenekleri](#kart-seçenekleri)
 
 ## Kurulum
@@ -223,10 +225,11 @@ Sol alttaki **Ayarlar** penceresi evdeki bütün kartlara uygulanır:
 
 - *Görünüm:* karo boyutu (otomatik, küçük, orta, büyük), renkli ya da sade (tek renk) simgeler, arka plan (koyu, siyah OLED, Home Assistant teması), efekt adları, renk çizgisi ve destek noktaları aç/kapat.
 - *Alt çubuk:* Durdur ve Rastgele düğmelerini gizleme.
-- *Davranış:* kapalı bir ışığa efekt seçilince hangi parlaklıkta açılacağı, kart açılınca hangi sekmenin geleceği (otomatik, Favoriler, son kullanılan, Işık), uzun basma süresi ve titreşim.
+- *Davranış:* kapalı bir ışığa efekt seçilince hangi parlaklıkta açılacağı, kart açılınca hangi sekmenin geleceği (otomatik, Favoriler, son kullanılan, Işık), uzun basma süresi, titreşim, geçiş süresi (renk, beyaz, parlaklık ve kapatma yumuşak geçer) ve **Son kullanılanlar** sekmesi (odada son oynatılan 12 efekt, Favoriler'in altında).
 - *Durdur sonrası* beyaz ton ve parlaklık.
 - *Gece modu:* seçtiğin saatler arasında parlaklık üst sınırı (efektler, Durdur ve parlaklık çubuğu bu sınırı aşmaz).
 - *Odalar ve ışıklar:* Home Assistant ışık gruplarını gösterme, bir ışığın efektli sayılması için gereken en az efekt sayısı.
+- *Yedek:* bütün düzeni (odalar, sekmeler, favoriler, kendi efektlerin, ayarlar, simgeler) tek dosya olarak indir, istediğinde geri yükle.
 - *Her şeyi sıfırla:* onay sorulduktan sonra bütün düzeni, sekmeleri, favorileri, simgeleri ve kendi efektlerini siler.
 
 ### Efekt oluştur
@@ -248,6 +251,29 @@ Kaydedince kartta **Efektlerim** sekmesinde normal bir efekt gibi görünür; do
 | **Ayarlar** | **Efekt oluştur** |
 | ![Ayarlar](docs/images/tr/panel-settings.png) | ![Efekt oluştur](docs/images/tr/panel-create.png) |
 
+## Otomasyonlar, scriptler ve sesli asistan
+
+Her oda için bir **efekt seçimi** varlığı oluşur (`select.lemur_salon_effect` gibi; Tüm Ev için `select.lemur_home_effect`). Odada o an çalan efekti gösterir, listeden seçince efekt oynar, `—` seçilince Durdur gibi davranır. Panolarda, otomasyonlarda ve sesli asistanlarda (Assist, Google, Alexa) kullanılabilir. Efekt listesinde ışığın verdiği adlar ve kendi efektlerin vardır; efektin kartta görünen adı da kabul edilir.
+
+Servisler:
+
+```yaml
+action: lemur_light_effects.play
+data:
+  room: salon            # alan kimliği ya da kartta görünen oda adı; _all = Tüm Ev
+  effect: Film Gecesi    # ışıktaki adı, kartta görünen adı ya da kendi efektinin adı
+  brightness: 60         # isteğe bağlı, %
+  transition: 2          # isteğe bağlı, saniye
+```
+
+```yaml
+action: lemur_light_effects.stop
+data:
+  room: salon
+```
+
+`lemur_light_effects.list_effects` (yanıt döndürür) bir odanın oynatabildiği efektleri ve şu an çalanı verir. Kart nasıl davranıyorsa servisler de öyle davranır: odada seçili ışıklar, gizlenen efektler, gece modu ve "kapalı ışık şu parlaklıkta açılsın" ayarı geçerlidir.
+
 ## Kart seçenekleri
 
 Bütün seçenekler görsel düzenleyicide de var. Kontrol panelindeki ayarlar bunların varsayılanını belirler; karta yazdığın değer önceliklidir.
@@ -260,7 +286,7 @@ Bütün seçenekler görsel düzenleyicide de var. Kontrol panelindeki ayarlar b
 | `kelvin` / `brightness` | `3200` / `40` | **Durdur** ve güç düğmesinin geçeceği beyaz |
 | `all_home` | `true` | "Tüm Ev" sekmesini göster |
 | `min_effects` | `3` | Bir ışığın efekt listesine girmesi için gereken en az efekt sayısı |
-| `language` | `auto` | `auto`, `tr`, `en` |
+| `language` | `auto` | `auto`, `tr`, `en`, `de`, `es`, `fr` |
 | `height` / `mobile_height` | `80vh` / `80vh` | Kart yüksekliği |
 | `mobile` | otomatik (< 640 px) | Telefon (`true`) ya da tablet (`false`) düzenini zorla |
 | `close` | `false` | Kapatma düğmesi göster (başka bir eklentinin açılır penceresi içinde kullanıyorsan) |
@@ -269,7 +295,7 @@ Bütün seçenekler görsel düzenleyicide de var. Kontrol panelindeki ayarlar b
 
 Gizli, kategori atanmış ve grup ışıkları otomatik atlanır.
 
-Ortak veriler (oda sekmeleri, favoriler, oda seçimleri, gizlenen efektler, son efekt, simgeler) `.storage/lemur_light_effects` içinde, yüklenen simgeler `config/lemur_light_effects_icons/` klasöründe tutulur. Entegrasyon olmadan kartı düz kaynak olarak da yükleyebilirsin (`/lemur_light_effects/lemur-light-effect-card.js` ya da `/local` altındaki bir kopya); bu durumda veriler yalnızca o tarayıcıda saklanır.
+Ortak veriler (oda sekmeleri, favoriler, oda seçimleri, gizlenen efektler, son efekt, son kullanılanlar, simgeler) `.storage/lemur_light_effects` içinde, yüklenen simgeler `config/lemur_light_effects_icons/` klasöründe tutulur. Entegrasyon olmadan kartı düz kaynak olarak da yükleyebilirsin (`/lemur_light_effects/lemur-light-effect-card.js` ya da `/local` altındaki bir kopya; `lemur-icons.json` dosyasını da yanına kopyala); bu durumda veriler yalnızca o tarayıcıda saklanır.
 
 ## Efektler nasıl gruplanıyor?
 

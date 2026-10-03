@@ -6,6 +6,63 @@
         "description": "Adds the effect card to your dashboards and stores shared favorites, room light selections and custom icons. No settings needed."
       }
     },
-    "abort": { "single_instance_allowed": "Already set up." }
+    "abort": {
+      "single_instance_allowed": "Already set up."
+    }
+  },
+  "entity": {
+    "select": {
+      "room_effect": {
+        "name": "{room} effect"
+      }
+    }
+  },
+  "services": {
+    "play": {
+      "name": "Play effect",
+      "description": "Plays an effect (or one of your own effects) in a room, like a tap on the card.",
+      "fields": {
+        "room": {
+          "name": "Room",
+          "description": "Area ID or name of the room as the card shows it. \"_all\" is the whole home."
+        },
+        "effect": {
+          "name": "Effect",
+          "description": "Effect name as the light calls it, its name on the card, or the name of one of your own effects."
+        },
+        "brightness": {
+          "name": "Brightness",
+          "description": "Optional brightness in percent."
+        },
+        "transition": {
+          "name": "Transition",
+          "description": "Optional fade time in seconds (lights that support it)."
+        }
+      }
+    },
+    "stop": {
+      "name": "Stop effects",
+      "description": "Does what the Stop button does: ends the effects in a room and goes back to a calm white.",
+      "fields": {
+        "room": {
+          "name": "Room",
+          "description": "Area ID or name of the room as the card shows it. \"_all\" is the whole home."
+        },
+        "transition": {
+          "name": "Transition",
+          "description": "Optional fade time in seconds (lights that support it)."
+        }
+      }
+    },
+    "list_effects": {
+      "name": "List effects",
+      "description": "Returns the effects a room can play and the one playing now.",
+      "fields": {
+        "room": {
+          "name": "Room",
+          "description": "Area ID or name of the room as the card shows it. \"_all\" is the whole home."
+        }
+      }
+    }
   }
 }

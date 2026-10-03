@@ -20,10 +20,15 @@ import voluptuous as vol
 from homeassistant.components import panel_custom, websocket_api
 from homeassistant.components.frontend import add_extra_js_url, async_remove_panel
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.const import Platform
+from homeassistant.core import HomeAssistant, ServiceCall, SupportsResponse, callback
+from homeassistant.exceptions import ServiceValidationError
+import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.dispatcher import async_dispatcher_connect, async_dispatcher_send
 from homeassistant.helpers.storage import Store
 
+from . import engine
+from .runtime import Runtime
 from .const import (
     CARD_FILE,
     DOMAIN,
@@ -54,7 +59,9 @@ DEFAULT_DATA: dict[str, Any] = {
     "icons": {},
     "settings": {},
     "tabs": {},
+    "recent": {},
 }
+PLATFORMS = [Platform.SELECT]
 MIME_EXT = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif"}
 
 
@@ -114,7 +121,7 @@ async def _register_static(hass: HomeAssistant, icon_dir: str) -> None:
 
         await hass.http.async_register_static_paths(
             [
-                StaticPathConfig(URL_BASE, frontend_dir, False),
+                StaticPathConfig(URL_BASE, frontend_dir, True),  # files carry ?v=<version>
                 StaticPathConfig(URL_ICONS, icon_dir, False),
             ]
         )
@@ -128,12 +135,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await data.async_load()
     await hass.async_add_executor_job(lambda: os.makedirs(data.icon_dir, exist_ok=True))
     hass.data[DOMAIN] = data
+    data.runtime = Runtime(hass, data)
+    data.runtime.start()
 
     if not hass.data.get(f"{DOMAIN}_static"):
         await _register_static(hass, data.icon_dir)
         add_extra_js_url(hass, f"{URL_BASE}/{CARD_FILE}?v={VERSION}")
-        for handler in (ws_get, ws_set, ws_last, ws_icon_upload, ws_icon_delete, ws_subscribe):
+        for handler in (ws_get, ws_set, ws_last, ws_icon_upload, ws_icon_delete, ws_subscribe, ws_info):
             websocket_api.async_register_command(hass, handler)
+        _register_services(hass)
         hass.data[f"{DOMAIN}_static"] = True
     if PANEL_URL not in hass.data.get("frontend_panels", {}):
         turkish = (hass.config.language or "").lower().startswith("tr")
@@ -147,13 +157,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             require_admin=True,
             config={},
         )
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    hass.data.pop(DOMAIN, None)
+    ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    data = hass.data.pop(DOMAIN, None)
+    if data is not None:
+        data.runtime.stop()
     async_remove_panel(hass, PANEL_URL)
-    return True
+    return ok
 
 
 def _data(hass: HomeAssistant) -> LemurData | None:
@@ -217,6 +231,7 @@ def ws_set(hass, connection, msg):
         vol.Required("type"): "lemur_light_effects/last",
         vol.Required("entities"): [str],
         vol.Optional("effect"): vol.Any(str, None),
+        vol.Optional("room"): vol.Any(str, None),
     }
 )
 @callback
@@ -225,13 +240,7 @@ def ws_last(hass, connection, msg):
     if data is None:
         connection.send_error(msg["id"], "not_loaded", "Integration not loaded")
         return
-    effect = msg.get("effect")
-    for ent in msg["entities"]:
-        if effect:
-            data.data["last"][ent] = {"effect": effect, "ts": time.time()}
-        else:
-            data.data["last"].pop(ent, None)
-    data.changed()
+    data.runtime.remember(msg.get("room"), msg["entities"], msg.get("effect"))
     connection.send_result(msg["id"], {"ok": True})
 
 
@@ -312,3 +321,60 @@ def ws_subscribe(hass, connection, msg):
 
     connection.subscriptions[msg["id"]] = async_dispatcher_connect(hass, SIGNAL_UPDATE, _forward)
     connection.send_result(msg["id"])
+
+
+@websocket_api.websocket_command({vol.Required("type"): "lemur_light_effects/info"})
+@callback
+def ws_info(hass, connection, msg):
+    """Version of the integration, so an outdated card in a browser cache can ask for a reload."""
+    connection.send_result(msg["id"], {"version": VERSION})
+
+
+PLAY_SCHEMA = vol.Schema(
+    {
+        vol.Required("room"): cv.string,
+        vol.Required("effect"): cv.string,
+        vol.Optional("brightness"): vol.All(vol.Coerce(int), vol.Range(min=1, max=100)),
+        vol.Optional("transition"): vol.All(vol.Coerce(float), vol.Range(min=0, max=60)),
+    }
+)
+STOP_SCHEMA = vol.Schema(
+    {vol.Required("room"): cv.string, vol.Optional("transition"): vol.All(vol.Coerce(float), vol.Range(min=0, max=60))}
+)
+ROOM_SCHEMA = vol.Schema({vol.Required("room"): cv.string})
+
+
+def _register_services(hass: HomeAssistant) -> None:
+    def room_of(call: ServiceCall) -> tuple[LemurData, dict[str, Any]]:
+        data = _data(hass)
+        if data is None:
+            raise ServiceValidationError("Lemur Light Effect Card is not loaded")
+        room = engine.find_room(hass, data.data.get("settings") or {}, call.data["room"])
+        if not room:
+            raise ServiceValidationError(f"Unknown room: {call.data['room']}")
+        return data, room
+
+    async def play(call: ServiceCall) -> None:
+        data, room = room_of(call)
+        try:
+            await data.runtime.play(room, call.data["effect"], call.data.get("brightness"), call.data.get("transition"))
+        except ValueError as err:
+            raise ServiceValidationError(str(err)) from err
+
+    async def stop(call: ServiceCall) -> None:
+        data, room = room_of(call)
+        await data.runtime.stop_room(room, call.data.get("transition"))
+
+    async def list_effects(call: ServiceCall) -> dict[str, Any]:
+        data, room = room_of(call)
+        us = engine.units(hass, data.data, room)
+        return {
+            "room": room["id"],
+            "name": room["name"],
+            "playing": engine.playing(hass, data.data, room, us),
+            "effects": sorted((u["label"] for u in us.values()), key=str.lower),
+        }
+
+    hass.services.async_register(DOMAIN, "play", play, schema=PLAY_SCHEMA)
+    hass.services.async_register(DOMAIN, "stop", stop, schema=STOP_SCHEMA)
+    hass.services.async_register(DOMAIN, "list_effects", list_effects, schema=ROOM_SCHEMA, supports_response=SupportsResponse.ONLY)

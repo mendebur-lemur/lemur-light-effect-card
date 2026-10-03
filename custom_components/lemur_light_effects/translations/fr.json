@@ -1,0 +1,68 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Lemur Light Effect Card",
+        "description": "Ajoute la carte d’effets à vos tableaux de bord et enregistre les favoris communs, le choix des lumières par pièce et les icônes personnelles. Aucun réglage nécessaire."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Déjà configuré."
+    }
+  },
+  "entity": {
+    "select": {
+      "room_effect": {
+        "name": "Effet {room}"
+      }
+    }
+  },
+  "services": {
+    "play": {
+      "name": "Jouer un effet",
+      "description": "Joue un effet (ou l’un de vos effets) dans une pièce, comme un appui sur la carte.",
+      "fields": {
+        "room": {
+          "name": "Pièce",
+          "description": "ID de la zone ou nom de la pièce tel que la carte l’affiche. « _all » correspond à toute la maison."
+        },
+        "effect": {
+          "name": "Effet",
+          "description": "Nom de l’effet tel que la lumière l’appelle, tel qu’il apparaît dans la carte, ou nom de l’un de vos effets."
+        },
+        "brightness": {
+          "name": "Luminosité",
+          "description": "Luminosité facultative en pourcentage."
+        },
+        "transition": {
+          "name": "Transition",
+          "description": "Durée de transition facultative en secondes (lumières compatibles)."
+        }
+      }
+    },
+    "stop": {
+      "name": "Arrêter les effets",
+      "description": "Comme le bouton Arrêter : termine les effets d’une pièce et revient à un blanc calme.",
+      "fields": {
+        "room": {
+          "name": "Pièce",
+          "description": "ID de la zone ou nom de la pièce tel que la carte l’affiche. « _all » correspond à toute la maison."
+        },
+        "transition": {
+          "name": "Transition",
+          "description": "Durée de transition facultative en secondes (lumières compatibles)."
+        }
+      }
+    },
+    "list_effects": {
+      "name": "Lister les effets",
+      "description": "Renvoie les effets d’une pièce et celui en cours.",
+      "fields": {
+        "room": {
+          "name": "Pièce",
+          "description": "ID de la zone ou nom de la pièce tel que la carte l’affiche. « _all » correspond à toute la maison."
+        }
+      }
+    }
+  }
+}

@@ -47,7 +47,14 @@ const P_TXT = {
     ceTitle: 'Kendi efektin', ceName: 'Ad', ceIcon: 'Simge', ceBase: 'Temel efekt', ceBaseS: 'Destekleyen ışıklarda bu efekt oynar', ceNoBase: 'Yok, her ışık için kendim seçeceğim',
     ceFb: 'Desteklemeyen ışıklarda', ceFbS: 'Temel efekti olmayan ya da sadece ışık olarak kullanılan ışıklar', ceLights: 'Işık ışık', ceLightsS: 'İstersen tek tek değiştir',
     save: 'Kaydet', del: 'Sil', bri: 'Parlaklık', ceNameErr: 'Bir ad yaz', ceSaved: '“{x}” kaydedildi', ceHint: 'Kartta “Efektlerim” sekmesinde görünür.',
-    m_auto: 'Otomatik', m_fx: 'Efekt', m_color: 'Renk', m_white: 'Beyaz', m_off: 'Kapat', m_skip: 'Dokunma', supBase: 'temel efekti oynatır', noBase: 'temel efekt yok', autoIs: 'otomatik: {x}'
+    m_auto: 'Otomatik', m_fx: 'Efekt', m_color: 'Renk', m_white: 'Beyaz', m_off: 'Kapat', m_skip: 'Dokunma', supBase: 'temel efekti oynatır', noBase: 'temel efekt yok', autoIs: 'otomatik: {x}',
+    upd: 'Yeni sürüm yüklendi ({v}). Ekranı yenile.', reload: 'Yenile',
+    fade: 'Geçiş süresi', fadeS: 'Renk, beyaz, parlaklık ve kapatma yumuşak geçsin (destekleyen ışıklarda)', fadeNo: 'Yok',
+    showRecent: 'Son kullanılanlar sekmesi', showRecentS: 'Odada son oynatılan efektler, Favoriler’in yanında',
+    sBackup: 'Yedek', bkDown: 'Yedeği indir', bkDownS: 'Odalar, sekmeler, favoriler, kendi efektlerin, ayarlar ve simgeler tek dosyada',
+    bkUp: 'Yedekten geri yükle', bkUpS: 'Bir yedek dosyası seç; şu anki düzenin yerine geçer', bkQ: 'Yedek geri yüklensin mi?',
+    bkW: '{d} tarihli yedek. Şu anki odalar, sekmeler, favoriler, kendi efektlerin, ayarlar ve simgeler bu yedekle değiştirilir.',
+    bkYes: 'Geri yükle', bkOk: 'Yedek geri yüklendi', bkErr: 'Bu dosya bir Lemur yedeği değil', bkSaved: 'Yedek indirildi', bkBusy: 'Yedek hazırlanıyor…'
   },
   en: {
     title: 'Lemur Light Effect Card', undo: 'Undo', undoK: 'Undo (Ctrl+Z)', more: 'More', settings: 'Settings', settingsS: 'Appearance, behaviour, night mode, your own effects',
@@ -94,7 +101,14 @@ const P_TXT = {
     ceTitle: 'Your own effect', ceName: 'Name', ceIcon: 'Icon', ceBase: 'Base effect', ceBaseS: 'Lights that have it play this effect', ceNoBase: 'None, I will choose for each light',
     ceFb: 'Lights without it', ceFbS: 'Lights without the base effect, or used for light only', ceLights: 'Light by light', ceLightsS: 'Change any light if you like',
     save: 'Save', del: 'Delete', bri: 'Brightness', ceNameErr: 'Type a name', ceSaved: '“{x}” saved', ceHint: 'It shows in the card under “My effects”.',
-    m_auto: 'Automatic', m_fx: 'Effect', m_color: 'Colour', m_white: 'White', m_off: 'Turn off', m_skip: 'Leave as is', supBase: 'plays the base effect', noBase: 'no base effect', autoIs: 'automatic: {x}'
+    m_auto: 'Automatic', m_fx: 'Effect', m_color: 'Colour', m_white: 'White', m_off: 'Turn off', m_skip: 'Leave as is', supBase: 'plays the base effect', noBase: 'no base effect', autoIs: 'automatic: {x}',
+    upd: 'A new version is installed ({v}). Reload the page.', reload: 'Reload',
+    fade: 'Transition', fadeS: 'Colour, white, brightness and turning off change softly (lights that support it)', fadeNo: 'None',
+    showRecent: 'Recently used tab', showRecentS: 'Effects played lately in the room, next to Favorites',
+    sBackup: 'Backup', bkDown: 'Download backup', bkDownS: 'Rooms, tabs, favorites, your own effects, settings and icons in one file',
+    bkUp: 'Restore a backup', bkUpS: 'Pick a backup file; it replaces the current setup', bkQ: 'Restore this backup?',
+    bkW: 'Backup from {d}. The current rooms, tabs, favorites, your own effects, settings and icons are replaced by it.',
+    bkYes: 'Restore', bkOk: 'Backup restored', bkErr: 'This file is not a Lemur backup', bkSaved: 'Backup downloaded', bkBusy: 'Preparing the backup…'
   }
 };
 const PI = {
@@ -121,7 +135,8 @@ const PI = {
   drag: '<path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/>',
   upload: '<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>',
   script: '<path d="M8 4h9a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7"/><path d="M8 4a2 2 0 0 0-2 2v12a2 2 0 0 1-2 2"/><path d="M10 9h6M10 13h6"/>',
-  wand: '<path d="M4 20L15 9"/><path d="M15 4v3M19 8h-3M18.5 4.5l-2 2"/>'
+  wand: '<path d="M4 20L15 9"/><path d="M15 4v3M19 8h-3M18.5 4.5l-2 2"/>',
+  download: '<path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>'
 };
 // room icons offered in the panel (any mdi: name can be typed too)
 const ROOM_ICONS = ['mdi:sofa', 'mdi:sofa-outline', 'mdi:bed', 'mdi:bed-king', 'mdi:bed-single', 'mdi:desk', 'mdi:laptop', 'mdi:monitor', 'mdi:silverware-fork-knife', 'mdi:stove', 'mdi:fridge', 'mdi:coffee', 'mdi:shower', 'mdi:bathtub', 'mdi:toilet', 'mdi:television', 'mdi:gamepad-variant', 'mdi:teddy-bear', 'mdi:baby-carriage', 'mdi:wardrobe', 'mdi:washing-machine', 'mdi:garage', 'mdi:car', 'mdi:tree', 'mdi:flower', 'mdi:balcony', 'mdi:door', 'mdi:stairs', 'mdi:home', 'mdi:home-floor-1', 'mdi:home-floor-2', 'mdi:home-roof', 'mdi:dumbbell', 'mdi:book-open-variant', 'mdi:music', 'mdi:lamp', 'mdi:ceiling-light', 'mdi:led-strip-variant', 'mdi:lightbulb-group', 'mdi:fireplace', 'mdi:pool', 'mdi:paw'];
@@ -167,12 +182,12 @@ class LemurLightEffectsPanel extends HTMLElement {
     const sig = this._sig();
     if (first) this._render(); else if (sig !== this._lastSig) this._later();
   }
-  _dataSig() { const d = STORE.d; return JSON.stringify([d.settings, d.tabs, d.icons, d.favorites, d.hidden, STORE.mode]); }
+  _dataSig() { const d = STORE.d; return JSON.stringify([d.settings, d.tabs, d.icons, d.favorites, d.hidden, STORE.mode, ICON3_OK]); }
   _later() {
     if (this._dd || this._ce || (this.shadowRoot && this.shadowRoot.querySelector('.pop'))) { this._pend = true; return; }
     this._render();
   }
-  _l() { const s = this._set().language; if (s && I18N[s]) return s; const h = this._hass, x = (h && ((h.locale && h.locale.language) || h.language)) || 'en'; return /^tr/i.test(x) ? 'tr' : 'en'; }
+  _l() { const s = this._set().language; if (s && I18N[s]) return s; const h = this._hass; return pickLang((h && ((h.locale && h.locale.language) || h.language)) || 'en'); }
   _t(k, v) { const T = P_TXT[this._l()]; let s = T[k] != null ? T[k] : P_TXT.en[k]; if (typeof s === 'string' && v) for (const x in v) s = s.split('{' + x + '}').join(v[x]); return s; }
   _hi(icon, fb) { return customElements.get('ha-icon') && icon ? `<ha-icon icon="${esc(icon)}"></ha-icon>` : fb; }
   _set() { const s = STORE.d.settings; return s && typeof s === 'object' ? s : {}; }
@@ -456,10 +471,10 @@ class LemurLightEffectsPanel extends HTMLElement {
     const pk = [...this._pick].filter(k => U.has(k));
     const selb = pk.length ? `<div class="selb"><b>${esc(t('selN', { n: pk.length }))}</b><span>${esc(t('selHint'))}</span><button class="btn ic" style="border:0;background:none" data-clr title="${esc(t('clear'))}">${pi('x', 's16')}</button></div>` : '';
     R.innerHTML = `<style>${PANEL_CSS}</style><div class="app ${this._narrow ? 'narrow' : ''}">${top}
-      ${STORE.mode === 'local' ? `<div class="warn">${esc(t('local'))}</div>` : ''}
+      ${STORE.mode === 'local' ? `<div class="warn">${esc(t('local'))}</div>` : ''}${STORE.stale ? `<div class="warn upd"><span>${esc(t('upd', { v: STORE.stale }))}</span><button class="btn sm pri" data-reload>${esc(t('reload'))}</button></div>` : ''}
       <div class="rblock">${rooms}${strip}</div><div class="body">${body}</div>${selb}
-      ${this._view === 'settings' ? this._settingsHtml() : this._view === 'reset' ? this._resetHtml() : ''}
-      <input type="file" id="icf" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden>
+      ${this._view === 'settings' ? this._settingsHtml() : this._view === 'reset' ? this._resetHtml() : this._view === 'restore' ? this._restoreHtml() : ''}
+      <input type="file" id="icf" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden><input type="file" id="bkf" accept="application/json,.json" hidden>
       <div class="toast"><span></span><button data-undo>${esc(t('undo'))}</button></div></div>`;
     if (customElements.get('ha-menu-button')) {
       this._mb = document.createElement('ha-menu-button'); this._mb.hass = this._hass; this._mb.narrow = this._narrow;
@@ -486,7 +501,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     return `<div class="modal" data-closeset><div class="dlg">
       <div class="dh"><span class="si">${pi('cog', 's20')}</span><b>${esc(t('settings'))}</b><span class="grow"></span><button class="btn ic" data-closeset title="${esc(t('close'))}">${pi('x', 's16')}</button></div>
       <div class="sh2">${esc(t('sCard'))}</div>
-      ${row(t('lang'), '', `<div class="segs">${[['auto', t('auto')], ['tr', 'Türkçe'], ['en', 'English']].map(([v, n]) => `<button class="${lang === v ? 'on' : ''}" data-lang="${v}">${esc(n)}</button>`).join('')}</div>`)}
+      ${row(t('lang'), '', `<div class="segs">${[['auto', t('auto')], ...LANGS.map(l => [l, LANG_NAMES[l]])].map(([v, n]) => `<button class="${lang === v ? 'on' : ''}" data-lang="${v}">${esc(n)}</button>`).join('')}</div>`)}
       <div class="sh2">${esc(t('sLook'))}</div>
       ${row(t('tileSize'), '', seg('tile_size', S.tile_size || 'auto', [['auto', t('tsAuto')], ['s', t('tsS')], ['m', t('tsM')], ['l', t('tsL')]]))}
       ${row(t('icStyle'), '', seg('icon_style', S.icon_style || 'color', [['color', t('icColorS')], ['mono', t('icMonoS')]]))}
@@ -502,6 +517,8 @@ class LemurLightEffectsPanel extends HTMLElement {
       ${row(t('startTab'), '', seg('start_tab', S.start_tab || 'auto', [['auto', t('stAuto')], ['fav', t('stFav')], ['last', t('stLast')], ['light', t('stLight')]]))}
       ${row(t('lp'), t('lpS'), seg('long_press', S.long_press || 550, [[300, '0,3 sn'], [450, '0,45 sn'], [550, '0,55 sn'], [800, '0,8 sn']]))}
       ${row(t('haptic'), t('hapticS'), sw('haptics', true))}
+      ${row(t('fade'), t('fadeS'), seg('transition', S.transition || 0, [[0, t('fadeNo')], ['0.5', '0,5 ' + t('sec')], [1, '1 ' + t('sec')], [2, '2 ' + t('sec')], [5, '5 ' + t('sec')]]))}
+      ${row(t('showRecent'), t('showRecentS'), sw('show_recent', true))}
       <div class="sh2">${esc(t('sStop'))}</div>
       ${row(t('white'), k + 'K', `<div class="kel">${KELV.map(([kv, c], i) => `<button class="${kv === k ? 'on' : ''}" data-k="${kv}" style="background:${c}">${esc(names[i])}</button>`).join('')}</div>`)}
       <div class="srow"><div class="t"><b>${esc(t('bright'))}</b><small id="bv">%${b}</small></div><input class="rng" id="gb" type="range" min="1" max="100" value="${b}"></div>
@@ -512,9 +529,43 @@ class LemurLightEffectsPanel extends HTMLElement {
       <div class="sh2">${esc(t('sRooms'))}</div>
       ${row(t('groups'), t('groupsS'), sw('include_groups', false))}
       <div class="srow"><div class="t"><b>${esc(t('thr'))}</b><small>${esc(t('thrS'))}</small></div><div class="segs">${[1, 2, 3, 5, 10].map(n => `<button class="${min === n ? 'on' : ''}" data-min="${n}">${esc(t('thrN', { n }))}</button>`).join('')}</div></div>
+      <div class="sh2">${esc(t('sBackup'))}</div>
+      ${row(t('bkDown'), t('bkDownS'), `<button class="btn" data-bkdown>${pi('download', 's16')}${esc(t('bkDown'))}</button>`)}
+      ${row(t('bkUp'), t('bkUpS'), `<button class="btn" data-bkup>${pi('upload', 's16')}${esc(t('bkUp'))}</button>`)}
       <div class="sh2">${esc(t('sReset'))}</div>
       ${row(t('resetAll'), t('resetAllS'), `<button class="btn danger" data-resetask>${pi('trash', 's16')}${esc(t('resetAll'))}</button>`)}
     </div></div>`;
+  }
+  _restoreHtml() {
+    const t = (k, v) => esc(this._t(k, v)), b = this._bk || {}; let d = ''; try { d = new Date(b.date).toLocaleString(this._l()); } catch (e) {}
+    return `<div class="modal" data-closerestore><div class="dlg sm">
+      <div class="dh"><span class="si">${pi('upload', 's20')}</span><b>${t('bkQ')}</b></div>
+      <p class="rw">${t('bkW', { d: d || '?' })}</p>
+      <div class="dbtns"><button class="btn" data-closerestore>${t('cancel')}</button><button class="btn pri" data-bkyes>${t('bkYes')}</button></div>
+    </div></div>`;
+  }
+  async _backupDown() {
+    const d = STORE.d, icons = {}, t = (k, v) => this._t(k, v); this._toast(t('bkBusy'), false);
+    for (const [k, url] of Object.entries(d.icons || {})) {
+      try { const b = await (await fetch(url)).blob(); icons[k] = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }); } catch (e) {}
+    }
+    const out = { format: 'lemur-light-effects-backup', version: CARD_VERSION, date: new Date().toISOString(), data: { settings: d.settings || {}, tabs: d.tabs || {}, favorites: d.favorites || [], hidden: d.hidden || [], rooms: d.rooms || {} }, icons };
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(out, null, 1)], { type: 'application/json' }));
+    a.download = 'lemur-backup-' + new Date().toISOString().slice(0, 10) + '.json'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    this._toast(t('bkSaved'), false);
+  }
+  async _backupApply() {
+    const b = this._bk, t = k => this._t(k); if (!b) return;
+    this._snap();
+    const D = b.data || {};
+    STORE.set('settings', D.settings && typeof D.settings === 'object' ? D.settings : {});
+    STORE.set('tabs', D.tabs && typeof D.tabs === 'object' ? D.tabs : {});
+    STORE.set('favorites', Array.isArray(D.favorites) ? D.favorites : []); STORE.set('hidden', Array.isArray(D.hidden) ? D.hidden : []);
+    STORE.set('rooms', D.rooms && typeof D.rooms === 'object' ? D.rooms : {});
+    const keep = b.icons || {};
+    for (const k of Object.keys(STORE.d.icons || {})) if (!keep[k]) await STORE.iconDel(k);
+    for (const [k, url] of Object.entries(keep)) { const m = String(url).match(/^data:(image\/(png|jpeg|webp|gif));base64,(.+)$/); if (m) try { await STORE.icon(k, m[1], m[3]); } catch (e) {} }
+    this._bk = null; this._view = 'edit'; this._ce = null; this._tab = {}; this._render(); this._toast(t('bkOk'), false);
   }
   _resetHtml() {
     const t = k => esc(this._t(k));
@@ -835,7 +886,7 @@ class LemurLightEffectsPanel extends HTMLElement {
   _key(e) {
     if (!this.isConnected || !this.shadowRoot) return;
     const tg = e.composedPath()[0], typing = tg && /INPUT|TEXTAREA/.test(tg.tagName);
-    if (e.key === 'Escape') { if (this.shadowRoot.querySelector('.pop')) return this._closePop(); if (this._view === 'reset') { this._view = 'settings'; return this._render(); } if (this._view === 'settings') { this._view = 'edit'; return this._render(); } if (this._pick.size) { this._pick.clear(); return this._render(); } }
+    if (e.key === 'Escape') { if (this.shadowRoot.querySelector('.pop')) return this._closePop(); if (this._view === 'reset' || this._view === 'restore') { this._bk = null; this._view = 'settings'; return this._render(); } if (this._view === 'settings') { this._view = 'edit'; return this._render(); } if (this._pick.size) { this._pick.clear(); return this._render(); } }
     if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && !typing && this._undo.length) { e.preventDefault(); this._undoIt(); }
   }
 
@@ -863,13 +914,19 @@ class LemurLightEffectsPanel extends HTMLElement {
       if (g('[data-resetask]')) { this._view = 'reset'; return this._render(); }
       if ((x = g('[data-closereset]')) && (x.classList.contains('btn') || !g('.dlg'))) { this._view = 'settings'; return this._render(); }
       if (g('[data-resetyes]')) return this._resetAll();
+      if (g('[data-reload]')) { try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.update())); } catch (e) {} setTimeout(() => location.reload(), 150); return; }
+      if (g('[data-bkdown]')) return this._backupDown();
+      if (g('[data-bkup]')) { const f = R.getElementById('bkf'); if (f) f.click(); return; }
+      if ((x = g('[data-closerestore]')) && (x.classList.contains('btn') || !g('.dlg'))) { this._bk = null; this._view = 'settings'; return this._render(); }
+      if (g('[data-bkyes]')) return this._backupApply();
+      if (this._view === 'restore' && g('.dlg')) return;
       if (this._view === 'reset' && g('.dlg')) return;
       if ((x = g('[data-closeset]')) && (x.classList.contains('btn') || !g('.dlg'))) { this._view = 'edit'; return this._render(); }
       // settings
       if ((x = g('[data-k]'))) return this._save({ kelvin: +x.dataset.k });
       if ((x = g('[data-lang]'))) return this._save({ language: x.dataset.lang === 'auto' ? null : x.dataset.lang });
       if ((x = g('[data-min]'))) return this._save({ min_effects: +x.dataset.min });
-      if ((x = g('[data-sv]'))) { const v = x.dataset.sv, i = v.indexOf('|'), key = v.slice(0, i), raw = v.slice(i + 1), num = /^\d+$/.test(raw) ? +raw : raw; const def = { tile_size: 'auto', icon_style: 'color', bg: 'dark', start_tab: 'auto', long_press: 550, fx_on_brightness: 0, night_max: 30 }[key]; return this._save({ [key]: num === def ? null : num }); }
+      if ((x = g('[data-sv]'))) { const v = x.dataset.sv, i = v.indexOf('|'), key = v.slice(0, i), raw = v.slice(i + 1), num = /^\d+(\.\d+)?$/.test(raw) ? +raw : raw; const def = { tile_size: 'auto', icon_style: 'color', bg: 'dark', start_tab: 'auto', long_press: 550, fx_on_brightness: 0, night_max: 30, transition: 0 }[key]; return this._save({ [key]: num === def ? null : num }); }
       if ((x = g('[data-sw]'))) { const [key, d] = x.dataset.sw.split('|'), def = d === '1', S = this._set(), cur = S[key] == null ? def : !!S[key], nv = !cur; return this._save({ [key]: nv === def ? null : nv }); }
       if ((x = g('[data-roff]'))) { this._closePop(); return this._roomVis(x.dataset.roff || this._room); }
       if (g('.dlg')) return;
@@ -962,6 +1019,10 @@ class LemurLightEffectsPanel extends HTMLElement {
       const x = e.target;
       if (x.id === 'gb') return this._save({ brightness: +x.value });
       if (x.id === 'nf' || x.id === 'nt') return this._save({ [x.id === 'nf' ? 'night_from' : 'night_to']: x.value || null });
+      if (x.id === 'bkf') {
+        const f = x.files && x.files[0]; x.value = ''; if (!f) return;
+        const rd = new FileReader(); rd.onload = () => { let b = null; try { b = JSON.parse(rd.result); } catch (e) {} if (!b || b.format !== 'lemur-light-effects-backup' || !b.data) return this._toast(this._t('bkErr'), false); this._bk = b; this._view = 'restore'; this._render(); }; rd.readAsText(f); return;
+      }
       if (this._ce) {
         const c = this._ce, d = x.dataset;
         if (x.id === 'cebase') { const A = this._allFx(); c.base = x.value; c.base_name = x.value ? A.get(x.value) || '' : ''; return this._render(); }

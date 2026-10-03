@@ -1,0 +1,68 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Lemur Light Effect Card",
+        "description": "Fügt die Effektkarte zu deinen Dashboards hinzu und speichert gemeinsame Favoriten, Lichtauswahl der Räume und eigene Symbole. Keine Einstellungen nötig."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Bereits eingerichtet."
+    }
+  },
+  "entity": {
+    "select": {
+      "room_effect": {
+        "name": "Effekt {room}"
+      }
+    }
+  },
+  "services": {
+    "play": {
+      "name": "Effekt abspielen",
+      "description": "Spielt in einem Raum einen Effekt (oder einen eigenen Effekt) ab, wie ein Tippen auf die Karte.",
+      "fields": {
+        "room": {
+          "name": "Raum",
+          "description": "Bereichs-ID oder Name des Raums wie in der Karte. „_all“ ist das ganze Zuhause."
+        },
+        "effect": {
+          "name": "Effekt",
+          "description": "Name des Effekts wie beim Licht, wie in der Karte oder der Name eines eigenen Effekts."
+        },
+        "brightness": {
+          "name": "Helligkeit",
+          "description": "Optionale Helligkeit in Prozent."
+        },
+        "transition": {
+          "name": "Übergang",
+          "description": "Optionale Überblendzeit in Sekunden (bei Lichtern, die es können)."
+        }
+      }
+    },
+    "stop": {
+      "name": "Effekte stoppen",
+      "description": "Wie die Stopp-Taste: beendet die Effekte in einem Raum und kehrt zu einem ruhigen Weiß zurück.",
+      "fields": {
+        "room": {
+          "name": "Raum",
+          "description": "Bereichs-ID oder Name des Raums wie in der Karte. „_all“ ist das ganze Zuhause."
+        },
+        "transition": {
+          "name": "Übergang",
+          "description": "Optionale Überblendzeit in Sekunden (bei Lichtern, die es können)."
+        }
+      }
+    },
+    "list_effects": {
+      "name": "Effekte auflisten",
+      "description": "Gibt die Effekte eines Raums und den gerade laufenden zurück.",
+      "fields": {
+        "room": {
+          "name": "Raum",
+          "description": "Bereichs-ID oder Name des Raums wie in der Karte. „_all“ ist das ganze Zuhause."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Lemur Light Effect Card",
+        "description": "Añade la tarjeta de efectos a tus paneles y guarda los favoritos comunes, la elección de luces de cada estancia y los iconos propios. No necesita ajustes."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Ya está configurado."
+    }
+  },
+  "entity": {
+    "select": {
+      "room_effect": {
+        "name": "Efecto de {room}"
+      }
+    }
+  },
+  "services": {
+    "play": {
+      "name": "Reproducir efecto",
+      "description": "Reproduce un efecto (o uno de tus efectos) en una estancia, como al tocarlo en la tarjeta.",
+      "fields": {
+        "room": {
+          "name": "Estancia",
+          "description": "ID del área o nombre de la estancia como aparece en la tarjeta. «_all» es toda la casa."
+        },
+        "effect": {
+          "name": "Efecto",
+          "description": "Nombre del efecto como lo llama la luz, como aparece en la tarjeta o el nombre de uno de tus efectos."
+        },
+        "brightness": {
+          "name": "Brillo",
+          "description": "Brillo opcional en porcentaje."
+        },
+        "transition": {
+          "name": "Transición",
+          "description": "Tiempo de transición opcional en segundos (en luces que lo admiten)."
+        }
+      }
+    },
+    "stop": {
+      "name": "Detener efectos",
+      "description": "Como el botón Detener: termina los efectos de una estancia y vuelve a un blanco tranquilo.",
+      "fields": {
+        "room": {
+          "name": "Estancia",
+          "description": "ID del área o nombre de la estancia como aparece en la tarjeta. «_all» es toda la casa."
+        },
+        "transition": {
+          "name": "Transición",
+          "description": "Tiempo de transición opcional en segundos (en luces que lo admiten)."
+        }
+      }
+    },
+    "list_effects": {
+      "name": "Listar efectos",
+      "description": "Devuelve los efectos de una estancia y el que suena ahora.",
+      "fields": {
+        "room": {
+          "name": "Estancia",
+          "description": "ID del área o nombre de la estancia como aparece en la tarjeta. «_all» es toda la casa."
+        }
+      }
+    }
+  }
+}

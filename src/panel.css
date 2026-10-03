@@ -338,3 +338,6 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .emp.sm{padding:16px;font-size:13px}
 .app.drag-cl .cezone,.app.drag-cl .cepool{outline:1.5px dashed var(--ln3);outline-offset:-2px}
 @media (max-width:900px){.cecols{grid-template-columns:1fr}.cepool{max-height:40vh}}
+/* v1.1: update notice */
+.warn.upd{display:flex;align-items:center;gap:12px;background:rgba(240,169,59,.12);border-color:rgba(240,169,59,.45);color:#F7D9A6}
+.warn.upd span{flex:1}

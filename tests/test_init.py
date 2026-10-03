@@ -93,7 +93,7 @@ async def test_config_flow_single(hass):
 async def test_settings_and_panel(hass, hass_ws_client, js_url):
     await _setup(hass)
     kw = js_url.panel.call_args.kwargs
-    assert kw["frontend_url_path"] == "light-effects" and kw["require_admin"] is True
+    assert kw["frontend_url_path"] == "lemur-light" and kw["require_admin"] is True
     assert kw["module_url"].startswith("/lemur_light_effects/lemur-light-effect-card.js?v=")
     ws = await hass_ws_client(hass)
     await ws.send_json({"id": 1, "type": "lemur_light_effects/set", "key": "settings",

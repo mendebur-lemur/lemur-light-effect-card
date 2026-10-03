@@ -1,0 +1,49 @@
+play:
+  fields:
+    room:
+      required: true
+      example: salon
+      selector:
+        text:
+    effect:
+      required: true
+      example: Candlelight
+      selector:
+        text:
+    brightness:
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    transition:
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 60
+          step: 0.5
+          unit_of_measurement: s
+stop:
+  fields:
+    room:
+      required: true
+      example: salon
+      selector:
+        text:
+    transition:
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 60
+          step: 0.5
+          unit_of_measurement: s
+list_effects:
+  fields:
+    room:
+      required: true
+      example: salon
+      selector:
+        text:

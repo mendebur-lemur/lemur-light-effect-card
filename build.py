@@ -9,7 +9,7 @@ def mincss(name):
     return "\n".join(l.strip() for l in c.splitlines() if l.strip())
 css = mincss("card.css")
 pcss = mincss("panel.css")
-parts = [(src / f).read_text() for f in ("icons.js", "icons2.js", "icons3.js", "govee.js", "card.js", "editor.js", "presets.js", "panel.js")]
+parts = [(src / f).read_text() for f in ("icons.js", "icons2.js", "govee.js", "card.js", "editor.js", "presets.js", "panel.js", "i18n_more.js")]
 body = "\n".join(parts).replace("const CARD_VERSION = '0.1.0';", f"const CARD_VERSION = '{version}';")
 out = f"""/*! Lemur Light Effect Card v{version} | MIT */
 (() => {{
@@ -39,4 +39,9 @@ console.info('%c LEMUR LIGHT EFFECT CARD %c v' + CARD_VERSION + ' ', 'background
 """
 dst = root / "custom_components/lemur_light_effects/frontend/lemur-light-effect-card.js"
 dst.write_text(out)
+# the 356 colour effect icons load on their own, after the card is already on screen
+i3 = (src / "icons3.js").read_text()
+i3 = i3[i3.index("{"): i3.rindex("}") + 1]
+json.loads(i3)
+(dst.parent / "lemur-icons.json").write_text(i3)
 print(dst, len(out.encode()))

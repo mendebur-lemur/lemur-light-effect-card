@@ -19,7 +19,8 @@ A Home Assistant dashboard card for light effects, white tones and colors that w
 - **Create your own effects.** Drag lights into an effect and choose what each opens: lights without the effect switch to a colour or white, any light can play another effect from its own list.
 - **Control panel in the sidebar** (*Lemur Light Effect Card*): arrange rooms, lights, tabs and effects by drag and drop.
 - **Plenty of settings:** tile size, colour or simple icons, black (OLED) or theme background, night mode, start tab, room icons and more. Effects and favorites become Home Assistant scripts in one click.
-- Turkish and English.
+- **Automations and voice assistants:** an effect select entity per room and the `lemur_light_effects.play` action.
+- Turkish, English, German, Spanish and French.
 
 ## Contents
 
@@ -36,6 +37,7 @@ A Home Assistant dashboard card for light effects, white tones and colors that w
 - [Control panel](#control-panel)
   - [Settings](#settings)
   - [Create effect](#create-effect)
+- [Automations, scripts and voice assistants](#automations-scripts-and-voice-assistants)
 - [Card options](#card-options)
 
 ## Install
@@ -223,10 +225,11 @@ The **Settings** window at the bottom left applies to every card at home:
 
 - *Appearance:* tile size (automatic, small, medium, large), colour or simple one-colour icons, background (dark, black OLED, Home Assistant theme), effect names, colour line and support dots on/off.
 - *Bottom bar:* hide the Stop and Random buttons.
-- *Behaviour:* the brightness a light that is off comes on at when an effect is picked, which tab the card opens on (automatic, Favorites, last used, Light), long press time and vibration.
+- *Behaviour:* the brightness a light that is off comes on at when an effect is picked, which tab the card opens on (automatic, Favorites, last used, Light), long press time, vibration, transition (colour, white, brightness and turning off change softly) and the **Recently used** tab (the last 12 effects played in the room, below Favorites).
 - *After Stop:* white tone and brightness.
 - *Night mode:* a brightness ceiling between two times (effects, Stop and the brightness bar never go above it).
 - *Rooms and lights:* show Home Assistant light groups, the minimum number of effects a light needs.
+- *Backup:* download the whole setup (rooms, tabs, favorites, your own effects, settings, icons) as one file and restore it when you like.
 - *Reset everything:* after a confirmation, deletes the whole layout, tabs, favorites, icons and your own effects.
 
 ### Create effect
@@ -248,6 +251,29 @@ Once saved it shows in the card under **My effects** like any other effect; one 
 | **Settings** | **Create effect** |
 | ![Settings](docs/images/panel-settings.png) | ![Create effect](docs/images/panel-create.png) |
 
+## Automations, scripts and voice assistants
+
+Every room gets an **effect select** entity (like `select.lemur_living_room_effect`; `select.lemur_home_effect` for the whole home). It shows the effect playing in the room, plays the one you pick, and `—` works like Stop. Use it on dashboards, in automations and with voice assistants (Assist, Google, Alexa). The list has the effect names as the lights report them plus your own effects; the name the card shows is accepted too.
+
+Actions:
+
+```yaml
+action: lemur_light_effects.play
+data:
+  room: living_room      # area ID or the room name the card shows; _all = whole home
+  effect: Movie Night    # name on the light, name on the card, or one of your own effects
+  brightness: 60         # optional, %
+  transition: 2          # optional, seconds
+```
+
+```yaml
+action: lemur_light_effects.stop
+data:
+  room: living_room
+```
+
+`lemur_light_effects.list_effects` (returns a response) gives the effects a room can play and the one playing now. The actions behave like the card: the lights chosen for the room, hidden effects, night mode and the "light that is off comes on at" setting all apply.
+
 ## Card options
 
 All options are available in the visual editor. The control panel settings set their defaults; a value written on the card wins.
@@ -260,7 +286,7 @@ All options are available in the visual editor. The control panel settings set t
 | `kelvin` / `brightness` | `3200` / `40` | What **Stop** and the power button switch to |
 | `all_home` | `true` | Show a "Whole home" tab |
 | `min_effects` | `3` | A light needs at least this many effects to be offered effects |
-| `language` | `auto` | `auto`, `tr`, `en` |
+| `language` | `auto` | `auto`, `tr`, `en`, `de`, `es`, `fr` |
 | `height` / `mobile_height` | `80vh` / `80vh` | Card height |
 | `mobile` | auto (< 640 px) | Force the phone (`true`) or tablet (`false`) layout |
 | `close` | `false` | Show a close button (when used inside another add-on's popup) |
@@ -269,7 +295,7 @@ All options are available in the visual editor. The control panel settings set t
 
 Hidden, entity-category and light-group entities are skipped automatically.
 
-The integration stores the shared data (room tabs, favorites, room selections, hidden effects, last effect, icons) in `.storage/lemur_light_effects`. Uploaded icons are saved in `config/lemur_light_effects_icons/`. Without the integration, you can load the card as a plain resource (`/lemur_light_effects/lemur-light-effect-card.js` or a copy under `/local`). Its data is then saved only in that browser.
+The integration stores the shared data (room tabs, favorites, room selections, hidden effects, last effect, recently used, icons) in `.storage/lemur_light_effects`. Uploaded icons are saved in `config/lemur_light_effects_icons/`. Without the integration, you can load the card as a plain resource (`/lemur_light_effects/lemur-light-effect-card.js` or a copy under `/local`; copy `lemur-icons.json` next to it). Its data is then saved only in that browser.
 
 ## How effects are grouped
 

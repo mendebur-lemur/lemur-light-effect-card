@@ -20,7 +20,7 @@ const preLang = h => {
   let x = h && ((h.locale && h.locale.language) || h.language);
   if (!x) try { x = JSON.parse(localStorage.getItem('selectedLanguage') || 'null'); } catch (e) {}
   x = x || document.documentElement.lang || navigator.language || 'en';
-  return /^tr/i.test(x) ? 'tr' : 'en';
+  return pickLang(x);
 };
 const LAUNCH_KEYS = ['type', 'name', 'subtitle', 'browser_fullscreen', 'hash', 'aspect', 'view_layout', 'grid_options', 'layout_options', 'visibility',
   'popup_width', 'popup_height', 'popup_position', 'popup_scale', 'popup_blur', 'popup_radius', 'button_style', 'style', 'icon', 'color_icon', 'color'];
@@ -73,8 +73,8 @@ class LemurLauncher extends HTMLElement {
   _style() { const v = this._cfg && this._cfg.style; return BTN_STYLES.includes(v) ? v : 'row'; }
   get _mode() { return this.constructor.mode; }
   constructor() { super(); this._nav = () => this._hashCheck(); }
-  connectedCallback() { ['location-changed', 'popstate', 'hashchange'].forEach(e => window.addEventListener(e, this._nav)); setTimeout(this._nav, 0); }
-  disconnectedCallback() { ['location-changed', 'popstate', 'hashchange'].forEach(e => window.removeEventListener(e, this._nav)); }
+  connectedCallback() { ['location-changed', 'popstate', 'hashchange'].forEach(e => window.addEventListener(e, this._nav)); this._ic = this._ic || (() => this._draw()); window.addEventListener('lemur-icons', this._ic); setTimeout(this._nav, 0); }
+  disconnectedCallback() { ['location-changed', 'popstate', 'hashchange'].forEach(e => window.removeEventListener(e, this._nav)); window.removeEventListener('lemur-icons', this._ic); }
   setConfig(c) {
     this._cfg = Object.assign({}, c || {});
     if (!this.shadowRoot) {
@@ -102,7 +102,7 @@ class LemurLauncher extends HTMLElement {
     const title = c.name || T.title, sub = c.subtitle != null && c.subtitle !== '' ? c.subtitle : H ? (n ? T.on(n) : T.off) : '';
     const st = this._style(), col = uiColor(c.color), ck = String(c.color_icon || '').replace(/^c:/, '');
     const art = ck && ICON3[ck] ? ICON3[ck] : '', mdi = !art && /^[a-z]+:[\w-]+$/.test(String(c.icon || '')) ? c.icon : '';
-    const sig = [title, sub, st, col, ck, mdi].join('|'); if (sig === this._sig) return; this._sig = sig;
+    const sig = [title, sub, st, col, ck, mdi, ICON3_OK].join('|'); if (sig === this._sig) return; this._sig = sig;
     const glow = col ? `color-mix(in srgb, ${col} 26%, transparent)` : 'rgba(240,169,59,.18)';
     const tileBg = art ? 'rgba(255,255,255,.06)' : col ? `linear-gradient(145deg, color-mix(in srgb, ${col} 80%, white), ${col})` : tile([30, 320, 260]);
     const ico = art || (mdi ? `<ha-icon icon="${esc(mdi)}"></ha-icon>` : svg('sparkle'));

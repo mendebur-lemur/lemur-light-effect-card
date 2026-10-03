@@ -6,6 +6,63 @@
         "description": "Efekt kartını panellere ekler; ortak favorileri, oda ışık seçimlerini ve özel simgeleri saklar. Ayar gerekmez."
       }
     },
-    "abort": { "single_instance_allowed": "Zaten kurulu." }
+    "abort": {
+      "single_instance_allowed": "Zaten kurulu."
+    }
+  },
+  "entity": {
+    "select": {
+      "room_effect": {
+        "name": "{room} efekti"
+      }
+    }
+  },
+  "services": {
+    "play": {
+      "name": "Efekt oynat",
+      "description": "Bir odada efekt (ya da kendi efektlerinden birini) oynatır; kartta dokunmakla aynı.",
+      "fields": {
+        "room": {
+          "name": "Oda",
+          "description": "Odanın alan kimliği ya da kartta görünen adı. \"_all\" bütün evdir."
+        },
+        "effect": {
+          "name": "Efekt",
+          "description": "Işığın verdiği efekt adı, kartta görünen adı ya da kendi efektlerinden birinin adı."
+        },
+        "brightness": {
+          "name": "Parlaklık",
+          "description": "İsteğe bağlı parlaklık (yüzde)."
+        },
+        "transition": {
+          "name": "Geçiş süresi",
+          "description": "İsteğe bağlı yumuşak geçiş süresi, saniye (destekleyen ışıklarda)."
+        }
+      }
+    },
+    "stop": {
+      "name": "Efektleri durdur",
+      "description": "Durdur düğmesi gibi: odadaki efektleri bitirir, sakin bir beyaza döner.",
+      "fields": {
+        "room": {
+          "name": "Oda",
+          "description": "Odanın alan kimliği ya da kartta görünen adı. \"_all\" bütün evdir."
+        },
+        "transition": {
+          "name": "Geçiş süresi",
+          "description": "İsteğe bağlı yumuşak geçiş süresi, saniye (destekleyen ışıklarda)."
+        }
+      }
+    },
+    "list_effects": {
+      "name": "Efektleri listele",
+      "description": "Odanın oynatabildiği efektleri ve şu an çalanı döndürür.",
+      "fields": {
+        "room": {
+          "name": "Oda",
+          "description": "Odanın alan kimliği ya da kartta görünen adı. \"_all\" bütün evdir."
+        }
+      }
+    }
   }
 }

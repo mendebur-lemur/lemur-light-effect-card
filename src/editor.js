@@ -29,7 +29,7 @@ class LemurLightEffectCardEditor extends HTMLElement {
   disconnectedCallback() { STORE.L.delete(this._u); }
   setConfig(c) { this._c = Object.assign({}, c); this._r(); }
   set hass(h) { this._h = h; STORE.attach(h); if (this._f) this._f.hass = h; else this._r(); }
-  _l() { const h = this._h, x = (h && ((h.locale && h.locale.language) || h.language)) || 'en'; return /^tr/i.test(x) ? 'tr' : 'en'; }
+  _l() { const h = this._h; return pickLang((h && ((h.locale && h.locale.language) || h.language)) || 'en'); }
   _kind() { const t = String((this._c && this._c.type) || ''); return /lemur-fullscreen-button/.test(t) ? 'full' : /lemur-window/.test(t) ? 'popup' : /lemur-phone-fullscreen/.test(t) ? 'mfull' : /lemur-phone-button/.test(t) ? 'mbtn' : /lemur-scalable/.test(t) ? 'scale' : /lemur-mobile-card/.test(t) ? 'mobile' : 'classic'; }
   _schema() {
     const T = ED_TXT[this._l()], k = this._kind();
@@ -71,7 +71,7 @@ class LemurLightEffectCardEditor extends HTMLElement {
         { name: 'brightness', selector: { number: { min: 1, max: 100, mode: 'slider', unit_of_measurement: '%' } } }
       ] },
       { type: 'grid', name: '', schema: [
-        { name: 'language', selector: { select: { mode: 'dropdown', options: [{ value: 'auto', label: T.auto }, { value: 'tr', label: 'Türkçe' }, { value: 'en', label: 'English' }] } } },
+        { name: 'language', selector: { select: { mode: 'dropdown', options: [{ value: 'auto', label: T.auto }, ...LANGS.map(l => ({ value: l, label: LANG_NAMES[l] }))] } } },
         { name: 'min_effects', selector: { number: { min: 1, max: 20, mode: 'box' } } }
       ] },
       ...size,

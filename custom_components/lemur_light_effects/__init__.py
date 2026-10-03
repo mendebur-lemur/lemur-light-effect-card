@@ -141,7 +141,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if not hass.data.get(f"{DOMAIN}_static"):
         await _register_static(hass, data.icon_dir)
         add_extra_js_url(hass, f"{URL_BASE}/{CARD_FILE}?v={VERSION}")
-        for handler in (ws_get, ws_set, ws_last, ws_icon_upload, ws_icon_delete, ws_subscribe, ws_info, ws_preview):
+        for handler in (ws_get, ws_set, ws_last, ws_icon_upload, ws_icon_delete, ws_subscribe, ws_info, ws_preview, ws_latest):
             websocket_api.async_register_command(hass, handler)
         _register_services(hass)
         hass.data[f"{DOMAIN}_static"] = True
@@ -365,6 +365,31 @@ async def ws_preview(hass, connection, msg):
         connection.send_result(msg["id"], {"room": room["id"], "effect": u["key"], "lights": list(u["names"])})
     except ValueError as err:
         connection.send_error(msg["id"], "preview_failed", str(err))
+
+
+REPO_API = "https://api.github.com/repos/mendebur-lemur/lemur-light-effect-card/releases/latest"
+
+
+@websocket_api.websocket_command({vol.Required("type"): "lemur_light_effects/latest"})
+@websocket_api.require_admin
+@websocket_api.async_response
+async def ws_latest(hass, connection, msg):
+    """Newest release on GitHub, for installs without HACS (the panel's "check for updates")."""
+    from homeassistant.helpers.aiohttp_client import async_get_clientsession
+    import aiohttp
+
+    try:
+        async with async_get_clientsession(hass).get(
+            REPO_API, headers={"Accept": "application/vnd.github+json"}, timeout=aiohttp.ClientTimeout(total=10)
+        ) as resp:
+            if resp.status != 200:
+                connection.send_error(msg["id"], "github", f"GitHub answered {resp.status}")
+                return
+            d = await resp.json()
+    except Exception as err:  # noqa: BLE001 - network errors of any kind end up in the panel as text
+        connection.send_error(msg["id"], "github", str(err) or type(err).__name__)
+        return
+    connection.send_result(msg["id"], {"version": str(d.get("tag_name") or "").lstrip("v"), "url": d.get("html_url"), "installed": VERSION})
 
 
 PLAY_SCHEMA = vol.Schema(

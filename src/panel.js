@@ -49,6 +49,7 @@ const P_TXT = {
     save: 'Kaydet', del: 'Sil', bri: 'Parlaklık', ceNameErr: 'Bir ad yaz', ceSaved: '“{x}” kaydedildi', ceHint: 'Kartta “Efektlerim” sekmesinde görünür.',
     m_auto: 'Otomatik', m_fx: 'Efekt', m_color: 'Renk', m_white: 'Beyaz', m_off: 'Kapat', m_skip: 'Dokunma', supBase: 'temel efekti oynatır', noBase: 'temel efekt yok', autoIs: 'otomatik: {x}',
     upd: 'Yeni sürüm yüklendi ({v}). Ekranı yenile.', reload: 'Yenile',
+    sVer: 'Sürüm ve güncelleme', updT: 'Sürüm', updInst: 'Yüklü: v{v}', updCheck: 'Güncellemeleri denetle', updChecking: 'Denetleniyor…', updOk: 'güncel', updAt: 'son kontrol {t}', updNew: 'v{v} hazır', updNotes: 'Yenilikler', updGo: 'Güncelle', updGh: 'GitHub’da aç', updIng: 'v{v} indiriliyor…', updDone: 'v{v} indirildi. Home Assistant yeniden başlayınca devreye girer.', updRestart: 'Yeniden başlat', updAsk: 'Home Assistant yeniden başlasın mı? Bir iki dakika ışık kontrolü ve otomasyonlar durur.', updYes: 'Evet, yeniden başlat', updRest: 'Yeniden başlatılıyor… Açılınca sayfa kendiliğinden yenilenir.', updErr: 'Denetlenemedi: {e}', updAgain: 'Tekrar denetle', updNoHacs: 'HACS ile kurulmadığı için buradan yüklenemiyor',
     pvB: 'Önizleme', pvT: 'Açıkken tıkladığın efekt ışıklarda hemen çalar', pvOn: 'Önizleme açık', pvWhere: 'tıkladığın efekt şu odanın ışıklarında çalar:', pvNow: 'şu an: {x}', pvBack: 'Eski haline dön', pvKeep: 'Böyle bırak', pvBackT: 'Işıklar önizlemeden önceki haline döndü', pvKeepT: 'Son efekt çalmaya devam ediyor', pvErr: 'Önizleme çalışmadı: {e}', pvNoRoom: 'Önizleme için bir oda seç',
     fade: 'Geçiş süresi', fadeS: 'Renk, beyaz, parlaklık ve kapatma yumuşak geçsin (destekleyen ışıklarda)', fadeNo: 'Yok',
     showRecent: 'Son kullanılanlar sekmesi', showRecentS: 'Odada son oynatılan efektler, Favoriler’in yanında',
@@ -108,6 +109,7 @@ const P_TXT = {
     save: 'Save', del: 'Delete', bri: 'Brightness', ceNameErr: 'Type a name', ceSaved: '“{x}” saved', ceHint: 'It shows in the card under “My effects”.',
     m_auto: 'Automatic', m_fx: 'Effect', m_color: 'Colour', m_white: 'White', m_off: 'Turn off', m_skip: 'Leave as is', supBase: 'plays the base effect', noBase: 'no base effect', autoIs: 'automatic: {x}',
     upd: 'A new version is installed ({v}). Reload the page.', reload: 'Reload',
+    sVer: 'Version and updates', updT: 'Version', updInst: 'Installed: v{v}', updCheck: 'Check for updates', updChecking: 'Checking…', updOk: 'up to date', updAt: 'checked {t}', updNew: 'v{v} is ready', updNotes: 'What’s new', updGo: 'Update', updGh: 'Open on GitHub', updIng: 'Downloading v{v}…', updDone: 'v{v} is downloaded. It takes effect when Home Assistant restarts.', updRestart: 'Restart', updAsk: 'Restart Home Assistant? Light control and automations stop for a minute or two.', updYes: 'Yes, restart', updRest: 'Restarting… The page reloads by itself when it is back.', updErr: 'Could not check: {e}', updAgain: 'Check again', updNoHacs: 'Not installed with HACS, so it cannot be installed from here',
     pvB: 'Preview', pvT: 'While it is on, the effect you click plays on the lights right away', pvOn: 'Preview on', pvWhere: 'the effect you click plays on the lights of:', pvNow: 'now: {x}', pvBack: 'Put lights back', pvKeep: 'Keep it', pvBackT: 'The lights are back as they were before the preview', pvKeepT: 'The last effect keeps playing', pvErr: 'Preview did not work: {e}', pvNoRoom: 'Pick a room for the preview',
     fade: 'Transition', fadeS: 'Colour, white, brightness and turning off change softly (lights that support it)', fadeNo: 'None',
     showRecent: 'Recently used tab', showRecentS: 'Effects played lately in the room, next to Favorites',
@@ -556,6 +558,8 @@ class LemurLightEffectsPanel extends HTMLElement {
     const mine = customList(S);
     return `<div class="modal" data-closeset><div class="dlg">
       <div class="dh"><span class="si">${pi('cog', 's20')}</span><b>${esc(t('settings'))}</b><span class="grow"></span><button class="btn ic" data-closeset title="${esc(t('close'))}">${pi('x', 's16')}</button></div>
+      <div class="sh2">${esc(t('sVer'))}</div>
+      ${this._updRow()}
       <div class="sh2">${esc(t('sCard'))}</div>
       ${row(t('lang'), '', `<div class="segs">${[['auto', t('auto')], ...LANGS.map(l => [l, LANG_NAMES[l]])].map(([v, n]) => `<button class="${lang === v ? 'on' : ''}" data-lang="${v}">${esc(n)}</button>`).join('')}</div>`)}
       <div class="sh2">${esc(t('sLook'))}</div>
@@ -592,6 +596,74 @@ class LemurLightEffectsPanel extends HTMLElement {
       ${row(t('resetAll'), t('resetAllS'), `<button class="btn danger" data-resetask>${pi('trash', 's16')}${esc(t('resetAll'))}</button>`)}
     </div></div>`;
   }
+  // ---- version and updates: HACS (refresh, install) when it is there, GitHub otherwise ----
+  _updRow() {
+    const t = (k, v) => this._t(k, v), U = this._upd || { st: 'idle' }, cur = U.cur || CARD_VERSION;
+    const notes = U.url ? ` · <a href="${esc(U.url)}" target="_blank" rel="noopener">${esc(t('updNotes'))}</a>` : '';
+    let sub = esc(t('updInst', { v: cur })), ctl = `<button class="btn" data-updcheck>${pi('reset', 's16')}${esc(t('updCheck'))}</button>`;
+    if (U.st === 'checking') ctl = `<button class="btn" disabled>${esc(t('updChecking'))}</button>`;
+    else if (U.st === 'ok') { sub += ` · <span class="uok">✓ ${esc(t('updOk'))}</span> · ${esc(t('updAt', { t: U.at }))}`; ctl = `<button class="btn" data-updcheck>${pi('reset', 's16')}${esc(t('updAgain'))}</button>`; }
+    else if (U.st === 'new') { sub += ` · <b class="unew">${esc(t('updNew', { v: U.latest }))}</b>${notes}${U.ent ? '' : `<br>${esc(t('updNoHacs'))}`}`; ctl = U.ent ? `<button class="btn pri" data-updgo>${pi('download', 's16')}${esc(t('updGo'))}</button>` : (U.url ? `<a class="btn" href="${esc(U.url)}" target="_blank" rel="noopener">${esc(t('updGh'))}</a>` : ''); }
+    else if (U.st === 'installing') { sub = `<b class="unew">${esc(t('updIng', { v: U.latest }))}</b>${U.pct != null ? ` %${U.pct}` : ''}`; ctl = ''; }
+    else if (U.st === 'installed') { sub = `<b class="unew">${esc(t('updDone', { v: U.latest }))}</b>${notes}`; ctl = `<button class="btn pri" data-updrs>${pi('reset', 's16')}${esc(t('updRestart'))}</button>`; }
+    else if (U.st === 'ask') { sub = `<b>${esc(t('updAsk'))}</b>`; ctl = `<div class="dbtns" style="margin:0"><button class="btn" data-updno>${esc(t('cancel'))}</button><button class="btn danger" data-updyes>${esc(t('updYes'))}</button></div>`; }
+    else if (U.st === 'restarting') { sub = `<b class="unew">${esc(t('updRest'))}</b>`; ctl = ''; }
+    else if (U.st === 'err') { sub += ` · <span class="uerr">${esc(t('updErr', { e: U.err }))}</span>`; ctl = `<button class="btn" data-updcheck>${pi('reset', 's16')}${esc(t('updAgain'))}</button>`; }
+    return `<div class="srow upd"><div class="t"><b>${esc(t('updT'))}</b><small>${sub}</small></div>${ctl}</div>`;
+  }
+  _updSet(o) { this._upd = Object.assign({}, this._upd, o); if (this._view === 'settings') this._render(); }
+  _updEnt() {
+    const S = this._hass.states;
+    return Object.values(S).find(s => s.entity_id.startsWith('update.') && /mendebur-lemur\/lemur-light-effect-card/.test(String(s.attributes.release_url || ''))) || S['update.lemur_light_effect_card_update'] || null;
+  }
+  async _updCheck() {
+    const c = this._hass.connection, vnum = v => String(v || '').replace(/^v/i, '').split('.').map(n => parseInt(n, 10) || 0);
+    const newer = (a, b) => { const x = vnum(a), y = vnum(b); for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); return false; };
+    this._updSet({ st: 'checking', err: null });
+    try {
+      let cur = CARD_VERSION; try { cur = (await c.sendMessagePromise({ type: 'lemur_light_effects/info' })).version || cur; } catch (e) {}
+      // HACS: same as "Update information" in its menu, so its update entity knows about the newest release
+      try { const L = await c.sendMessagePromise({ type: 'hacs/repositories/list' }); const r = (L || []).find(x => /\/lemur-light-effect-card$/i.test(x.full_name || '')); if (r) { await c.sendMessagePromise({ type: 'hacs/repository/refresh', repository: String(r.id) }); await new Promise(z => setTimeout(z, 900)); } } catch (e) {}
+      const ent = this._updEnt();
+      let latest = ent && ent.attributes.latest_version, url = ent && ent.attributes.release_url;
+      if (!latest) { const g = await c.sendMessagePromise({ type: 'lemur_light_effects/latest' }); latest = g.version; url = g.url; }
+      latest = String(latest || '').replace(/^v/i, '');
+      const at = new Date().toLocaleTimeString(this._l(), { hour: '2-digit', minute: '2-digit' });
+      this._updSet(newer(latest, cur) ? { st: 'new', cur, latest, url, ent: ent ? ent.entity_id : null, at } : { st: 'ok', cur, latest, url, at });
+    } catch (e) { this._updSet({ st: 'err', err: (e && (e.message || e.code)) || String(e) }); }
+  }
+  // restart, then reload the page once the new version answers (the old code is still in memory until then)
+  _updRestart() {
+    const want = (this._upd || {}).latest; this._updSet({ st: 'restarting' });
+    this._hass.callService('homeassistant', 'restart').catch(() => {});
+    const t0 = Date.now(); let down = false;
+    const poll = async () => {
+      if (Date.now() - t0 > 600000) return;
+      try {
+        const v = (await this._hass.connection.sendMessagePromise({ type: 'lemur_light_effects/info' })).version;
+        if (v === want || (down && v)) { await Promise.resolve(window.__LEMUR_HEAL && window.__LEMUR_HEAL()); return location.reload(); }
+      } catch (e) { down = true; }
+      setTimeout(poll, 3000);
+    };
+    setTimeout(poll, 8000);
+  }
+  async _updInstall() {
+    const U = this._upd || {}; if (!U.ent) return;
+    this._updSet({ st: 'installing', pct: null });
+    try { await this._hass.callService('update', 'install', { entity_id: U.ent }); }
+    catch (e) { return this._updSet({ st: 'err', err: (e && e.message) || String(e) }); }
+    const t0 = Date.now();
+    const tick = () => {
+      const s = this._hass.states[U.ent], a = (s && s.attributes) || {};
+      const done = s && !a.in_progress && String(a.installed_version || '').replace(/^v/i, '') === U.latest;
+      if (done) return this._updSet({ st: 'installed', pct: null });
+      if (Date.now() - t0 > 300000) return this._updSet({ st: 'err', err: 'timeout' });
+      if (typeof a.update_percentage === 'number' || typeof a.in_progress === 'number') this._updSet({ pct: Math.round(a.update_percentage != null ? a.update_percentage : a.in_progress) });
+      this._updT = setTimeout(tick, 1000);
+    };
+    tick();
+  }
+
   _restoreHtml() {
     const t = (k, v) => esc(this._t(k, v)), b = this._bk || {}; let d = ''; try { d = new Date(b.date).toLocaleString(this._l()); } catch (e) {}
     return `<div class="modal" data-closerestore><div class="dlg sm">
@@ -1035,6 +1107,11 @@ class LemurLightEffectsPanel extends HTMLElement {
       if ((x = g('[data-closereset]')) && (x.classList.contains('btn') || !g('.dlg'))) { this._view = 'settings'; return this._render(); }
       if (g('[data-resetyes]')) return this._resetAll();
       if (g('[data-reload]')) { try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.update())); } catch (e) {} Promise.resolve(window.__LEMUR_HEAL && window.__LEMUR_HEAL()).finally(() => setTimeout(() => location.reload(), 150)); return; }
+      if (g('[data-updcheck]')) return this._updCheck();
+      if (g('[data-updgo]')) return this._updInstall();
+      if (g('[data-updrs]')) return this._updSet({ st: 'ask' });
+      if (g('[data-updno]')) return this._updSet({ st: 'installed' });
+      if (g('[data-updyes]')) return this._updRestart();
       if (g('[data-bkdown]')) return this._backupDown();
       if (g('[data-bkup]')) { const f = R.getElementById('bkf'); if (f) f.click(); return; }
       if ((x = g('[data-closerestore]')) && (x.classList.contains('btn') || !g('.dlg'))) { this._bk = null; this._view = 'settings'; return this._render(); }

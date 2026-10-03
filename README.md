@@ -172,11 +172,14 @@ Bu kartlara [kart seçeneklerinin](#kart-seçenekleri) hepsi de yazılabilir (ö
 
 ## Güncelleme
 
-Yeni sürüm çıkınca HACS'ta ve **Ayarlar** sayfasında güncelleme bildirimi görünür.
+En kolayı kontrol panelinden: **Ayarlar → Sürüm ve güncelleme → Güncellemeleri denetle**. Yeni sürüm varsa **Güncelle** HACS üzerinden indirir, ardından **Yeniden başlat** Home Assistant'ı yeniden başlatır; açılınca sayfa kendiliğinden yeni sürüme geçer.
 
-1. **HACS → Lemur Light Effect Card → ⋮ → Yeniden indir** (ya da bildirimdeki **Güncelle**).
+Elle yapmak istersen:
+
+1. **HACS → Lemur Light Effect Card → ⋮ → Bilgileri güncelle**, sonra **İndir** (ya da Ayarlar'daki güncelleme bildiriminden **Güncelle**). HACS özel depolara kendiliğinden ancak 48 saatte bir bakar; "Bilgileri güncelle" bunu beklemeden yapar.
 2. Home Assistant'ı yeniden başlat.
-3. Tarayıcıyı **Ctrl+F5** ile (telefonda uygulamayı kapatıp açarak) yenile; yoksa eski kart önbellekten gelebilir.
+
+Kart, tarayıcının ve telefon uygulamasının sakladığı eski sayfa kopyalarını kendisi temizler; eski kart bir kez gelirse sayfa bir kez yenilenir. 1.4.0'dan eski bir sürümden geliyorsan bir kereliğine bilgisayarda Ctrl+F5 yap, telefon uygulamasında **Ayarlar → Companion app → Reset frontend cache**.
 
 Odaların, sekmelerin, favorilerin ve simgelerin güncellemede silinmez.
 
@@ -222,6 +225,7 @@ Sol alttaki **Ayarlar** penceresi evdeki bütün kartlara uygulanır:
 - *Durdur sonrası* beyaz ton ve parlaklık.
 - *Gece modu:* seçtiğin saatler arasında parlaklık üst sınırı (efektler, Durdur ve parlaklık çubuğu bu sınırı aşmaz).
 - *Odalar ve ışıklar:* Home Assistant ışık gruplarını gösterme, bir ışığın efektli sayılması için gereken en az efekt sayısı.
+- *Sürüm ve güncelleme:* yüklü sürüm; yeni sürümü denetleme, HACS ile indirme ve Home Assistant'ı yeniden başlatma.
 - *Yedek:* bütün düzeni (odalar, sekmeler, favoriler, kendi efektlerin, ayarlar, simgeler) tek dosya olarak indir, istediğinde geri yükle.
 - *Her şeyi sıfırla:* onay sorulduktan sonra bütün düzeni, sekmeleri, favorileri, simgeleri ve kendi efektlerini siler.
 

@@ -172,11 +172,14 @@ Every [card option](#card-options) can be added to these cards too (for example 
 
 ## Updating
 
-When a new version is out, an update notice appears in HACS and on the **Settings** page.
+The easiest way is the control panel: **Settings → Version and updates → Check for updates**. If there is a new version, **Update** downloads it through HACS and **Restart** restarts Home Assistant; when it is back the page moves to the new version by itself.
 
-1. **HACS → Lemur Light Effect Card → ⋮ → Redownload** (or **Update** in the notice).
+To do it by hand:
+
+1. **HACS → Lemur Light Effect Card → ⋮ → Update information**, then **Download** (or **Update** in the notification under Settings). HACS looks at custom repositories on its own only every 48 hours; "Update information" does it right away.
 2. Restart Home Assistant.
-3. Refresh the browser with **Ctrl+F5** (on a phone, close and reopen the app); otherwise the old card may come from the cache.
+
+The card clears old page copies kept by the browser and the phone app itself; if an old card loads once, the page reloads once. Coming from a version older than 1.4.0, press Ctrl+F5 once on a computer, and in the phone app use **Settings → Companion app → Reset frontend cache**.
 
 Your rooms, tabs, favorites and icons are kept across updates.
 
@@ -222,6 +225,7 @@ The **Settings** window at the bottom left applies to every card at home:
 - *After Stop:* white tone and brightness.
 - *Night mode:* a brightness ceiling between two times (effects, Stop and the brightness bar never go above it).
 - *Rooms and lights:* show Home Assistant light groups, the minimum number of effects a light needs.
+- *Version and updates:* the installed version; check for a new one, download it with HACS and restart Home Assistant.
 - *Backup:* download the whole setup (rooms, tabs, favorites, your own effects, settings, icons) as one file and restore it when you like.
 - *Reset everything:* after a confirmation, deletes the whole layout, tabs, favorites, icons and your own effects.
 

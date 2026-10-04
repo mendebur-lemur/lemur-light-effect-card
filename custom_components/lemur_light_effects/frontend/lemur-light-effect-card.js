@@ -1,4 +1,4 @@
-/*! Lemur Light Effect Card v1.5.0 | MIT */
+/*! Lemur Light Effect Card v1.5.0 | PolyForm-Noncommercial-1.0.0 */
 (() => {
 // Home Assistant's service worker keeps a copy of every page it served. A copy made before an update still
 // points at the old card file, which the browser also keeps, so the old card can come back after an update.

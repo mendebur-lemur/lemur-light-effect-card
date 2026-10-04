@@ -39,6 +39,7 @@ Hangi marka olursa olsun, efekt destekleyen bütün ışıkları oda oda yönete
   - [Eksik ışıkları tamamla](#eksik-ışıkları-tamamla)
 - [Otomasyonlar, scriptler ve sesli asistan](#otomasyonlar-scriptler-ve-sesli-asistan)
 - [Kart seçenekleri](#kart-seçenekleri)
+- [Lemur ailesi](#lemur-ailesi)
 
 ## Kurulum
 
@@ -309,6 +310,16 @@ Ortak veriler (oda sekmeleri, favoriler, oda seçimleri, gizlenen efektler, son 
 ## Efektler nasıl gruplanıyor?
 
 Panelde henüz düzenlenmemiş bir odada efekt adları sadeleştirilip küçük bir eş anlamlılar tablosuyla eşleştirilir, sonra anahtar kelimelere göre Doğa, Gök & Uzay, Ev Hali, Renk & Sanat, Eğlence ve Diğer kategorilerine ayrılır. Yaygın sahne adlarının Türkçe karşılıkları ve renkleri hazır bir tablodan gelir. "off", "none", "stop" ya da "solid" gibi adlar *efekt yok* sayılır.
+
+## Lemur ailesi
+
+Üçü de birbirinden bağımsız kurulur; birlikte kurulunca birbirini tamamlar.
+
+| | Ne yapar | Kurulum |
+|---|---|---|
+| **[Lemur Home Dashboard](https://github.com/mendebur-lemur/lemur-home-dashboard)** | Tek satırla kurulan, kendi yönetim paneli olan hazır tablet panosu. Odalar, ışıklar, senaryolar, iklim ve medya evdeki alanlardan kendiliğinden gelir. Kuruluysa panonun üst şeridine Efektler düğmesi gelir, senaryo bölümlerine efekt düğmeleri eklenebilir. | [![HACS'ta aç](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-home-dashboard&category=integration) |
+| **Lemur Light Effect Card** (bu depo) | Efekt destekleyen bütün ışıkları oda oda yöneten efekt ekranı. | [![HACS'ta aç](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-light-effect-card&category=integration) |
+| **[Lemur Halo Cards](https://github.com/mendebur-lemur/lemur-halo-cards)** | Durumu renkli haleyle anlatan sekiz kart: iklim, sensör, hava, süpürge, enerji, güvenlik, ışık ve kilit. | [![HACS'ta aç](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-halo-cards&category=plugin) |
 
 ## Geliştirme
 

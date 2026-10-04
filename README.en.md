@@ -39,6 +39,7 @@ A Home Assistant dashboard card for light effects, white tones and colors that w
   - [Fill in the missing lights](#fill-in-the-missing-lights)
 - [Automations, scripts and voice assistants](#automations-scripts-and-voice-assistants)
 - [Card options](#card-options)
+- [The Lemur family](#the-lemur-family)
 
 ## Install
 
@@ -309,6 +310,16 @@ The integration stores the shared data (room tabs, favorites, room selections, h
 ## How effects are grouped
 
 In a room you have not arranged in the panel yet, names are normalized and matched against a small synonym table, then sorted into Nature, Sky & Space, Home, Color & Art, Fun and Other using keyword rules. For common scene names, a curated table adds Turkish names and colors. Effects named like "off", "none", "stop" or "solid" are treated as *no effect*.
+
+## The Lemur family
+
+Each one installs on its own; installed together, they work hand in hand.
+
+| | What it does | Install |
+|---|---|---|
+| **[Lemur Home Dashboard](https://github.com/mendebur-lemur/lemur-home-dashboard)** | A ready-made tablet dashboard set up with one line, with its own admin panel. Rooms, lights, scenes, climate and media come from your areas on their own. When both are installed, the dashboard gets an Effects button in its top bar and effect buttons for scene sections. | [![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-home-dashboard&category=integration) |
+| **Lemur Light Effect Card** (this repository) | An effect screen that manages every effect-capable light room by room. | [![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-light-effect-card&category=integration) |
+| **[Lemur Halo Cards](https://github.com/mendebur-lemur/lemur-halo-cards)** | Eight cards that tell the state with a coloured halo: climate, sensor, air, vacuum, energy, security, light and lock. | [![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-halo-cards&category=plugin) |
 
 ## Development
 

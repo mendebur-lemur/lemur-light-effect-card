@@ -12,7 +12,7 @@ pcss = mincss("panel.css")
 parts = [(src / f).read_text() for f in ("icons.js", "icons2.js", "govee.js", "card.js", "editor.js", "presets.js", "panel.js", "i18n_more.js")]
 body = "\n".join(parts).replace("const CARD_VERSION = '0.1.0';", f"const CARD_VERSION = '{version}';")
 heal = (src / "heal.js").read_text().replace("__VERSION__", version)
-out = f"""/*! Lemur Light Effect Card v{version} | PolyForm-Noncommercial-1.0.0 */
+out = f"""/*! Lemur Light Effect Card v{version} | GPL-3.0 */
 (() => {{
 {heal}
 if (customElements.get('lemur-light-effect-card')) return;

@@ -330,8 +330,12 @@ pytest                    # entegrasyon testleri (pytest-homeassistant-custom-co
 
 ## Lisans
 
-Kod **[PolyForm Noncommercial 1.0.0](LICENSE)** lisansıyla yayınlanır: kişisel, ev, eğitim ve kâr amacı gütmeyen kullanım serbest; **ticari kullanım yasak**. Kodu kopyalayan, değiştiren ya da üzerine geliştirip paylaşan herkes lisans metnini ve `Required Notice` satırını (mendeburlemur ve bu deponun bağlantısı) korumak zorundadır.
+Kod **[GPL-3.0](LICENSE)** lisansıyla ve [NOTICE.md](NOTICE.md) dosyasındaki ek atıf koşuluyla yayınlanır:
 
-Görseller, videolar ve dokümanlar **[CC BY-NC-SA 4.0](LICENSE-DOCS.md)** lisansıyla yayınlanır: kaynak göstererek, ticari olmayan amaçla ve aynı lisansla paylaşılabilir.
+- Herkes kullanabilir, değiştirebilir ve paylaşabilir.
+- Bu kodu kullanan ya da üzerine geliştiren her proje **kendi kaynak kodunu da aynı lisansla açmak** zorundadır; kapalı kaynak bir ürüne dönüştürülemez.
+- Kopyalar ve geliştirilmiş sürümler şu atıf satırını korumak zorundadır: *Based on Lemur Light Effect Card by mendeburlemur — https://github.com/mendebur-lemur/lemur-light-effect-card*
 
-Ticari kullanım için izin istersen [bir issue aç](https://github.com/mendebur-lemur/lemur-light-effect-card/issues). v1.5.0 ve önceki sürümler MIT lisansıyla yayınlanmıştı; o sürümler için MIT geçerli kalır.
+Görseller, videolar ve dokümanlar **[CC BY-NC-SA 4.0](docs/LICENSE.md)** lisansıyla yayınlanır: kaynak göstererek, ticari olmayan amaçla ve aynı lisansla paylaşılabilir.
+
+v1.5.0 ve önceki sürümler MIT lisansıyla yayınlanmıştı; o sürümler için MIT geçerli kalır.

@@ -11,8 +11,10 @@ if (!window.__LEMUR_ERRH) {
   window.addEventListener('unhandledrejection', e => { const r = e.reason; addErr((r && r.message) || r, r && r.stack); });
 }
 const ICON_URL = (() => { try { const el = document.currentScript || [...document.querySelectorAll('script[src*="lemur-light-effect-card"]')].pop(), s = el && el.src; if (s) return s.replace(/[^/?#]*([?#].*)?$/, '') + 'lemur-icons.json?v=' + CARD_VERSION; } catch (e) {} return '/lemur_light_effects/lemur-icons.json?v=' + CARD_VERSION; })();
+// only accept well-formed <svg>...</svg> strings with no script/handler content, so a tampered/compromised icon file can't inject executable markup
+const sanitizeIcon3 = d => { const o = {}; if (d && typeof d === 'object') for (const k in d) { const v = d[k]; if (typeof v === 'string' && /^<svg[^>]*>[\s\S]*<\/svg>$/i.test(v) && !/<script|on\w+\s*=|javascript:/i.test(v)) o[k] = v; } return o; };
 const ICON3_READY = (window.__LEMUR_ICON3 ? Promise.resolve(window.__LEMUR_ICON3) : fetch(ICON_URL).then(r => r.ok ? r.json() : {})).catch(() => ({})).then(d => {
-  ICON3 = d && typeof d === 'object' ? d : {}; ICON3_OK = true;
+  ICON3 = sanitizeIcon3(d); ICON3_OK = true;
   try { STORE.v++; STORE._emit(); } catch (e) {}
   window.dispatchEvent(new Event('lemur-icons'));
 });

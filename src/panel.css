@@ -383,3 +383,27 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .srow.upd .t small b{display:inline;font-size:inherit}
 .srow.upd .uok{color:#7FD39B}.srow.upd .unew{color:var(--ac);font-weight:600}.srow.upd .uerr{color:var(--red)}
 .srow.upd a.btn{text-decoration:none}
+/* what's new */
+.news .nv{background:var(--s1);border:1px solid var(--ln);border-radius:var(--r1);padding:14px 18px;margin:10px 0}
+.news .nv.cur{border-color:rgba(240,169,59,.45);background:linear-gradient(180deg,rgba(240,169,59,.08),transparent 70%),var(--s1)}
+.news .nvh{font-weight:600;font-size:14px;margin-bottom:6px}
+.news .nv:not(.cur) .nvh{color:var(--mu);font-size:13px}
+.news ul{margin:0;padding-left:18px;color:var(--tx2);line-height:1.5;font-size:13.5px}
+.news li+li{margin-top:6px}
+.news .lnk{background:none;border:0;color:var(--ac);font:inherit;font-size:13.5px;cursor:pointer;padding:4px 2px}
+.news .lnk:hover{text-decoration:underline}
+.news .dbtns a.btn,.rep .dbtns a.btn{text-decoration:none}
+.dbtns .grow{flex:1}
+/* report a problem */
+.rep .rl{display:block;font-weight:600;font-size:13.5px;margin:12px 2px 6px}
+.rep .rl small{display:block;font-weight:400;color:var(--mu);font-size:12.5px;margin-top:2px}
+.rep textarea{width:100%;box-sizing:border-box;min-height:110px;resize:vertical;background:var(--s2);border:1px solid var(--ln2);border-radius:10px;padding:10px 12px;color:var(--tx);font:inherit;font-size:14px;line-height:1.45;outline:0}
+.rep textarea:focus{border-color:var(--acl)}
+.rep .rinfo{background:var(--s1);border:1px solid var(--ln);border-radius:var(--r1);padding:8px 14px;font-size:13px}
+.rep .rinfo div{display:flex;gap:12px;padding:5px 0;border-bottom:1px solid var(--ln)}
+.rep .rinfo div:last-child{border-bottom:0}
+.rep .rinfo span{color:var(--mu);flex:none;width:150px}
+.rep .rinfo b{font-weight:500;min-width:0;overflow-wrap:anywhere}
+.rep .rsw{margin:10px 0 0}
+.rep .rnote{color:var(--mu);font-size:12.5px;margin:10px 2px 0}
+@media (max-width:560px){.rep .rinfo div{flex-direction:column;gap:2px}.rep .rinfo span{width:auto}}

@@ -19,7 +19,7 @@ A Home Assistant dashboard card for light effects, white tones and colors that w
 - **Create your own effects.** Drag lights into an effect and choose what each opens: lights without the effect switch to a colour or white, any light can play another effect from its own list.
 - **Control panel in the sidebar** (*Lemur Light Effect Card*): arrange rooms, lights, tabs and effects by drag and drop.
 - **Plenty of settings:** tile size, colour or simple icons, black (OLED) or theme background, night mode, start tab, room icons and more. Effects and favorites become Home Assistant scripts in one click.
-- **Automations and voice assistants:** an effect select entity per room and the `lemur_light_effects.play` action.
+- **Voice commands and automations:** say "play the aurora effect in the living room" to Assist; there is also an effect select entity per room and the `lemur_light_effects.play` action.
 - Turkish, English, German, Spanish and French.
 
 ## Contents
@@ -227,6 +227,8 @@ The **Settings** window at the bottom left applies to every card at home:
 - *Night mode:* a brightness ceiling between two times (effects, Stop and the brightness bar never go above it).
 - *Rooms and lights:* show Home Assistant light groups, the minimum number of effects a light needs.
 - *Version and updates:* the installed version; check for a new one, download it with HACS and restart Home Assistant.
+- *What's new:* after an update the panel shows what the new version brings once; later it opens from the **What's new** link in the Version row.
+- *Help → Report a problem:* you write what happened; a GitHub issue opens with the version, browser, screen, light counts, light integrations (can be switched off) and recent errors filled in. Nothing personal such as room or light names is added. No GitHub account? Copy the text instead.
 - *Backup:* download the whole setup (rooms, tabs, favorites, your own effects, settings, icons) as one file and restore it when you like.
 - *Reset everything:* after a confirmation, deletes the whole layout, tabs, favorites, icons and your own effects.
 
@@ -283,6 +285,17 @@ data:
 ```
 
 `lemur_light_effects.list_effects` (returns a response) gives the effects a room can play and the one playing now. The actions behave like the card: the lights chosen for the room, hidden effects, night mode and the "light that is off comes on at" setting all apply.
+
+### Voice commands (Assist)
+
+Once installed, Home Assistant's own voice assistant (Assist) knows the effects, with no setup or YAML. It works from the Assist button in the app, on voice satellites and by typing. The sentence must contain the word "effect", so your usual light commands keep working.
+
+- "Play the aurora effect in the living room" (start, turn on and run work too)
+- "Start the candle effect": with no room, it plays in the room of the voice satellite that heard it, or else in the whole home.
+- "Stop the effects", "Stop the effects in the bedroom"
+- Turkish: "Salonda kuzey ışıkları efektini aç", "Salonda efekti durdur"
+
+The name the card shows, the name the light reports and the names of your own effects are all recognised. If the name is not exact, the closest effect is picked. Voice commands behave like the card: the lights chosen for the room, filling in lights and night mode apply.
 
 ## Card options
 

@@ -1,7 +1,12 @@
 {
   "domain": "lemur_light_effects",
   "name": "Lemur Light Effect Card",
-  "codeowners": ["@mendebur-lemur"],
+  "after_dependencies": [
+    "conversation"
+  ],
+  "codeowners": [
+    "@mendebur-lemur"
+  ],
   "config_flow": true,
   "dependencies": [
     "http",
@@ -15,5 +20,5 @@
   "issue_tracker": "https://github.com/mendebur-lemur/lemur-light-effect-card/issues",
   "requirements": [],
   "single_config_entry": true,
-  "version": "1.5.0"
+  "version": "1.6.0"
 }

@@ -29,6 +29,7 @@ from homeassistant.helpers.storage import Store
 
 from . import engine
 from .runtime import Runtime
+from .voice import async_setup_voice
 from .const import (
     CARD_FILE,
     DOMAIN,
@@ -158,6 +159,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             config={},
         )
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    data.voice = await async_setup_voice(hass, data)
     return True
 
 
@@ -166,6 +168,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     data = hass.data.pop(DOMAIN, None)
     if data is not None:
         data.runtime.stop()
+        if getattr(data, "voice", None) is not None:
+            data.voice.stop()
     async_remove_panel(hass, PANEL_URL)
     return ok
 

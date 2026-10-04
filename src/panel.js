@@ -49,6 +49,15 @@ const P_TXT = {
     save: 'Kaydet', del: 'Sil', bri: 'Parlaklık', ceNameErr: 'Bir ad yaz', ceSaved: '“{x}” kaydedildi', ceHint: 'Kartta “Efektlerim” sekmesinde görünür.',
     m_auto: 'Otomatik', m_fx: 'Efekt', m_color: 'Renk', m_white: 'Beyaz', m_off: 'Kapat', m_skip: 'Dokunma', supBase: 'temel efekti oynatır', noBase: 'temel efekt yok', autoIs: 'otomatik: {x}',
     upd: 'Yeni sürüm yüklendi ({v}). Ekranı yenile.', reload: 'Yenile',
+    newsT: 'Yenilikler', newsV: 'v{v} ile gelenler', newsOld: 'Önceki sürümler', newsAll: 'Bütün notlar GitHub\'da', newsOk: 'Tamam', newsLink: 'Yenilikler',
+    sHelp: 'Yardım', repT: 'Sorun bildir', repS: 'Sürüm ve cihaz bilgisiyle GitHub\'da kayıt açar; ne olduğunu yazman yeter',
+    repQ: 'Ne oldu?', repPh: 'Ne yaptın, ne bekliyordun, ne oldu? Örnek: Yatak odasında Kuzey Işıkları\'na basınca abajur yanmıyor.',
+    repInfo: 'Kayda eklenecek bilgiler', repInfoS: 'Kişisel bilgi yok: oda ve ışık adları, adresin ya da hesabın eklenmez.',
+    repPlat: 'Işık entegrasyonlarını ekle', repPlatS: 'Hangi entegrasyondan kaç ışık olduğu; sorunu bulmayı çok kolaylaştırır',
+    repGh: 'GitHub\'da aç', repCopy: 'Metni kopyala', repCopied: 'Kopyalandı', repNoGh: 'GitHub hesabın yoksa metni kopyalayıp geliştiriciye ilet.',
+    rCard: 'Kart', rInt: 'Entegrasyon', rHa: 'Home Assistant', rBrowser: 'Tarayıcı', rScreen: 'Ekran', rLang: 'Dil', rTouch: 'dokunmatik', rNoTouch: 'dokunmatik değil', rApp: 'HA uygulaması',
+    rRooms: 'Odalar', rLights: 'Işıklar', rFx: 'efektli', rMine: 'Kendi efektler', rFill: 'Tamamlanan efektler', rPlat: 'Işık entegrasyonları', rErr: 'Son hatalar', rNoErr: 'yok',
+    rWhat: 'Ne oldu?', rInfoH: 'Bilgiler',
     sVer: 'Sürüm ve güncelleme', updT: 'Sürüm', updInst: 'Yüklü: v{v}', updCheck: 'Güncellemeleri denetle', updChecking: 'Denetleniyor…', updOk: 'güncel', updAt: 'son kontrol {t}', updNew: 'v{v} hazır', updNotes: 'Yenilikler', updGo: 'Güncelle', updGh: 'GitHub’da aç', updIng: 'v{v} indiriliyor…', updDone: 'v{v} indirildi. Home Assistant yeniden başlayınca devreye girer.', updRestart: 'Yeniden başlat', updAsk: 'Home Assistant yeniden başlasın mı? Bir iki dakika ışık kontrolü ve otomasyonlar durur.', updYes: 'Evet, yeniden başlat', updRest: 'Yeniden başlatılıyor… Açılınca sayfa kendiliğinden yenilenir.', updErr: 'Denetlenemedi: {e}', updAgain: 'Tekrar denetle', updNoHacs: 'HACS ile kurulmadığı için buradan yüklenemiyor',
     pvB: 'Önizleme', pvT: 'Açıkken tıkladığın efekt ışıklarda hemen çalar', pvOn: 'Önizleme açık', pvWhere: 'tıkladığın efekt şu odanın ışıklarında çalar:', pvNow: 'şu an: {x}', pvBack: 'Eski haline dön', pvKeep: 'Böyle bırak', pvBackT: 'Işıklar önizlemeden önceki haline döndü', pvKeepT: 'Son efekt çalmaya devam ediyor', pvErr: 'Önizleme çalışmadı: {e}', pvNoRoom: 'Önizleme için bir oda seç',
     fade: 'Geçiş süresi', fadeS: 'Renk, beyaz, parlaklık ve kapatma yumuşak geçsin (destekleyen ışıklarda)', fadeNo: 'Yok',
@@ -109,6 +118,15 @@ const P_TXT = {
     save: 'Save', del: 'Delete', bri: 'Brightness', ceNameErr: 'Type a name', ceSaved: '“{x}” saved', ceHint: 'It shows in the card under “My effects”.',
     m_auto: 'Automatic', m_fx: 'Effect', m_color: 'Colour', m_white: 'White', m_off: 'Turn off', m_skip: 'Leave as is', supBase: 'plays the base effect', noBase: 'no base effect', autoIs: 'automatic: {x}',
     upd: 'A new version is installed ({v}). Reload the page.', reload: 'Reload',
+    newsT: 'What\'s new', newsV: 'New in v{v}', newsOld: 'Earlier versions', newsAll: 'All notes on GitHub', newsOk: 'OK', newsLink: 'What\'s new',
+    sHelp: 'Help', repT: 'Report a problem', repS: 'Opens a GitHub issue with the version and device details; you only write what happened',
+    repQ: 'What happened?', repPh: 'What did you do, what did you expect, what happened? Example: tapping Aurora in the bedroom doesn\'t turn on the bedside lamp.',
+    repInfo: 'Details added to the issue', repInfoS: 'Nothing personal: no room or light names, address or account.',
+    repPlat: 'Add the light integrations', repPlatS: 'How many lights come from which integration; makes the problem much easier to find',
+    repGh: 'Open on GitHub', repCopy: 'Copy text', repCopied: 'Copied', repNoGh: 'No GitHub account? Copy the text and send it to the developer.',
+    rCard: 'Card', rInt: 'Integration', rHa: 'Home Assistant', rBrowser: 'Browser', rScreen: 'Screen', rLang: 'Language', rTouch: 'touch', rNoTouch: 'no touch', rApp: 'HA app',
+    rRooms: 'Rooms', rLights: 'Lights', rFx: 'with effects', rMine: 'Own effects', rFill: 'Filled-in effects', rPlat: 'Light integrations', rErr: 'Recent errors', rNoErr: 'none',
+    rWhat: 'What happened?', rInfoH: 'Details',
     sVer: 'Version and updates', updT: 'Version', updInst: 'Installed: v{v}', updCheck: 'Check for updates', updChecking: 'Checking…', updOk: 'up to date', updAt: 'checked {t}', updNew: 'v{v} is ready', updNotes: 'What’s new', updGo: 'Update', updGh: 'Open on GitHub', updIng: 'Downloading v{v}…', updDone: 'v{v} is downloaded. It takes effect when Home Assistant restarts.', updRestart: 'Restart', updAsk: 'Restart Home Assistant? Light control and automations stop for a minute or two.', updYes: 'Yes, restart', updRest: 'Restarting… The page reloads by itself when it is back.', updErr: 'Could not check: {e}', updAgain: 'Check again', updNoHacs: 'Not installed with HACS, so it cannot be installed from here',
     pvB: 'Preview', pvT: 'While it is on, the effect you click plays on the lights right away', pvOn: 'Preview on', pvWhere: 'the effect you click plays on the lights of:', pvNow: 'now: {x}', pvBack: 'Put lights back', pvKeep: 'Keep it', pvBackT: 'The lights are back as they were before the preview', pvKeepT: 'The last effect keeps playing', pvErr: 'Preview did not work: {e}', pvNoRoom: 'Pick a room for the preview',
     fade: 'Transition', fadeS: 'Colour, white, brightness and turning off change softly (lights that support it)', fadeNo: 'None',
@@ -124,6 +142,8 @@ const P_TXT = {
   }
 };
 const PI = {
+  help: '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.6.3-1 .8-1 1.5v.6"/><path d="M12 16.9h.01"/>',
+  ext: '<path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/>',
   home: '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',
   homes: '<path d="M2 11l7-5.5 7 5.5"/><path d="M4 10v9h10v-9"/><path d="M13 6.5l3-2.5 6 5v10h-5"/>',
   inbox: '<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 2h6l1-2h5"/>',
@@ -209,6 +229,7 @@ class LemurLightEffectsPanel extends HTMLElement {
   _dataSig() { const d = STORE.d; return JSON.stringify([d.settings, d.tabs, d.icons, d.favorites, d.hidden, STORE.mode, ICON3_OK]); }
   _later() {
     if (this._dd || this._ce || (this.shadowRoot && this.shadowRoot.querySelector('.pop'))) { this._pend = true; return; }
+    if (this._view === 'report') { this._repInfoPaint(); return; }
     this._render();
   }
   _l() { const s = this._set().language; if (s && I18N[s]) return s; const h = this._hass; return pickLang((h && ((h.locale && h.locale.language) || h.language)) || 'en'); }
@@ -438,6 +459,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     if (!this._hass) return;
     if (!this.shadowRoot) this.attachShadow({ mode: 'open' });
     const R = this.shadowRoot, t = (k, v) => this._t(k, v), S = this._set();
+    if (!this._newsChk && STORE.mode) { this._newsChk = true; this._newsAuto(); }
     this._lastSig = this._sig(); this._lastData = this._dataSig(); this._pend = false;
     const keep = [...R.querySelectorAll('.grid,.tscroll,.rooms')].map(el => [el.scrollTop, el.scrollLeft]), od = R.querySelector('.dlg'), dlgTop = od ? od.scrollTop : 0, dlgView = this._dlgView;
     const ae = R.activeElement, af = ae && ae.id, ss = ae && ae.selectionStart;
@@ -531,7 +553,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       ${pv ? `<div class="pvbar"><span class="pvd"></span><span class="tx"><b>${esc(t('pvOn'))}</b> · ${esc(t('pvWhere'))} <b>${esc(this._roomName(pv.room))}</b>${pvU ? ` · ${esc(t('pvNow', { x: this._label(pvU) }))}` : ''}</span><button class="btn sm" data-pvend="1">${pi('undo', 's16')}${esc(t('pvBack'))}</button><button class="btn sm" data-pvend="0">${esc(t('pvKeep'))}</button></div>` : ''}
       ${STORE.mode === 'local' ? `<div class="warn">${esc(t('local'))}</div>` : ''}${STORE.stale ? `<div class="warn upd"><span>${esc(t('upd', { v: STORE.stale }))}</span><button class="btn sm pri" data-reload>${esc(t('reload'))}</button></div>` : ''}
       <div class="rblock">${rooms}${strip}</div><div class="body">${body}</div>${selb}
-      ${this._view === 'settings' ? this._settingsHtml() : this._view === 'reset' ? this._resetHtml() : this._view === 'restore' ? this._restoreHtml() : ''}
+      ${this._view === 'settings' ? this._settingsHtml() : this._view === 'reset' ? this._resetHtml() : this._view === 'restore' ? this._restoreHtml() : this._view === 'news' ? this._newsHtml() : this._view === 'report' ? this._reportHtml() : ''}
       <input type="file" id="icf" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden><input type="file" id="bkf" accept="application/json,.json" hidden>
       <div class="toast"><span></span><button data-undo>${esc(t('undo'))}</button></div></div>`;
     if (customElements.get('ha-menu-button')) {
@@ -589,6 +611,8 @@ class LemurLightEffectsPanel extends HTMLElement {
       <div class="sh2">${esc(t('sRooms'))}</div>
       ${row(t('groups'), t('groupsS'), sw('include_groups', false))}
       <div class="srow"><div class="t"><b>${esc(t('thr'))}</b><small>${esc(t('thrS'))}</small></div><div class="segs">${[1, 2, 3, 5, 10].map(n => `<button class="${min === n ? 'on' : ''}" data-min="${n}">${esc(t('thrN', { n }))}</button>`).join('')}</div></div>
+      <div class="sh2">${esc(t('sHelp'))}</div>
+      ${row(t('repT'), t('repS'), `<button class="btn" data-report>${pi('help', 's16')}${esc(t('repT'))}</button>`)}
       <div class="sh2">${esc(t('sBackup'))}</div>
       ${row(t('bkDown'), t('bkDownS'), `<button class="btn" data-bkdown>${pi('download', 's16')}${esc(t('bkDown'))}</button>`)}
       ${row(t('bkUp'), t('bkUpS'), `<button class="btn" data-bkup>${pi('upload', 's16')}${esc(t('bkUp'))}</button>`)}
@@ -600,7 +624,7 @@ class LemurLightEffectsPanel extends HTMLElement {
   _updRow() {
     const t = (k, v) => this._t(k, v), U = this._upd || { st: 'idle' }, cur = U.cur || CARD_VERSION;
     const notes = U.url ? ` · <a href="${esc(U.url)}" target="_blank" rel="noopener">${esc(t('updNotes'))}</a>` : '';
-    let sub = esc(t('updInst', { v: cur })), ctl = `<button class="btn" data-updcheck>${pi('reset', 's16')}${esc(t('updCheck'))}</button>`;
+    let sub = esc(t('updInst', { v: cur })) + ` · <a href="#" data-news>${esc(t('newsLink'))}</a>`, ctl = `<button class="btn" data-updcheck>${pi('reset', 's16')}${esc(t('updCheck'))}</button>`;
     if (U.st === 'checking') ctl = `<button class="btn" disabled>${esc(t('updChecking'))}</button>`;
     else if (U.st === 'ok') { sub += ` · <span class="uok">✓ ${esc(t('updOk'))}</span> · ${esc(t('updAt', { t: U.at }))}`; ctl = `<button class="btn" data-updcheck>${pi('reset', 's16')}${esc(t('updAgain'))}</button>`; }
     else if (U.st === 'new') { sub += ` · <b class="unew">${esc(t('updNew', { v: U.latest }))}</b>${notes}${U.ent ? '' : `<br>${esc(t('updNoHacs'))}`}`; ctl = U.ent ? `<button class="btn pri" data-updgo>${pi('download', 's16')}${esc(t('updGo'))}</button>` : (U.url ? `<a class="btn" href="${esc(U.url)}" target="_blank" rel="noopener">${esc(t('updGh'))}</a>` : ''); }
@@ -662,6 +686,95 @@ class LemurLightEffectsPanel extends HTMLElement {
       this._updT = setTimeout(tick, 1000);
     };
     tick();
+  }
+
+  // ---- what's new: shown once after an update, and from Settings → Version ----
+  _newsAuto() {
+    let seen = null; try { seen = localStorage.getItem('lemur-news'); } catch (e) { return; }
+    if (seen === CARD_VERSION) return;
+    const mark = () => { try { localStorage.setItem('lemur-news', CARD_VERSION); } catch (e) {} };
+    const d = STORE.d || {}, used = (d.settings && Object.keys(d.settings).length) || (d.tabs && Object.keys(d.tabs).length) || (d.favorites || []).length;
+    if (!seen && !used) return mark();                       // a fresh install has nothing to catch up on
+    if (!CHANGES.length || CHANGES[0].v !== CARD_VERSION) return mark();
+    if ((this._view && this._view !== 'edit') || this._fill || this._ce) return;   // something else is open: next time
+    this._newsFrom = null; this._newsAll = false; this._view = 'news';
+  }
+  _newsClose() { try { localStorage.setItem('lemur-news', CARD_VERSION); } catch (e) {} this._view = this._newsFrom || 'edit'; this._newsFrom = null; this._render(); }
+  _newsHtml() {
+    const t = (k, v) => esc(this._t(k, v)), L = this._l(), lines = c => c[L] || c.en || [];
+    const one = (c, open) => `<div class="nv${open ? ' cur' : ''}"><div class="nvh">${t('newsV', { v: c.v })}</div><ul>${lines(c).map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`;
+    const rest = CHANGES.slice(1);
+    return `<div class="modal" data-closenews><div class="dlg sm news">
+      <div class="dh"><span class="si">${pi('sparkles', 's20')}</span><b>${t('newsT')}</b><span class="grow"></span><button class="btn ic" data-closenews title="${t('close')}">${pi('x', 's16')}</button></div>
+      ${CHANGES.length ? one(CHANGES[0], true) : ''}
+      ${rest.length ? (this._newsAll ? rest.map(c => one(c, false)).join('') : `<button class="lnk" data-newsall>${t('newsOld')} ›</button>`) : ''}
+      <div class="dbtns"><a class="btn" href="https://github.com/mendebur-lemur/lemur-light-effect-card/releases" target="_blank" rel="noopener">${pi('ext', 's16')}${t('newsAll')}</a><span class="grow"></span><button class="btn pri" data-closenews>${t('newsOk')}</button></div>
+    </div></div>`;
+  }
+
+  // ---- report a problem: a ready GitHub issue with the version and device details, nothing personal ----
+  async _reportOpen() {
+    this._rep = { text: '', plat: true, iv: null, copied: false };
+    this._view = 'report'; this._render();
+    try { this._rep.iv = (await this._hass.connection.sendMessagePromise({ type: 'lemur_light_effects/info' })).version; } catch (e) {}
+    if (this._view === 'report') this._repInfoPaint();
+  }
+  _repInfo() {
+    const t = k => this._t(k), H = this._hass || {}, S = this._set(), R = this._rep || {};
+    const ua = navigator.userAgent || '', app = /Home ?Assistant\//i.test(ua);
+    const br = (/Edg\/(\d+)/.exec(ua) && 'Edge ' + /Edg\/(\d+)/.exec(ua)[1]) || (/Firefox\/(\d+)/.exec(ua) && 'Firefox ' + /Firefox\/(\d+)/.exec(ua)[1]) || (/Chrome\/(\d+)/.exec(ua) && 'Chrome ' + /Chrome\/(\d+)/.exec(ua)[1]) || (/Version\/([\d.]+).*Safari/.exec(ua) && 'Safari ' + /Version\/([\d.]+)/.exec(ua)[1]) || '?';
+    const os = /Android/.test(ua) ? 'Android' : /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? 'iOS' : /Windows/.test(ua) ? 'Windows' : /Mac OS X/.test(ua) ? 'macOS' : /Linux/.test(ua) ? 'Linux' : '?';
+    const touch = (navigator.maxTouchPoints || 0) > 0;
+    const st = H.states || {}, E = H.entities || {}, D = H.devices || {};
+    const lights = Object.keys(st).filter(id => id.startsWith('light.'));
+    const fx = lights.filter(id => (st[id].attributes.effect_list || []).length).length;
+    const rooms = new Set(lights.map(id => { const e = E[id]; return e && (e.area_id || (e.device_id && D[e.device_id] && D[e.device_id].area_id)); }).filter(Boolean));
+    const plat = {}; lights.forEach(id => { const e = (H.entities || {})[id], p = (e && e.platform) || '?'; plat[p] = (plat[p] || 0) + 1; });
+    const err = (window.__LEMUR_ERR || []).slice(-5);
+    const out = [
+      [t('rCard'), 'v' + CARD_VERSION + (R.iv && R.iv !== CARD_VERSION ? ` · ${t('rInt')} v${R.iv}` : '')],
+      [t('rHa'), (H.config && H.config.version) || '?'],
+      [t('rBrowser'), `${app ? t('rApp') + ' · ' : ''}${br} · ${os}`],
+      [t('rScreen'), `${window.innerWidth}×${window.innerHeight} · ${touch ? t('rTouch') : t('rNoTouch')}`],
+      [t('rLang'), `${(H.locale && H.locale.language) || H.language || '?'} → ${this._l()}`],
+      [t('rRooms'), String(rooms.size)],
+      [t('rLights'), `${lights.length} (${fx} ${t('rFx')})`],
+      [t('rMine'), String(customList(S).length)],
+      [t('rFill'), String(Object.keys(S.fill || {}).length)],
+    ];
+    if (R.plat) out.push([t('rPlat'), Object.entries(plat).sort((a, b) => b[1] - a[1]).map(([p, n]) => `${p} ${n}`).join(', ') || '–']);
+    out.push([t('rErr'), err.length ? err.join(' | ') : t('rNoErr')]);
+    return out;
+  }
+  _repBody() {
+    const t = k => this._t(k), R = this._rep || {};
+    return `**${t('rWhat')}**\n\n${(R.text || '').trim() || '…'}\n\n**${t('rInfoH')}**\n\n` + this._repInfo().map(([k, v]) => `- ${k}: ${v}`).join('\n');
+  }
+  _repInfoPaint() { const el = this.shadowRoot && this.shadowRoot.getElementById('repinfo'); if (el) el.innerHTML = this._repInfo().map(([k, v]) => `<div><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join(''); }
+  _reportHtml() {
+    const t = (k, v) => esc(this._t(k, v)), R = this._rep || {};
+    return `<div class="modal" data-closerep><div class="dlg sm rep">
+      <div class="dh"><span class="si">${pi('help', 's20')}</span><b>${t('repT')}</b><span class="grow"></span><button class="btn ic" data-closerep title="${t('close')}">${pi('x', 's16')}</button></div>
+      <label class="rl" for="repq">${t('repQ')}</label>
+      <textarea id="repq" rows="5" placeholder="${t('repPh')}">${esc(R.text || '')}</textarea>
+      <div class="rl">${t('repInfo')}<small>${t('repInfoS')}</small></div>
+      <div class="rinfo" id="repinfo">${this._repInfo().map(([k, v]) => `<div><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('')}</div>
+      <div class="srow rsw"><div class="t"><b>${t('repPlat')}</b><small>${t('repPlatS')}</small></div><button class="swt ${R.plat ? 'on' : ''}" data-repplat role="switch" aria-checked="${!!R.plat}"></button></div>
+      <p class="rnote">${t('repNoGh')}</p>
+      <div class="dbtns"><button class="btn" data-repcopy>${pi('copy', 's16')}${R.copied ? t('repCopied') : t('repCopy')}</button><span class="grow"></span><button class="btn pri" data-repgo>${pi('ext', 's16')}${t('repGh')}</button></div>
+    </div></div>`;
+  }
+  _repGo() {
+    const R = this._rep || {}, first = (R.text || '').trim().split('\n')[0].slice(0, 70);
+    const title = `[v${CARD_VERSION}] ${first || this._t('repT')}`;
+    let body = this._repBody(); if (body.length > 6000) body = body.slice(0, 6000) + '\n…';
+    window.open('https://github.com/mendebur-lemur/lemur-light-effect-card/issues/new?title=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(body), '_blank', 'noopener');
+  }
+  async _repCopy() {
+    const txt = `[v${CARD_VERSION}] ${this._t('repT')}\n\n` + this._repBody();
+    let ok = false; try { await navigator.clipboard.writeText(txt); ok = true; } catch (e) {}
+    if (!ok) { const ta = document.createElement('textarea'); ta.value = txt; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); try { ok = document.execCommand('copy'); } catch (e) {} ta.remove(); }
+    if (ok && this._rep) { this._rep.copied = true; this._render(); }
   }
 
   _restoreHtml() {
@@ -1072,7 +1185,7 @@ class LemurLightEffectsPanel extends HTMLElement {
   _key(e) {
     if (!this.isConnected || !this.shadowRoot) return;
     const tg = e.composedPath()[0], typing = tg && /INPUT|TEXTAREA/.test(tg.tagName);
-    if (e.key === 'Escape') { if (this.shadowRoot.querySelector('.pop')) return this._closePop(); if (this._view === 'reset' || this._view === 'restore') { this._bk = null; this._view = 'settings'; return this._render(); } if (this._view === 'settings') { this._view = 'edit'; return this._render(); } if (this._pick.size) { this._pick.clear(); return this._render(); } }
+    if (e.key === 'Escape') { if (this.shadowRoot.querySelector('.pop')) return this._closePop(); if (this._view === 'reset' || this._view === 'restore') { this._bk = null; this._view = 'settings'; return this._render(); } if (this._view === 'news') return this._newsClose(); if (this._view === 'report') { this._rep = null; this._view = 'settings'; return this._render(); } if (this._view === 'settings') { this._view = 'edit'; return this._render(); } if (this._pick.size) { this._pick.clear(); return this._render(); } }
     if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && !typing && this._undo.length) { e.preventDefault(); this._undoIt(); }
   }
 
@@ -1107,6 +1220,14 @@ class LemurLightEffectsPanel extends HTMLElement {
       if ((x = g('[data-closereset]')) && (x.classList.contains('btn') || !g('.dlg'))) { this._view = 'settings'; return this._render(); }
       if (g('[data-resetyes]')) return this._resetAll();
       if (g('[data-reload]')) { try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.update())); } catch (e) {} Promise.resolve(window.__LEMUR_HEAL && window.__LEMUR_HEAL()).finally(() => setTimeout(() => location.reload(), 150)); return; }
+      if (g('[data-news]')) { ev.preventDefault(); this._newsFrom = this._view; this._newsAll = false; this._view = 'news'; return this._render(); }
+      if (g('[data-newsall]')) { this._newsAll = true; return this._render(); }
+      if ((x = g('[data-closenews]')) && (x.classList.contains('btn') || !g('.dlg'))) return this._newsClose();
+      if (g('[data-report]')) return this._reportOpen();
+      if ((x = g('[data-closerep]')) && (x.classList.contains('btn') || !g('.dlg'))) { this._rep = null; this._view = 'settings'; return this._render(); }
+      if (g('[data-repplat]')) { this._rep.plat = !this._rep.plat; this._rep.copied = false; return this._render(); }
+      if (g('[data-repgo]')) return this._repGo();
+      if (g('[data-repcopy]')) return this._repCopy();
       if (g('[data-updcheck]')) return this._updCheck();
       if (g('[data-updgo]')) return this._updInstall();
       if (g('[data-updrs]')) return this._updSet({ st: 'ask' });
@@ -1212,6 +1333,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       if (e.target.id === 'aq') { this._q = e.target.value; this._filterAll(); }
       if (e.target.id === 'gb') { const bv = R.getElementById('bv'); if (bv) bv.textContent = '%' + e.target.value; }
       if (e.target.id === 'cename' && this._ce) this._ce.name = e.target.value;
+      if (e.target.id === 'repq' && this._rep) { this._rep.text = e.target.value; if (this._rep.copied) { this._rep.copied = false; const b = R.querySelector('[data-repcopy]'); if (b) b.lastChild.textContent = this._t('repCopy'); } }
       if (e.target.id === 'ceiq') { const v = e.target.value.toLocaleLowerCase(this._l()).trim(); R.querySelectorAll('#ceig button').forEach(b => { b.style.display = !v || b.dataset.n.includes(v) ? '' : 'none'; }); }
     });
     app.addEventListener('change', e => {

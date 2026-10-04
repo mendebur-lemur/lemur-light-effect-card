@@ -2,6 +2,14 @@
 const CARD_VERSION = '0.1.0';
 // colour effect icons (ICON3) come from lemur-icons.json next to this file, so the card shows up before they arrive
 let ICON3 = {}, ICON3_OK = false;
+// the last few errors from this card, for Settings → Help → Report a problem (they stay in the browser unless the user sends the report)
+const LERR = window.__LEMUR_ERR || (window.__LEMUR_ERR = []);
+if (!window.__LEMUR_ERRH) {
+  window.__LEMUR_ERRH = 1;
+  const addErr = (m, where) => { if (!/lemur/i.test(String(where || '') + String(m || ''))) return; LERR.push(new Date().toTimeString().slice(0, 8) + ' ' + String(m || '?').split('\n')[0].slice(0, 160)); if (LERR.length > 5) LERR.shift(); };
+  window.addEventListener('error', e => addErr(e.message + (e.lineno ? ' @' + e.lineno : ''), e.filename));
+  window.addEventListener('unhandledrejection', e => { const r = e.reason; addErr((r && r.message) || r, r && r.stack); });
+}
 const ICON_URL = (() => { try { const el = document.currentScript || [...document.querySelectorAll('script[src*="lemur-light-effect-card"]')].pop(), s = el && el.src; if (s) return s.replace(/[^/?#]*([?#].*)?$/, '') + 'lemur-icons.json?v=' + CARD_VERSION; } catch (e) {} return '/lemur_light_effects/lemur-icons.json?v=' + CARD_VERSION; })();
 const ICON3_READY = (window.__LEMUR_ICON3 ? Promise.resolve(window.__LEMUR_ICON3) : fetch(ICON_URL).then(r => r.ok ? r.json() : {})).catch(() => ({})).then(d => {
   ICON3 = d && typeof d === 'object' ? d : {}; ICON3_OK = true;

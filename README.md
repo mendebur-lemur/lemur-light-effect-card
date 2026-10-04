@@ -19,7 +19,7 @@ Hangi marka olursa olsun, efekt destekleyen bütün ışıkları oda oda yönete
 - **Kendi efektlerini oluştur.** Işıkları sürükleyip bir efekte kat, her birinin ne açacağını seç: efekti desteklemeyen ışık renk ya da beyaz açar, istediğin ışık kendi listesinden başka bir efekt oynatır.
 - **Kenar menüde kontrol paneli** (*Lemur Işık Efekt Kartı*): odalar, ışıklar, sekmeler ve efektler sürükle-bırak ile düzenlenir.
 - **Geniş ayarlar:** karo boyutu, renkli ya da sade simgeler, siyah (OLED) ya da tema arka planı, gece modu, açılış sekmesi, oda simgeleri ve daha fazlası. Efektler ve favoriler tek tıkla Home Assistant scripti olur.
-- **Otomasyon ve sesli asistan:** her oda için efekt seçimi varlığı ve `lemur_light_effects.play` servisi.
+- **Sesli komut ve otomasyon:** Assist'e "salonda kuzey ışıkları efektini aç" demen yeter; her oda için efekt seçimi varlığı ve `lemur_light_effects.play` servisi de var.
 - Türkçe, İngilizce, Almanca, İspanyolca ve Fransızca arayüz.
 
 ## İçindekiler
@@ -227,6 +227,8 @@ Sol alttaki **Ayarlar** penceresi evdeki bütün kartlara uygulanır:
 - *Gece modu:* seçtiğin saatler arasında parlaklık üst sınırı (efektler, Durdur ve parlaklık çubuğu bu sınırı aşmaz).
 - *Odalar ve ışıklar:* Home Assistant ışık gruplarını gösterme, bir ışığın efektli sayılması için gereken en az efekt sayısı.
 - *Sürüm ve güncelleme:* yüklü sürüm; yeni sürümü denetleme, HACS ile indirme ve Home Assistant'ı yeniden başlatma.
+- *Yenilikler:* güncellemeden sonra panel ilk açılışta yeni sürümle gelenleri bir kez gösterir; sonra Sürüm satırındaki **Yenilikler** bağlantısıyla açılır.
+- *Yardım → Sorun bildir:* ne olduğunu yazarsın; sürüm, tarayıcı, ekran, ışık sayıları, ışık entegrasyonları (istersen kapatılır) ve son hatalar eklenmiş hazır bir GitHub kaydı açılır. Oda ve ışık adları gibi kişisel bilgiler eklenmez. GitHub hesabın yoksa metni kopyalayabilirsin.
 - *Yedek:* bütün düzeni (odalar, sekmeler, favoriler, kendi efektlerin, ayarlar, simgeler) tek dosya olarak indir, istediğinde geri yükle.
 - *Her şeyi sıfırla:* onay sorulduktan sonra bütün düzeni, sekmeleri, favorileri, simgeleri ve kendi efektlerini siler.
 
@@ -283,6 +285,18 @@ data:
 ```
 
 `lemur_light_effects.list_effects` (yanıt döndürür) bir odanın oynatabildiği efektleri ve şu an çalanı verir. Kart nasıl davranıyorsa servisler de öyle davranır: odada seçili ışıklar, gizlenen efektler, gece modu ve "kapalı ışık şu parlaklıkta açılsın" ayarı geçerlidir.
+
+### Sesli komut (Assist)
+
+Kurulumdan sonra Home Assistant'ın kendi sesli asistanı (Assist) efektleri tanır; ayar ya da YAML gerekmez. Telefondaki Assist düğmesinde, sesli asistan cihazlarında ve yazarak çalışır. Cümlede "efekt" kelimesi geçmeli; böylece normal ışık komutların eskisi gibi çalışır.
+
+- "Salonda kuzey ışıkları efektini aç" (başlat, oynat, çal da olur)
+- "Kuzey ışıkları efektini yatak odasında aç"
+- "Mum ışığı efektini aç": oda söylenmezse, komutu duyan sesli asistan cihazının odasında çalar; o da yoksa Tüm Ev'de.
+- "Salonda efekti durdur", "Efektleri durdur"
+- İngilizce: "Play the aurora effect in the living room", "Stop the effects in the bedroom"
+
+Efektin kartta görünen Türkçe adı, ışığın verdiği ad ve kendi efektlerinin adları tanınır. Ad tam tutmasa da en yakın efekt seçilir. Kart nasıl davranıyorsa sesli komut da öyle davranır: odada seçili ışıklar, eksik ışıkları tamamlama ve gece modu geçerlidir.
 
 ## Kart seçenekleri
 

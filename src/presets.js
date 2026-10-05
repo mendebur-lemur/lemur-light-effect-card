@@ -59,7 +59,8 @@ const ICON_BTN = {
 };
 
 // button colour: a Home Assistant colour name (red, primary, ...) or any CSS colour
-const uiColor = v => { const s = String(v || '').trim(); if (!s) return ''; return /^[a-z-]+$/.test(s) && !/^(white|black|transparent)$/.test(s) ? `var(--${s}-color, ${s})` : s; };
+// button colour from the card config: an HA colour name, or a plain CSS colour (#hex, rgb(), hsl()); anything else is ignored
+const uiColor = v => { const s = String(v || '').trim(); if (!s) return ''; if (/^[a-z-]{1,30}$/.test(s)) return !/^(white|black|transparent)$/.test(s) ? `var(--${s}-color, ${s})` : s; return /^(#[0-9a-f]{3,8}|(rgb|rgba|hsl|hsla)\([\d\s.,%]{1,40}\))$/i.test(s) ? s : ''; };
 const BTN_STYLES = ['row', 'tile', 'icon'];
 class LemurLauncher extends HTMLElement {
   static get mode() { return 'full'; }

@@ -24,6 +24,7 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, ServiceCall, SupportsResponse, callback
 from homeassistant.exceptions import ServiceValidationError
 import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers.dispatcher import async_dispatcher_connect, async_dispatcher_send
 from homeassistant.helpers.storage import Store
 
@@ -64,6 +65,52 @@ DEFAULT_DATA: dict[str, Any] = {
 }
 PLATFORMS = [Platform.SELECT]
 MIME_EXT = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif"}
+MAX_KEY = 200          # longest effect key, room id or tab id kept from the browser
+MAX_ROOMS = 500        # most rooms in tabs / rooms
+MAX_ICONS = 500        # most uploaded effect pictures
+
+
+def _looks_like(raw: bytes, ext: str) -> bool:
+    """The uploaded bytes really are the image type claimed (magic number), so nothing else is stored under an image name."""
+    if ext == "png":
+        return raw.startswith(b"\x89PNG\r\n\x1a\n")
+    if ext == "jpg":
+        return raw.startswith(b"\xff\xd8\xff")
+    if ext == "gif":
+        return raw[:6] in (b"GIF87a", b"GIF89a")
+    if ext == "webp":
+        return raw[:4] == b"RIFF" and raw[8:12] == b"WEBP"
+    return False
+
+
+def _clean_tabs(v: dict) -> dict:
+    """One room's tab layout in the shape the card reads; written by any user, so types are enforced here."""
+    out: dict[str, Any] = {}
+    tabs = []
+    for t in v.get("tabs") if isinstance(v.get("tabs"), list) else []:
+        if not isinstance(t, dict) or not isinstance(t.get("id"), str):
+            continue
+        c: dict[str, Any] = {"id": t["id"][:80]}
+        for k in ("name", "icon", "auto"):
+            if isinstance(t.get(k), str):
+                c[k] = t[k][:MAX_KEY]
+        for k in ("fav", "recent"):
+            if t.get(k):
+                c[k] = 1
+        c["fx"] = [str(x)[:MAX_KEY] for x in (t.get("fx") if isinstance(t.get("fx"), list) else []) if isinstance(x, str)][:2000]
+        tabs.append(c)
+        if len(tabs) >= 100:
+            break
+    if "tabs" in v:
+        out["tabs"] = tabs
+    if isinstance(v.get("hid"), list):
+        out["hid"] = [str(x)[:MAX_KEY] for x in v["hid"] if isinstance(x, str)][:2000]
+    if isinstance(v.get("light_icon"), str):
+        out["light_icon"] = v["light_icon"][:MAX_KEY]
+    for k, val in v.items():   # other small flags the card may add later (grow...), only plain values
+        if k not in out and k not in ("tabs", "hid", "light_icon") and isinstance(val, (bool, int, float)) and len(out) < 20:
+            out[k] = val
+    return out
 
 
 class LemurData:
@@ -215,17 +262,17 @@ def ws_set(hass, connection, msg):
         if not isinstance(value, dict) or len(json.dumps(value)) > MAX_TABS_BYTES:
             connection.send_error(msg["id"], "invalid", "tabs must be a small object")
             return
-        data.data[key] = {str(k): v for k, v in value.items() if isinstance(v, dict)}
+        data.data[key] = {str(k)[:MAX_KEY]: _clean_tabs(v) for k, v in list(value.items())[:MAX_ROOMS] if isinstance(v, dict)}
     elif key in ("favorites", "hidden"):
         if not isinstance(value, list):
             connection.send_error(msg["id"], "invalid", "list expected")
             return
-        data.data[key] = [str(v) for v in value][:2000]
+        data.data[key] = [str(v)[:MAX_KEY] for v in value][:2000]
     else:
-        if not isinstance(value, dict):
-            connection.send_error(msg["id"], "invalid", "dict expected")
+        if not isinstance(value, dict) or len(json.dumps(value)) > MAX_TABS_BYTES:
+            connection.send_error(msg["id"], "invalid", "rooms must be a small object")
             return
-        data.data[key] = {str(k): [str(e) for e in v] for k, v in value.items() if isinstance(v, list)}
+        data.data[key] = {str(k)[:MAX_KEY]: [str(e)[:MAX_KEY] for e in v][:500] for k, v in list(value.items())[:MAX_ROOMS] if isinstance(v, list)}
     data.changed()
     connection.send_result(msg["id"], data.data)
 
@@ -244,7 +291,13 @@ def ws_last(hass, connection, msg):
     if data is None:
         connection.send_error(msg["id"], "not_loaded", "Integration not loaded")
         return
-    data.runtime.remember(msg.get("room"), msg["entities"], msg.get("effect"))
+    # anyone may record what they played, but only for real lights and real rooms, so the store can't be filled with junk
+    ents = [e for e in dict.fromkeys(msg["entities"]) if isinstance(e, str) and e.startswith("light.") and hass.states.get(e)][:300]
+    room = msg.get("room")
+    if room is not None and room not in ("_all", "_none") and not ar.async_get(hass).async_get_area(str(room)):
+        room = None
+    effect = msg.get("effect")
+    data.runtime.remember(room, ents, str(effect)[:MAX_KEY] if effect else None)
     connection.send_result(msg["id"], {"ok": True})
 
 
@@ -256,6 +309,7 @@ def ws_last(hass, connection, msg):
         vol.Required("data"): str,
     }
 )
+@websocket_api.require_admin
 @websocket_api.async_response
 async def ws_icon_upload(hass, connection, msg):
     data = _data(hass)
@@ -274,7 +328,13 @@ async def ws_icon_upload(hass, connection, msg):
     if len(raw) > MAX_ICON_BYTES:
         connection.send_error(msg["id"], "too_large", "Icon is larger than 512 KB")
         return
-    key = msg["key"][:200]
+    if not _looks_like(raw, ext):
+        connection.send_error(msg["id"], "invalid_type", "The file is not the image type it claims to be")
+        return
+    key = msg["key"][:MAX_KEY]
+    if key not in data.data["icons"] and len(data.data["icons"]) >= MAX_ICONS:
+        connection.send_error(msg["id"], "too_many", f"At most {MAX_ICONS} uploaded icons")
+        return
     name = hashlib.sha1(key.encode()).hexdigest()[:16] + "." + ext
     path = os.path.join(data.icon_dir, name)
     old = data.data["icons"].get(key)
@@ -297,6 +357,7 @@ async def ws_icon_upload(hass, connection, msg):
 @websocket_api.websocket_command(
     {vol.Required("type"): "lemur_light_effects/icon_delete", vol.Required("key"): str}
 )
+@websocket_api.require_admin
 @websocket_api.async_response
 async def ws_icon_delete(hass, connection, msg):
     data = _data(hass)
@@ -305,7 +366,7 @@ async def ws_icon_delete(hass, connection, msg):
         return
     url = data.data["icons"].pop(msg["key"], None)
     if url:
-        path = os.path.join(data.icon_dir, os.path.basename(url.split("?")[0]))
+        path = os.path.join(data.icon_dir, os.path.basename(str(url).split("?")[0]))
 
         def _rm():
             if os.path.exists(path):

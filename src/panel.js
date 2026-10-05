@@ -316,7 +316,7 @@ class LemurLightEffectsPanel extends HTMLElement {
   _lightIcon(rid) { return (roomCfg(this._set(), rid || this._room) || {}).light_icon || ''; }
   _lightDot(id) {
     const s = this._hass.states[id], a = (s && s.attributes) || {}, on = s && s.state === 'on';
-    const bg = on && a.rgb_color ? `rgb(${a.rgb_color.join(',')})` : on && a.color_mode === 'color_temp' ? 'linear-gradient(140deg,#FFD9A8,#FFB86E)' : grad([hashHue(id), (hashHue(id) + 50) % 360], 70, 62, '135deg');
+    const bg = on && a.rgb_color ? rgbCss(a.rgb_color) : on && a.color_mode === 'color_temp' ? 'linear-gradient(140deg,#FFD9A8,#FFB86E)' : grad([hashHue(id), (hashHue(id) + 50) % 360], 70, 62, '135deg');
     return `<span class="dot ${on ? '' : 'off'}" style="background:${bg}">${pi('bulb')}</span>`;
   }
   _toast(x, undo = true) {
@@ -638,7 +638,9 @@ class LemurLightEffectsPanel extends HTMLElement {
   _updSet(o) { this._upd = Object.assign({}, this._upd, o); if (this._view === 'settings') this._render(); }
   _updEnt() {
     const S = this._hass.states;
-    return Object.values(S).find(s => s.entity_id.startsWith('update.') && /mendebur-lemur\/lemur-light-effect-card/.test(String(s.attributes.release_url || ''))) || S['update.lemur_light_effect_card_update'] || null;
+    // only the update entity HACS made for this repository (a look-alike entity from another integration is ignored)
+    const E = this._hass.entities || {}, ours = s => /^https:\/\/github\.com\/mendebur-lemur\/lemur-light-effect-card(\/|$)/.test(String(s.attributes.release_url || ''));
+    return Object.values(S).find(s => s.entity_id.startsWith('update.') && ours(s) && (!E[s.entity_id] || E[s.entity_id].platform === 'hacs')) || (S['update.lemur_light_effect_card_update'] && ours(S['update.lemur_light_effect_card_update']) ? S['update.lemur_light_effect_card_update'] : null);
   }
   async _updCheck() {
     const c = this._hass.connection, vnum = v => String(v || '').replace(/^v/i, '').split('.').map(n => parseInt(n, 10) || 0);
@@ -647,12 +649,13 @@ class LemurLightEffectsPanel extends HTMLElement {
     try {
       let cur = CARD_VERSION; try { cur = (await c.sendMessagePromise({ type: 'lemur_light_effects/info' })).version || cur; } catch (e) {}
       // HACS: same as "Update information" in its menu, so its update entity knows about the newest release
-      try { const L = await c.sendMessagePromise({ type: 'hacs/repositories/list' }); const r = (L || []).find(x => /\/lemur-light-effect-card$/i.test(x.full_name || '')); if (r) { await c.sendMessagePromise({ type: 'hacs/repository/refresh', repository: String(r.id) }); await new Promise(z => setTimeout(z, 900)); } } catch (e) {}
+      try { const L = await c.sendMessagePromise({ type: 'hacs/repositories/list' }); const r = (L || []).find(x => /^mendebur-lemur\/lemur-light-effect-card$/i.test(x.full_name || '')); if (r) { await c.sendMessagePromise({ type: 'hacs/repository/refresh', repository: String(r.id) }); await new Promise(z => setTimeout(z, 900)); } } catch (e) {}
       const ent = this._updEnt();
       let latest = ent && ent.attributes.latest_version, url = ent && ent.attributes.release_url;
       if (!latest) { const g = await c.sendMessagePromise({ type: 'lemur_light_effects/latest' }); latest = g.version; url = g.url; }
       latest = String(latest || '').replace(/^v/i, '');
       const at = new Date().toLocaleTimeString(this._l(), { hour: '2-digit', minute: '2-digit' });
+      if (!/^https:\/\/github\.com\/mendebur-lemur\/lemur-light-effect-card(\/|$)/.test(String(url || ''))) url = null;   // links only to our own releases
       this._updSet(newer(latest, cur) ? { st: 'new', cur, latest, url, ent: ent ? ent.entity_id : null, at } : { st: 'ok', cur, latest, url, at });
     } catch (e) { this._updSet({ st: 'err', err: (e && (e.message || e.code)) || String(e) }); }
   }
@@ -788,6 +791,7 @@ class LemurLightEffectsPanel extends HTMLElement {
   async _backupDown() {
     const d = STORE.d, icons = {}, t = (k, v) => this._t(k, v); this._toast(t('bkBusy'), false);
     for (const [k, url] of Object.entries(d.icons || {})) {
+      if (!safeImg(url) || /^data:/.test(url)) continue;   // only our own uploaded files
       try { const b = await (await fetch(url)).blob(); icons[k] = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }); } catch (e) {}
     }
     const out = { format: 'lemur-light-effects-backup', version: CARD_VERSION, date: new Date().toISOString(), data: { settings: d.settings || {}, tabs: d.tabs || {}, favorites: d.favorites || [], hidden: d.hidden || [], rooms: d.rooms || {} }, icons };

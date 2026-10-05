@@ -11,8 +11,20 @@ if (!window.__LEMUR_ERRH) {
   window.addEventListener('unhandledrejection', e => { const r = e.reason; addErr((r && r.message) || r, r && r.stack); });
 }
 const ICON_URL = (() => { try { const el = document.currentScript || [...document.querySelectorAll('script[src*="lemur-light-effect-card"]')].pop(), s = el && el.src; if (s) return s.replace(/[^/?#]*([?#].*)?$/, '') + 'lemur-icons.json?v=' + CARD_VERSION; } catch (e) {} return '/lemur_light_effects/lemur-icons.json?v=' + CARD_VERSION; })();
+// Colour icons are inserted as markup, so only clean drawings are accepted: one <svg>…</svg> with no script, event
+// handlers, javascript: links, embedded documents/images or links to other files (same rules as lemur-icons/birlestir.py).
+// A damaged or tampered icon file then shows plain icons instead of running code.
+const ICON_BAD = /<script|<foreignObject|<iframe|<object|<embed|<image|<a[\s>]|<use[^>]*href\s*=\s*["'](?!#)|\son[a-z]+\s*=|javascript:|data:text|href\s*=\s*["'](?!#)|xlink:href\s*=\s*["'](?!#)|url\(\s*["']?(?!#)/i;
+const safeSvg = v => typeof v === 'string' && v.length < 20000 && /^\s*<svg[\s>][\s\S]*<\/svg>\s*$/i.test(v) && !ICON_BAD.test(v) && (v.match(/<svg[\s>]/gi) || []).length === 1;
+const safeIcons = d => { const o = {}; if (d && typeof d === 'object' && !Array.isArray(d)) for (const k of Object.keys(d)) if (/^[a-z0-9_]{1,60}$/.test(k) && safeSvg(d[k])) o[k] = d[k]; return o; };
+// uploaded effect pictures: only our own icon folder or an inline raster image (backup restore)
+const safeImg = u => typeof u === 'string' && (/^\/(lemur|ultimate)_light_effects_icons\/[0-9a-f]{16}\.(png|jpg|webp|gif)(\?v=\d+)?$/.test(u) || /^data:image\/(png|jpeg|webp|gif);base64,[a-z0-9+/=]+$/i.test(u));
+// a light's colour as CSS: always three numbers 0-255, whatever the device reports
+const rgbCss = a => 'rgb(' + [0, 1, 2].map(i => Math.max(0, Math.min(255, Math.round(+(Array.isArray(a) ? a[i] : 0) || 0)))).join(',') + ')';
+// a CSS value from settings or card config: no characters that could end the declaration or the attribute
+const cssSafe = v => { const s = String(v == null ? '' : v).trim(); return /^[#\w\s(),.%+-]{1,60}$/.test(s) && !/url\s*\(|expression/i.test(s) ? s : ''; };
 const ICON3_READY = (window.__LEMUR_ICON3 ? Promise.resolve(window.__LEMUR_ICON3) : fetch(ICON_URL).then(r => r.ok ? r.json() : {})).catch(() => ({})).then(d => {
-  ICON3 = d && typeof d === 'object' ? d : {}; ICON3_OK = true;
+  ICON3 = safeIcons(d); ICON3_OK = true;
   try { STORE.v++; STORE._emit(); } catch (e) {}
   window.dispatchEvent(new Event('lemur-icons'));
 });
@@ -102,7 +114,7 @@ const GICON = { all: 'sparkle', mine: 'sparkle', nature: 'tree', sky: 'galaxy', 
 const RENK = ['#FF3B30', '#FF9500', '#FFD60A', '#A3E635', '#30D158', '#40E0D0', '#32ADE6', '#0A84FF', '#5E5CE6', '#BF5AF2', '#FF6FB5', '#FF2D95'];
 const KELV = [[2700, '#FFA757'], [3000, '#FFB16E'], [3200, '#FFB87B'], [4000, '#FFCEA6'], [5000, '#FFE4CE'], [6500, '#FFFEFA']];
 const hex2rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const svg = n => `<svg viewBox="0 0 24 24" fill="currentColor">${ICONS[n] || ICONS.generic}</svg>`;
 // tab icon: a mono ICONS name, or 'c:<key>' for one of the colour effect icons (ICON3)
 const tabSvg = (ic, fb) => ic && ic.slice(0, 2) === 'c:' && ICON3[ic.slice(2)] ? ICON3[ic.slice(2)] : svg(ic && ICONS[ic] ? ic : fb);
@@ -230,7 +242,14 @@ function baseTabs(S) {
   if (CS) CS.forEach(c => tabs.push({ id: c.id, name: c.name, icon: c.icon, fx: Object.keys(of).filter(k => of[k] === c.id) }));
   return { tabs, hid: (STORE.d.hidden || []).slice(), grow: !CS };
 }
-function roomCfg(S, rid) { const c = STORE.d.tabs && STORE.d.tabs[rid]; return c && Array.isArray(c.tabs) ? c : baseTabs(S); }
+// the stored room layout, with every field in the shape the card expects (any user can write it, so nothing is trusted)
+function roomCfg(S, rid) {
+  const c = STORE.d.tabs && STORE.d.tabs[rid];
+  if (!c || typeof c !== 'object' || !Array.isArray(c.tabs)) return baseTabs(S);
+  const str = v => (typeof v === 'string' ? v : null), list = v => (Array.isArray(v) ? v.filter(x => typeof x === 'string') : []);
+  const tabs = c.tabs.filter(t => t && typeof t === 'object' && typeof t.id === 'string').map(t => Object.assign({}, t, { id: t.id.slice(0, 80), name: str(t.name), icon: str(t.icon), auto: str(t.auto), fx: list(t.fx) }));
+  return Object.assign({}, c, { tabs, hid: list(c.hid), light_icon: str(c.light_icon) });
+}
 function resolveTabs(cfg, keys, grpOf) {
   // favorites are a star on top of the effect's own tab; every other tab owns its effects
   const P = new Set(keys), hid = [...new Set((cfg.hid || []).filter(k => P.has(k)))], seen = new Set(hid), take = k => P.has(k) && !seen.has(k) && (seen.add(k), true);
@@ -322,7 +341,7 @@ function nightMax(S) {
 }
 // the picture of an effect tile: uploaded image, own effect icon, colour icon or the plain one-colour style
 function fxArt(u, px, S) {
-  const url = STORE.d.icons && STORE.d.icons[u.k];
+  const url = STORE.d.icons && safeImg(STORE.d.icons[u.k]) ? STORE.d.icons[u.k] : null;
   if (url) return `<img class="cimg" src="${esc(url)}" alt="" style="width:${px}px;height:${px}px">`;
   const i = fxInfo(u.rep), cu = u.custom;
   if (S && S.icon_style === 'mono') return `<i class="ic mono" style="width:${px}px;height:${px}px;background:${tile(i.hues)}">${svg(cu && !cu.base ? 'sparkle' : i.mono)}</i>`;
@@ -574,7 +593,7 @@ class LemurLightEffectCard extends HTMLElement {
     const k = ct && ks.length && ks.every(x => Math.abs(x - ks[0]) < 150) ? ks[0] : null;
     const rgb = !ct && a.rgb_color && cl.every(s => s.attributes.rgb_color && s.attributes.rgb_color.every((v, i) => Math.abs(v - a.rgb_color[i]) < 24)) ? a.rgb_color : null;
     const brs = on.filter(s => s.attributes.brightness).map(s => s.attributes.brightness);
-    return { on: true, k, ct, rgb, hs: !ct && a.hs_color, fill: a.rgb_color ? `rgb(${a.rgb_color.join(',')})` : '#F0A93B', br: brs.length ? Math.round(brs.reduce((x, y) => x + y, 0) / brs.length / 2.55) : 100 };
+    return { on: true, k, ct, rgb, hs: !ct && a.hs_color, fill: a.rgb_color ? rgbCss(a.rgb_color) : '#F0A93B', br: brs.length ? Math.round(brs.reduce((x, y) => x + y, 0) / brs.length / 2.55) : 100 };
   }
 
   // ---- service calls ----
@@ -845,7 +864,8 @@ class LemurLightEffectCard extends HTMLElement {
       M = { top: top, head: stat + head, search: mtab === 'fx' ? find(st.q) : null, foot, rooms: roomsSheet };
     }
     const sc = R.querySelector('.scroll'), y = sc ? sc.scrollTop : 0, rl = R.querySelector('.crail'), ry = rl ? rl.scrollTop : 0;
-    const vars = (this._c.height ? `--lemur-height:${this._c.height};` : '') + (this._c.mobile_height ? `--lemur-mh:${this._c.mobile_height};` : '') + (this._c.accent ? `--lemur-accent:${this._c.accent};` : '');
+    const hgt = cssSafe(this._c.height), mh = cssSafe(this._c.mobile_height), acc = cssSafe(this._c.accent);
+    const vars = (hgt ? `--lemur-height:${hgt};` : '') + (mh ? `--lemur-mh:${mh};` : '') + (acc ? `--lemur-accent:${acc};` : '');
     R.innerHTML = `<style>${CSS}</style><div class="wrap ${mob ? 'm' : ''} ${this._c.safe_area ? 'sa' : this._c.safe_area === false ? 'nosa' : ''} ${this._look()}" style="${esc(vars)}">${mob ? '' : `<div class="glow ${glowSoft ? 'soft' : ''}" style="background:${glowBg}"></div>`}
       ${mob ? M.top : `<div class="top"><div class="rooms">${rooms.map(r => roomBtn(r)).join('')}</div>${X}</div>`}
       ${upd}${mob ? M.head : `<div class="mid"><section class="pn cp"><nav class="crail">${tabBtn}</nav></section><section class="pn fxp">`}
@@ -891,8 +911,8 @@ class LemurLightEffectCard extends HTMLElement {
       <div class="shb">
         <button data-favt class="${fav ? 'on' : ''}">${STAR}<span>${fav ? t('remFav') : t('addFav')}</span></button>
         ${!u.custom && this._hass.user && this._hass.user.is_admin && (u.fill || this._part(u, IF)) ? `<button data-fill>${svg('gradient')}<span>${u.fill ? t('fillE') : t('fillB')}</span></button>` : ''}
-        <button data-icup>${svg('palette')}<span>${t('setIcon')}</span></button>
-        ${cust ? `<button data-icrm>${svg('generic')}<span>${t('resetIcon')}</span></button>` : ''}
+        ${this._hass.user && this._hass.user.is_admin ? `<button data-icup>${svg('palette')}<span>${t('setIcon')}</span></button>
+        ${cust ? `<button data-icrm>${svg('generic')}<span>${t('resetIcon')}</span></button>` : ''}` : ''}
         <button data-hide class="warn">${svg('ghost')}<span>${t('hide')}</span></button>
       </div><input type="file" id="icf" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden></div>`;
   }

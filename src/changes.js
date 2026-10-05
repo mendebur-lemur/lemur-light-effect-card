@@ -1,6 +1,12 @@
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.6.1',
+    tr: ['Güvenlik güncellemesi: simge dosyası, ışıkların bildirdiği renkler, güncelleme bağlantısı ve paylaşılan düzen artık sıkı denetleniyor. Efekt resmi yükleme ve silme yalnızca yönetici hesabında.'],
+    en: ['Security update: the icon file, colours reported by lights, the update link and the shared layout are now strictly checked. Uploading and removing effect pictures is admin only.'],
+    de: ['Sicherheitsupdate: Symboldatei, von Lichtern gemeldete Farben, Update-Link und gemeinsames Layout werden jetzt streng geprüft. Effektbilder hochladen und entfernen nur für Administratoren.'],
+    es: ['Actualización de seguridad: el archivo de iconos, los colores que envían las luces, el enlace de actualización y el diseño compartido se comprueban estrictamente. Subir y quitar imágenes de efectos solo para administradores.'],
+    fr: ['Mise à jour de sécurité : le fichier d’icônes, les couleurs envoyées par les lumières, le lien de mise à jour et la disposition partagée sont désormais strictement vérifiés. Ajouter et retirer des images d’effet est réservé aux administrateurs.'] },
   { v: '1.6.0',
     tr: ['Sesli komut: Assist\'e "salonda kuzey ışıkları efektini aç" ya da "efekti durdur" demen yeter. Ayar gerekmez.',
       'Güncellemeden sonra bu "Yenilikler" penceresi bir kez çıkar; sonra Ayarlar → Sürüm\'den yeniden açılır.',

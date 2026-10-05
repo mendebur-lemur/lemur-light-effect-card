@@ -236,7 +236,7 @@ ha-icon{--mdc-icon-size:100%;display:inline-flex;width:20px;height:20px}
   .app{padding:0 10px 10px;gap:10px}
   .btn.gear{display:inline-flex}
   .setb{display:none}
-  .body{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr}
   .lcol{min-height:auto}
   .tabs{flex-direction:row;overflow-x:auto;padding:6px}
   .tscroll{flex-direction:row;overflow:visible;-webkit-mask-image:none;mask-image:none;padding:0;margin:0}
@@ -251,7 +251,7 @@ ha-icon{--mdc-icon-size:100%;display:inline-flex;width:20px;height:20px}
   .fx{padding:12px 6px 14px}
   .rb{min-width:0}
   .tb{min-height:50px}
-  .fsearch{width:auto;flex:1;max-width:none}
+  .fsearch{width:auto;flex:1;max-width:none;min-width:0}
   .lhd{border-right:0;width:100%;padding-left:2px}
   .strip{min-height:auto}
 }
@@ -407,3 +407,4 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .rep .rsw{margin:10px 0 0}
 .rep .rnote{color:var(--mu);font-size:12.5px;margin:10px 2px 0}
 @media (max-width:560px){.rep .rinfo div{flex-direction:column;gap:2px}.rep .rinfo span{width:auto}}
+@media (max-width: 360px){.pvb .l{display:none}}

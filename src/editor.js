@@ -33,7 +33,7 @@ class LemurLightEffectCardEditor extends HTMLElement {
   _kind() { const t = String((this._c && this._c.type) || ''); return /lemur-fullscreen-button/.test(t) ? 'full' : /lemur-window/.test(t) ? 'popup' : /lemur-phone-fullscreen/.test(t) ? 'mfull' : /lemur-phone-button/.test(t) ? 'mbtn' : /lemur-scalable/.test(t) ? 'scale' : /lemur-mobile-card/.test(t) ? 'mobile' : 'classic'; }
   _schema() {
     const T = ED_TXT[this._l()], k = this._kind();
-    const lang = this._l(), icons = Object.keys(ICON3).map(x => ({ value: x, label: icName(x, lang) })).sort((a, b) => a.label.localeCompare(b.label, lang));
+    const lang = this._l(), icons = Object.keys(ICON3).map(x => ({ value: x, label: icName(x, lang) })).sort((a, b) => coll(lang).compare(a.label, b.label));
     const btn = [{ type: 'grid', name: '', schema: [{ name: 'name', selector: { text: {} } }, { name: 'subtitle', selector: { text: {} } }] },
       { type: 'expandable', name: '', title: T.look, icon: 'mdi:palette-outline', schema: [
         { type: 'grid', name: '', schema: [

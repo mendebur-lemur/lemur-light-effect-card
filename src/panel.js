@@ -205,7 +205,6 @@ class LemurLightEffectsPanel extends HTMLElement {
     STORE.L.add(this._onStore);
     window.addEventListener('pointermove', this._pm, { passive: false });
     window.addEventListener('pointerup', this._pu); window.addEventListener('pointercancel', this._pu);
-    window.addEventListener('touchmove', this._tm, { passive: false });
     window.addEventListener('keydown', this._kd);
     this._render();
   }
@@ -238,8 +237,9 @@ class LemurLightEffectsPanel extends HTMLElement {
   _set() { const s = STORE.d.settings; return s && typeof s === 'object' ? s : {}; }
   _sig() {
     const H = this._hass; if (!H) return '';
-    let s = (H.entities ? Object.keys(H.entities).length : 0) + '|' + (H.areas ? Object.keys(H.areas).length : 0) + '|';
-    for (const id in H.states) if (id.startsWith('light.')) { const x = H.states[id], l = x.attributes.effect_list; s += id + x.state + (l ? l.length : 0) + ','; }
+    if (H.entities !== this._sgE || H.areas !== this._sgA || H.devices !== this._sgD) { this._sgE = H.entities; this._sgA = H.areas; this._sgD = H.devices; this._sgN = (this._sgN || 0) + 1; }
+    let s = this._sgN + '|';
+    for (const id in H.states) if (id.startsWith('light.')) { const x = H.states[id], l = x.attributes.effect_list; s += id + x.state + (l ? l.length : 0) + (x.attributes.friendly_name || '') + ','; }
     return s;
   }
 
@@ -271,11 +271,11 @@ class LemurLightEffectsPanel extends HTMLElement {
       const p = lightPlace(H, S, id);
       if (!p.room) hidden.push({ id, why: p.why }); else (by[p.room] = by[p.room] || []).push(id);
     }
-    const cmp = (a, b) => this._name(a).localeCompare(this._name(b), lang);
+    const cmp = (a, b) => coll(lang).compare(this._name(a), this._name(b));
     Object.values(by).forEach(l => l.sort(cmp)); hidden.sort((a, b) => cmp(a.id, b.id));
     const ok = a => a === '_all' || (a === '_none' ? !!by._none : !!by[a] || (this._extra && this._extra === a && !!A[a]));
     const pref = (S.order || []).filter(ok);
-    const rest = Object.keys(by).filter(a => a !== '_none' && !pref.includes(a)).sort((a, b) => A[a].name.localeCompare(A[b].name, lang));
+    const rest = Object.keys(by).filter(a => a !== '_none' && !pref.includes(a)).sort((a, b) => coll(lang).compare(A[a].name, A[b].name));
     let order = [...pref, ...rest];
     if (by._none && !order.includes('_none')) order.push('_none');
     if (this._extra && A[this._extra] && !order.includes(this._extra)) order.push(this._extra);
@@ -283,7 +283,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     const real = order.filter(a => a !== '_all');
     if (real.length < 2) order = real;
     const why = {}; hidden.forEach(h => { why[h.id] = h.why; });
-    const empty = Object.values(A).filter(a => !by[a.area_id] && a.area_id !== this._extra).sort((a, b) => a.name.localeCompare(b.name, lang));
+    const empty = Object.values(A).filter(a => !by[a.area_id] && a.area_id !== this._extra).sort((a, b) => coll(lang).compare(a.name, b.name));
     return { by, hidden: hidden.map(h => h.id), why, order, empty };
   }
   _lightsOf(M, rid) {
@@ -528,7 +528,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       else if (!U.size) grid = `<div class="grid"><div class="emp">${pi('sparkles')}<span>${esc(t('noFxRoom'))}</span></div></div>`;
       else if (tid === '_allfx') {
         const where = {}; RES.tabs.forEach(x => { if (!x.fav) x.fx.forEach(k => { where[k] = x; }); });
-        const lang = this._l(), all = [...U.values()].sort((a, b) => this._label(a).localeCompare(this._label(b), lang));
+        const lang = this._l(), all = [...U.values()].sort((a, b) => coll(lang).compare(this._label(a), this._label(b)));
         grid = `<div class="fxh"><b>${esc(t('allFx'))}</b><em>${U.size}</em><span class="grow"></span><label class="fsearch">${pi('search', 's16')}<input id="aq" placeholder="${esc(t('search'))}" value="${esc(this._q)}" autocomplete="off"></label></div>
           <div class="grid" id="allg">${all.map(u => { const w = where[u.k], n = (this._label(u) + ' ' + Object.values(u.names).join(' ')).toLocaleLowerCase(lang);
             return tileH(u.k, { hd: !w, n, where: `<small class="where ${w ? '' : 'h'}"><i>${w ? this._tabIcon(w) : pi('eyeoff')}</i>${esc(w ? this._tabName(w) : t('hid'))}</small>` }); }).join('')}</div>`;
@@ -549,13 +549,13 @@ class LemurLightEffectsPanel extends HTMLElement {
       <button class="btn ic gear" data-settings title="${esc(t('settings'))}">${pi('cog', 's16')}</button></div>`;
     const pk = [...this._pick].filter(k => U.has(k));
     const selb = pk.length ? `<div class="selb"><b>${esc(t('selN', { n: pk.length }))}</b><span>${esc(t('selHint'))}</span><button class="btn ic" style="border:0;background:none" data-clr title="${esc(t('clear'))}">${pi('x', 's16')}</button></div>` : '';
-    R.innerHTML = `<style>${PANEL_CSS}</style><div class="app ${this._narrow ? 'narrow' : ''} ${pv ? 'pv' : ''}">${top}
+    paint(R, PANEL_CSS, `<div class="app ${this._narrow ? 'narrow' : ''} ${pv ? 'pv' : ''}">${top}
       ${pv ? `<div class="pvbar"><span class="pvd"></span><span class="tx"><b>${esc(t('pvOn'))}</b> · ${esc(t('pvWhere'))} <b>${esc(this._roomName(pv.room))}</b>${pvU ? ` · ${esc(t('pvNow', { x: this._label(pvU) }))}` : ''}</span><button class="btn sm" data-pvend="1">${pi('undo', 's16')}${esc(t('pvBack'))}</button><button class="btn sm" data-pvend="0">${esc(t('pvKeep'))}</button></div>` : ''}
       ${STORE.mode === 'local' ? `<div class="warn">${esc(t('local'))}</div>` : ''}${STORE.stale ? `<div class="warn upd"><span>${esc(t('upd', { v: STORE.stale }))}</span><button class="btn sm pri" data-reload>${esc(t('reload'))}</button></div>` : ''}
       <div class="rblock">${rooms}${strip}</div><div class="body">${body}</div>${selb}
       ${this._view === 'settings' ? this._settingsHtml() : this._view === 'reset' ? this._resetHtml() : this._view === 'restore' ? this._restoreHtml() : this._view === 'news' ? this._newsHtml() : this._view === 'report' ? this._reportHtml() : ''}
       <input type="file" id="icf" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden><input type="file" id="bkf" accept="application/json,.json" hidden>
-      <div class="toast"><span></span><button data-undo>${esc(t('undo'))}</button></div></div>`;
+      <div class="toast"><span></span><button data-undo>${esc(t('undo'))}</button></div></div>`);
     if (customElements.get('ha-menu-button')) {
       this._mb = document.createElement('ha-menu-button'); this._mb.hass = this._hass; this._mb.narrow = this._narrow;
       R.querySelector('.mb').appendChild(this._mb);
@@ -844,8 +844,8 @@ class LemurLightEffectsPanel extends HTMLElement {
         <div class="grid">${L.map(x => { const u = { k: 'u:' + x.id, rep: x.base_name || x.name, label: x.name, custom: x }, n = x.v === 2 ? Object.keys(x.lights || {}).length : null;
           return `<div class="fx mfx" data-ceedit="${esc(x.id)}" data-d="fx|${esc(u.k)}" data-label="${esc(x.name)}" style="--l:${grad(fxInfo(u.rep).hues, 80, 60, '90deg')}"><span class="fi">${this._ico(u, 96)}</span><span class="nm">${esc(x.name)}</span>${n != null ? `<small class="where">${esc(t('nLin', { n }))}</small>` : ''}</div>`; }).join('') || `<div class="emp">${pi('wand')}<span>${esc(t('mineEmpty'))}</span><button class="btn pri" data-cenew>${pi('plus', 's16')}${esc(t('mineNew'))}</button></div>`}</div>`;
     }
-    const A = this._allFx(), base = [...A].map(([k, rep]) => [k, this._label({ rep })]).sort((a, b) => a[1].localeCompare(b[1], lang));
-    const fxOf = id => { const l = H.states[id] && H.states[id].attributes.effect_list; return Array.isArray(l) ? [...parseList(l).m.values()].sort((a, b) => a.localeCompare(b, lang)) : []; };
+    const A = this._allFx(), base = [...A].map(([k, rep]) => [k, this._label({ rep })]).sort((a, b) => coll(lang).compare(a[1], b[1]));
+    const fxOf = id => { const l = H.states[id] && H.states[id].attributes.effect_list; return Array.isArray(l) ? [...parseList(l).m.values()].sort((a, b) => coll(lang).compare(a, b)) : []; };
     const act = (who, a, light) => {
       const m = (a && a.mode) || (who === '_fb' ? 'color' : 'auto'), hasFx = light && fxOf(light).length;
       const modes = [...(who === '_fb' ? [] : ['auto']), ...(hasFx ? ['fx'] : []), 'color', 'white', 'off', ...(who === '_fb' ? ['skip'] : [])];
@@ -902,7 +902,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     const hasIt = id => { const l = H.states[id] && H.states[id].attributes.effect_list; return Array.isArray(l) && parseList(l).m.has(k); };
     const sup = [], miss = [];
     rooms.forEach(r => M.by[r].forEach(id => { (hasIt(id) && this._fxOn(id) ? sup : miss).push([r, id]); }));
-    const fxOf = id => { const l = H.states[id] && H.states[id].attributes.effect_list; return Array.isArray(l) ? [...parseList(l).m.values()].sort((a, b) => a.localeCompare(b, this._l())) : []; };
+    const fxOf = id => { const l = H.states[id] && H.states[id].attributes.effect_list; return Array.isArray(l) ? [...parseList(l).m.values()].sort((a, b) => coll(this._l()).compare(a, b)) : []; };
     const act = (who, a, light) => {
       const all = who === '_all', m = (a && a.mode) || (all ? 'skip' : 'auto'), hasFx = light && fxOf(light).length;
       const modes = [...(all ? [] : ['auto']), ...(hasFx ? ['fx'] : []), 'color', 'white', 'off', 'skip'];
@@ -948,7 +948,7 @@ class LemurLightEffectsPanel extends HTMLElement {
   }
   _ceIconPop(el) {
     const t = (k, v) => this._t(k, v), lang = this._l(), c = this._ce;
-    const p = this._popAt(el, `<div style="padding:0 4px"><input id="ceiq" placeholder="${esc(t('searchI'))}" autocomplete="off"></div><div class="igrid ig3" id="ceig">${Object.keys(ICON3).map(k => [k, icName(k, lang)]).sort((a, b) => a[1].localeCompare(b[1], lang)).map(([k, n]) => `<button class="${c.icon === 'c:' + k ? 'on' : ''}" data-ceic="${esc(k)}" data-n="${esc((n + ' ' + k).toLocaleLowerCase(lang))}" title="${esc(n)}">${ICON3[k]}</button>`).join('')}</div>`, { w: 470 });
+    const p = this._popAt(el, `<div style="padding:0 4px"><input id="ceiq" placeholder="${esc(t('searchI'))}" autocomplete="off"></div><div class="igrid ig3" id="ceig">${Object.keys(ICON3).map(k => [k, icName(k, lang)]).sort((a, b) => coll(lang).compare(a[1], b[1])).map(([k, n]) => `<button class="${c.icon === 'c:' + k ? 'on' : ''}" data-ceic="${esc(k)}" data-n="${esc((n + ' ' + k).toLocaleLowerCase(lang))}" title="${esc(n)}">${ICON3[k]}</button>`).join('')}</div>`, { w: 470 });
     const q = p.querySelector('#ceiq'); if (q) q.focus();
   }
   _ceDefault(mode, light) {
@@ -1044,7 +1044,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     const t = (k, v) => this._t(k, v), lt = id === '_light', x = lt ? { id, icon: this._lightIcon(), lock: 1 } : this._RES.tabs.find(q => q.id === id); if (!x) return;
     const fixed = x.fav || lt, lang = this._l(), def = !x.icon || x.icon === 'sparkle' || (!lt && x.icon === GICON[x.fav ? 'fav' : x.auto]), cur = def ? '' : x.icon, low = s => String(s).toLocaleLowerCase(lang);
     const btn = (v, ic, n, f) => `<button class="${cur === v ? 'on' : ''}" data-ticon="${esc(id)}|${esc(v)}" data-n="${esc(low(n + ' ' + f))}" title="${esc(n)}">${ic}</button>`;
-    const col = Object.keys(ICON3).map(k => [k, icName(k, lang)]).sort((a, b) => a[1].localeCompare(b[1], lang)).map(([k, n]) => btn('c:' + k, ICON3[k], n, k.replace(/_/g, ' '))).join('');
+    const col = Object.keys(ICON3).map(k => [k, icName(k, lang)]).sort((a, b) => coll(lang).compare(a[1], b[1])).map(([k, n]) => btn('c:' + k, ICON3[k], n, k.replace(/_/g, ' '))).join('');
     const mono = Object.keys(ICONS).filter(n => n !== 'generic').map(n => btn(n, svg(n), n, '')).join('');
     const dflt = `<button class="it ${cur ? '' : 'on'}" data-ticon="${esc(id)}|"><span class="ti">${tabArt(lt ? {} : { fav: x.fav, auto: x.auto }, lt ? 'light' : null)}</span>${esc(t('defIcon'))}</button>`;
     const p = this._popAt(el, `<div style="padding:4px 4px 0"><input data-tname="${esc(id)}" value="${esc(lt ? t('light') : this._tabName(x))}" ${fixed ? 'disabled' : ''}></div>
@@ -1126,7 +1126,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     const it = e.target.closest('[data-d]'); if (!it || e.target.closest('input,button,select,label,.pop,.modal')) return;
     const v = it.dataset.d, i = v.indexOf('|'), zs = it.closest('[data-src]');
     this._dd = { it, type: v.slice(0, i), id: v.slice(i + 1), x: e.clientX, y: e.clientY, on: false, touch: e.pointerType === 'touch', src: zs ? zs.dataset.src : null };
-    if (this._dd.touch) { const d = this._dd; d.timer = setTimeout(() => { if (this._dd === d && !d.on) this._dstart(); }, 280); }
+    if (this._dd.touch) { window.addEventListener('touchmove', this._tm, { passive: false }); const d = this._dd; d.timer = setTimeout(() => { if (this._dd === d && !d.on) this._dstart(); }, 280); }
   }
   _dstart() {
     const d = this._dd, R = this.shadowRoot; d.on = true; this._closePop();
@@ -1158,12 +1158,17 @@ class LemurLightEffectsPanel extends HTMLElement {
     const d = this._dd; if (!d) return;
     if (!d.on) {
       const dist = Math.hypot(e.clientX - d.x, e.clientY - d.y);
-      if (d.touch) { if (dist > 10) { clearTimeout(d.timer); this._dd = null; } return; }
+      if (d.touch) { if (dist > 10) { clearTimeout(d.timer); this._dd = null; window.removeEventListener('touchmove', this._tm); } return; }
       if (dist < 6) return;
       this._dstart();
     }
     e.preventDefault();
     d.ghost.style.transform = `translate(${e.clientX + 14}px,${e.clientY + 10}px)`;
+    // the hit test and marks measure the layout: at most once per frame
+    d.ex = e.clientX; d.ey = e.clientY; if (d.raf) return;
+    d.raf = requestAnimationFrame(() => { d.raf = 0; if (this._dd === d) this._dhit(d, { clientX: d.ex, clientY: d.ey }); });
+  }
+  _dhit(d, e) {
     this.shadowRoot.querySelectorAll('.over,.ins,.insv').forEach(el => el.classList.remove('over', 'ins', 'insv'));
     const z = this._zoneAt(e.clientX, e.clientY, d.type); d.z = z; d.before = null;
     if (z) {
@@ -1179,7 +1184,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     if (sc) { const r = sc.getBoundingClientRect(), sp = e.clientY < r.top + 40 ? -12 : e.clientY > r.bottom - 40 ? 12 : 0; if (sp) this._asc = setInterval(() => { sc.scrollTop += sp; }, 16); }
   }
   _dup() {
-    const d = this._dd; if (!d) return; clearTimeout(d.timer); clearInterval(this._asc); this._dd = null;
+    const d = this._dd; if (!d) return; if (d.on && d.raf) { cancelAnimationFrame(d.raf); d.raf = 0; this._dhit(d, { clientX: d.ex, clientY: d.ey }); } clearTimeout(d.timer); clearInterval(this._asc); this._dd = null; window.removeEventListener('touchmove', this._tm);
     if (!d.on) return;
     d.ghost.remove(); const app = this.shadowRoot.querySelector('.app'); app.classList.remove('drag-' + d.type);
     this.shadowRoot.querySelectorAll('.over,.ins,.insv,.dragsrc').forEach(el => el.classList.remove('over', 'ins', 'insv', 'dragsrc'));

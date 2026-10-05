@@ -27,5 +27,7 @@
     if (!older) return;
     try { const f = 'lemur-heal-' + V; if (!sessionStorage.getItem(f)) { sessionStorage.setItem(f, '1'); location.reload(); } } catch (e) {}
   });
-  if (older) run(); else setTimeout(run, 8000);
+  // once a version has cleaned up on this browser, later page loads skip the scan (it reads every cached page)
+  let done = false; try { done = localStorage.getItem('lemur-healed') === V; } catch (e) {}
+  if (older) run(); else if (!done) setTimeout(() => run().then(() => { try { localStorage.setItem('lemur-healed', V); } catch (e) {} }), 8000);
 })();

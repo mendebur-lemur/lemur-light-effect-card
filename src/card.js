@@ -114,6 +114,18 @@ const GICON = { all: 'sparkle', mine: 'sparkle', nature: 'tree', sky: 'galaxy', 
 const RENK = ['#FF3B30', '#FF9500', '#FFD60A', '#A3E635', '#30D158', '#40E0D0', '#32ADE6', '#0A84FF', '#5E5CE6', '#BF5AF2', '#FF6FB5', '#FF2D95'];
 const KELV = [[2700, '#FFA757'], [3000, '#FFB16E'], [3200, '#FFB87B'], [4000, '#FFCEA6'], [5000, '#FFE4CE'], [6500, '#FFFEFA']];
 const hex2rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+// one collator per language (localeCompare with a locale builds a new one on every call)
+const COLL = {};
+function coll(l) { try { return COLL[l] || (COLL[l] = new Intl.Collator(l)); } catch (e) { return COLL[l] = new Intl.Collator(); } }
+// Shadow DOM page: the stylesheet is parsed once and stays; only the body below it is rebuilt.
+function paint(R, css, html) {
+  let st = R.__lst, b = R.__lbody;
+  if (!st || st.parentNode !== R || st.__css !== css) {
+    R.innerHTML = ''; st = document.createElement('style'); st.textContent = css; st.__css = css;
+    b = document.createElement('div'); b.style.display = 'contents'; R.append(st, b); R.__lst = st; R.__lbody = b;
+  }
+  b.innerHTML = html;
+}
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const svg = n => `<svg viewBox="0 0 24 24" fill="currentColor">${ICONS[n] || ICONS.generic}</svg>`;
 // tab icon: a mono ICONS name, or 'c:<key>' for one of the colour effect icons (ICON3)
@@ -369,11 +381,11 @@ const STORE = {
       this._put(d);
     }
   },
-  _put(d) { if (!d || typeof d !== 'object') return; for (const k of Object.keys(this.d)) if (d[k] != null) this.d[k] = d[k]; this.v++; this._emit(); },
+  _put(d) { if (!d || typeof d !== 'object') return; for (const k of Object.keys(this.d)) if (d[k] != null) this.d[k] = d[k]; if (d.settings != null) this.sv = (this.sv || 0) + 1; this.v++; this._emit(); },
   _emit() { this.L.forEach(f => { try { f(); } catch (e) { console.error(e); } }); },
   _local() { if (this.mode !== 'ha') try { localStorage.setItem(LS_KEY, JSON.stringify(this.d)); } catch (e) {} },
   _send(m) { return this.mode === 'ha' ? this.conn.sendMessagePromise(m) : Promise.resolve(); },
-  set(key, val) { this.d[key] = val; this.v++; this._emit(); this._local(); return this._send({ type: 'lemur_light_effects/set', key, value: val }).catch(e => console.warn('LEMUR', e)); },
+  set(key, val) { this.d[key] = val; if (key === 'settings') this.sv = (this.sv || 0) + 1; this.v++; this._emit(); this._local(); return this._send({ type: 'lemur_light_effects/set', key, value: val }).catch(e => console.warn('LEMUR', e)); },
   last(ents, effect, room) {
     if (!ents.length) return; const ts = Date.now() / 1000;
     ents.forEach(e => { if (effect) this.d.last[e] = { effect, ts }; else delete this.d.last[e]; });
@@ -403,7 +415,7 @@ const toPngB64 = file => new Promise((res, rej) => {
 });
 
 class LemurLightEffectCard extends HTMLElement {
-  constructor() { super(); this._onStore = () => { this._mergeCfg(); this._kick(); }; this._lastFx = {}; }
+  constructor() { super(); this._onStore = () => { if (STORE.sv !== this._msv) { this._msv = STORE.sv; this._mergeCfg(); } this._kick(); }; this._lastFx = {}; }
   connectedCallback() { STORE.L.add(this._onStore); if (this._hass) this._render(true); }
   disconnectedCallback() { STORE.L.delete(this._onStore); }
   static getConfigElement() { return document.createElement('lemur-light-effect-card-editor'); }
@@ -476,13 +488,13 @@ class LemurLightEffectCard extends HTMLElement {
       if (room === '_none') none.push(id); else (by[room] = by[room] || []).push(id);
     }
     const lang = this._lang();
-    const hid = new Set(c.hidden_areas || []), sortL = l => l.sort((a, b) => this._lname(a).localeCompare(this._lname(b), lang));
+    const hid = new Set(c.hidden_areas || []), sortL = l => l.sort((a, b) => coll(lang).compare(this._lname(a), this._lname(b)));
     const RI = c.room_icons || {}, mk = a => a === '_none' ? { id: '_none', name: this._t('unassigned'), icon: RI._none || 'mdi:lightbulb-group-outline', lights: sortL(none) } : { id: a, name: A[a].name, icon: RI[a] || A[a].icon || 'mdi:texture-box', lights: sortL(by[a]) };
     let rids;
     if (c.areas && c.areas.length) rids = c.areas.filter(a => by[a]);
     else {
       const ok = a => a === '_all' || (a === '_none' ? none.length > 0 : !!by[a]), pref = (c.order || []).filter(ok);
-      const rest = Object.keys(by).filter(a => !pref.includes(a)).sort((a, b) => A[a].name.localeCompare(A[b].name, lang));
+      const rest = Object.keys(by).filter(a => !pref.includes(a)).sort((a, b) => coll(lang).compare(A[a].name, A[b].name));
       rids = [...pref, ...rest];
       if (none.length && !rids.includes('_none')) rids.push('_none');
       rids = rids.filter(a => !hid.has(a));
@@ -523,7 +535,7 @@ class LemurLightEffectCard extends HTMLElement {
   _parsed(id) { const s = this._hass.states[id], l = s && s.attributes.effect_list; return Array.isArray(l) ? parseList(l) : EMPTY_P; }
   _fx(id) { const p = this._parsed(id), H = this._hid; if (!H || !H.size) return p.m; const m = new Map(); for (const [k, n] of p.m) if (!H.has(k)) m.set(k, n); return m; }
   _cap(id) { return fxOn(this._c, id, this._parsed(id).m.size); }
-  _keyOf(id, name) { for (const [k, n] of this._parsed(id).m) if (n === name) return k; return norm(name); }
+  _keyOf(id, name) { const p = this._parsed(id); if (!p.r) { p.r = new Map(); for (const [k, n] of p.m) if (!p.r.has(n)) p.r.set(n, k); } const k = p.r.get(name); return k !== undefined ? k : norm(name); }
   _now(id) {
     const o = this._optFx; if (o && Date.now() < o.until && o.ids.includes(id)) return o.k;
     const s = this._hass.states[id]; if (!s || s.state !== 'on') return null;
@@ -750,7 +762,7 @@ class LemurLightEffectCard extends HTMLElement {
       if (!this._raw.room && (this._c.start_tab || 'last') === 'last') { let r = null; try { r = localStorage.getItem('lemur-room'); } catch (e) {} if (r && rooms.some(x => x.id === r)) st.room = r; }
     }
     const room = this._room();
-    if (!rooms.length) { R.innerHTML = `<style>${CSS}</style><div class="wrap empty-card"><div class="empty">${esc(this._t('noLights'))}</div></div>`; this._lastSig = this._sig(); return; }
+    if (!rooms.length) { paint(R, CSS, `<div class="wrap empty-card"><div class="empty">${esc(this._t('noLights'))}</div></div>`); this._lastSig = this._sig(); return; }
     st.room = room.id;
     if (this._roomInit) try { localStorage.setItem('lemur-room', room.id); } catch (e) {}
     this._lastSig = this._sig();
@@ -765,8 +777,8 @@ class LemurLightEffectCard extends HTMLElement {
     customUnits(this._c, this._hass, IA, id => this._cap(id)).forEach(u => { if (!this._hid.has(u.k)) U.set(u.k, u); });
     const hasCu = [...U.values()].some(u => u.custom);
     this._U = U;
-    const all = [...U.values()], lab = u => this._label(u);
-    const cmp = (a, b) => (b.c - a.c) || lab(a).localeCompare(lab(b), lang);
+    const all = [...U.values()], LB = new Map(), lab = u => { let x = LB.get(u); if (x === undefined) LB.set(u, x = this._label(u)); return x; };
+    const cmp = (a, b) => (b.c - a.c) || coll(lang).compare(lab(a), lab(b));
     const by = {}, TB = {};
     RES.tabs.forEach(tb => { TB[tb.id] = tb; by[tb.id] = tb.fx.map(k => U.get(k)).filter(Boolean); });
     this._tb = TB;
@@ -866,7 +878,7 @@ class LemurLightEffectCard extends HTMLElement {
     const sc = R.querySelector('.scroll'), y = sc ? sc.scrollTop : 0, rl = R.querySelector('.crail'), ry = rl ? rl.scrollTop : 0;
     const hgt = cssSafe(this._c.height), mh = cssSafe(this._c.mobile_height), acc = cssSafe(this._c.accent);
     const vars = (hgt ? `--lemur-height:${hgt};` : '') + (mh ? `--lemur-mh:${mh};` : '') + (acc ? `--lemur-accent:${acc};` : '');
-    R.innerHTML = `<style>${CSS}</style><div class="wrap ${mob ? 'm' : ''} ${this._c.safe_area ? 'sa' : this._c.safe_area === false ? 'nosa' : ''} ${this._look()}" style="${esc(vars)}">${mob ? '' : `<div class="glow ${glowSoft ? 'soft' : ''}" style="background:${glowBg}"></div>`}
+    paint(R, CSS, `<div class="wrap ${mob ? 'm' : ''} ${this._c.safe_area ? 'sa' : this._c.safe_area === false ? 'nosa' : ''} ${this._look()}${!mob && (this._w || 1080) < 960 ? ' nw' : ''}" style="${esc(vars)}">${mob ? '' : `<div class="glow ${glowSoft ? 'soft' : ''}" style="background:${glowBg}"></div>`}
       ${mob ? M.top : `<div class="top"><div class="rooms">${rooms.map(r => roomBtn(r)).join('')}</div>${X}</div>`}
       ${upd}${mob ? M.head : `<div class="mid"><section class="pn cp"><nav class="crail">${tabBtn}</nav></section><section class="pn fxp">`}
       <div class="scroll">${mob && M.search ? M.search : body}</div>${mob ? '' : '</section></div>'}
@@ -879,7 +891,8 @@ class LemurLightEffectCard extends HTMLElement {
         <button class="act offb" data-off ${anyOn ? '' : 'disabled'}>${PW}<span class="at"> ${esc(t('turnOff'))}</span></button>
       </div>`}
       ${st.panel ? this._panel(room, IA) : ''}${st.sheet ? this._sheet(st.sheet, IF) : ''}${mob && st.rpick ? M.rooms : ''}
-      <div class="toast"></div></div>`;
+      <div class="toast"></div></div>`);
+    if (this._tq && Date.now() < this._tq.until) { const el = R.querySelector('.toast'); if (el) { el.textContent = this._tq.x; el.classList.add('show'); } }
     if (keep) { const n2 = R.querySelector('.scroll'); if (n2) n2.scrollTop = y; }
     const mc = R.querySelector('.mchips'), mca = mc && mc.querySelector('.on'); if (mc) mc.scrollLeft = mca ? mca.offsetLeft - 12 : (this._mcx || 0);
     const rl2 = R.querySelector('.crail'); if (rl2) rl2.scrollTop = ry;
@@ -928,7 +941,7 @@ class LemurLightEffectCard extends HTMLElement {
         <div class="isec"><div class="sec">${esc(t('color'))}</div><div class="cb2"><div class="wheel" data-wheel>${knob}</div><div class="cg2">${RENK.map(c => { const r = hex2rgb(c); const on = L.on && !fx && L.rgb && L.rgb.every((v, i) => Math.abs(v - r[i]) < 24); return `<button class="swc ${on ? 'on' : ''}" data-rgb="${r.join(',')}" style="background:${c}"></button>`; }).join('')}</div></div></div>
       </div></div>`;
   }
-  _toast(x) { const el = this.shadowRoot && this.shadowRoot.querySelector('.toast'); if (!el) return; el.textContent = x; el.classList.add('show'); clearTimeout(this._tt); this._tt = setTimeout(() => el.classList.remove('show'), 2200); }
+  _toast(x) { this._tq = { x, until: Date.now() + 2200 }; const el = this.shadowRoot && this.shadowRoot.querySelector('.toast'); if (!el) return; el.textContent = x; el.classList.add('show'); clearTimeout(this._tt); this._tt = setTimeout(() => { const e = this.shadowRoot && this.shadowRoot.querySelector('.toast'); if (e) e.classList.remove('show'); }, 2200); }
   _bind(all) {
     const R = this.shadowRoot, t = (k, v) => this._t(k, v);
     R.querySelector('.wrap').onclick = ev => {

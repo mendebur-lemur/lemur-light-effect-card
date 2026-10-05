@@ -1,6 +1,19 @@
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.6.2',
+    tr: ['Daha hızlı: kart ve panel her güncellemede bütün sayfayı yeniden kurmuyor; efekt seçince yalnızca değişen bilgi gönderiliyor; oda efekt varlıkları parlaklık ve renk değişimlerinde boşuna hesaplanmıyor.',
+      'Ekran düzeltmeleri: küçük tabletlerde ve yan çevrilmiş telefonda oda satırı ve alt çubuk taşmıyor; telefonda kontrol panelindeki efekt listesi ve arama kutusu ekrana sığıyor.',
+      'Bildirimler (örneğin "uygulandı") ışık durumu gelince erken kaybolmuyor.'],
+    en: ['Faster: the card and panel no longer rebuild the whole page on every update; playing an effect sends only what changed; room effect entities skip work on brightness and colour changes.',
+      'Layout fixes: on small tablets and phones held sideways the room row and bottom bar no longer overflow; on phones the control panel effect list and search box fit the screen.',
+      'Messages (such as "applied") no longer vanish early when the light state arrives.'],
+    de: ['Schneller: Karte und Panel bauen nicht mehr bei jedem Update die ganze Seite neu auf; beim Abspielen wird nur die Änderung gesendet.',
+      'Layout-Korrekturen für kleine Tablets, quer gehaltene Handys und das Panel auf dem Handy.'],
+    es: ['Más rápido: la tarjeta y el panel ya no reconstruyen toda la página en cada actualización; al reproducir un efecto solo se envía lo que cambió.',
+      'Correcciones de diseño en tabletas pequeñas, móviles en horizontal y el panel en el móvil.'],
+    fr: ['Plus rapide : la carte et le panneau ne reconstruisent plus toute la page à chaque mise à jour ; lancer un effet n’envoie que ce qui a changé.',
+      'Corrections d’affichage sur petites tablettes, téléphones à l’horizontale et le panneau sur téléphone.'] },
   { v: '1.6.1',
     tr: ['Güvenlik güncellemesi: simge dosyası, ışıkların bildirdiği renkler, güncelleme bağlantısı ve paylaşılan düzen artık sıkı denetleniyor. Efekt resmi yükleme ve silme yalnızca yönetici hesabında.'],
     en: ['Security update: the icon file, colours reported by lights, the update link and the shared layout are now strictly checked. Uploading and removing effect pictures is admin only.'],

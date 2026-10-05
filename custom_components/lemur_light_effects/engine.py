@@ -7,6 +7,7 @@ card does, without a browser.
 from __future__ import annotations
 
 import asyncio
+import functools
 import math
 import re
 from typing import Any
@@ -43,10 +44,26 @@ def pretty(name: Any) -> str:
 
 
 def parse_list(effects: Any) -> tuple[dict[str, str], str | None]:
-    """Effect key -> name as the light calls it, plus the light's own 'off' effect."""
+    """Effect key -> name as the light calls it, plus the light's own 'off' effect.
+
+    Lights report the same list on every state change, so results are cached per list (read-only)."""
+    if not isinstance(effects, (list, tuple)):
+        return {}, None
+    try:
+        return _parse_cached(tuple(effects))
+    except TypeError:  # something unhashable in the list
+        return _parse(effects)
+
+
+@functools.lru_cache(maxsize=256)
+def _parse_cached(effects: tuple) -> tuple[dict[str, str], str | None]:
+    return _parse(effects)
+
+
+def _parse(effects: Any) -> tuple[dict[str, str], str | None]:
     m: dict[str, str] = {}
     off = None
-    for nm in effects if isinstance(effects, list) else []:
+    for nm in effects:
         if not isinstance(nm, str) or not nm.strip():
             continue
         if OFF_RE.match(nm.strip()):

@@ -50,7 +50,7 @@ class Runtime:
             rec = self.data.setdefault("recent", {})
             lst = [k for k in rec.get(room_id, []) if k != key]
             rec[room_id] = [key, *lst][:RECENT_MAX]
-        self.store.changed()
+        self.store.changed(["last", "recent"])
 
     async def play(self, room: dict[str, Any], effect: str, brightness: int | None = None, transition: float | None = None) -> dict[str, Any]:
         us = engine.units(self.hass, self.data, room)

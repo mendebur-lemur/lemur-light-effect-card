@@ -20,7 +20,7 @@ ha-icon{--mdc-icon-size:100%;display:inline-flex;width:24px;height:24px;flex:non
 .room span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .room svg,.room ha-icon{width:clamp(22px,2vw,30px);height:clamp(22px,2vw,30px);flex:none;color:var(--acc)}
 .room.on{background:var(--acc);color:var(--acc-tx)}.room.on svg,.room.on ha-icon{color:var(--acc-tx)}
-.x{height:100%;aspect-ratio:1/1;min-width:44px;border-radius:22px;background:var(--glass);border:1px solid var(--glass-b);color:var(--mut);font-size:17px;cursor:pointer;flex:none}
+.x{height:auto;min-height:44px;width:clamp(56px,5.6vw,76px);min-width:44px;border-radius:22px;background:var(--glass);border:1px solid var(--glass-b);color:var(--mut);font-size:17px;cursor:pointer;flex:none}
 
 /* panels */
 .mid{flex:1 1 auto;min-height:0;display:flex;gap:12px;padding:0 16px}
@@ -279,3 +279,7 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .racts button{display:flex;align-items:center;justify-content:center;gap:8px;height:48px;border-radius:14px;border:0;background:var(--btn);color:var(--tx);font:inherit;font-size:14.5px;font-weight:600;cursor:pointer}
 .racts button svg{width:20px;height:20px;color:var(--acc)}
 .racts .warn svg{color:#ff8a7a}.racts button:disabled{opacity:.4;cursor:default}
+
+@supports (height:1dvh){.wrap{height:var(--lemur-height,80dvh)}.m{height:var(--lemur-mh,80dvh)}}
+/* tablet layout in a narrow card (small tablets, phones on their side): icon-only buttons in the bottom bar */
+.nw .at{display:none}.nw .slider{min-width:90px}.nw .now{min-width:0;flex:1}.nw .cbar{flex-wrap:nowrap}

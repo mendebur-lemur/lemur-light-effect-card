@@ -78,8 +78,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEnt
     @callback
     def light_changed(ev: Event) -> None:
         eid = ev.data.get("entity_id", "")
-        if ev.data.get("old_state") is None or ev.data.get("new_state") is None:
+        old, new = ev.data.get("old_state"), ev.data.get("new_state")
+        if old is None or new is None:
             later()  # a light came or went: rooms may change
+        else:
+            a, b = old.attributes, new.attributes
+            # brightness and colour changes don't change the options or what is playing
+            if old.state == new.state and a.get("effect") == b.get("effect") and a.get("effect_list") == b.get("effect_list"):
+                return
         for e in ents.values():
             if eid in e.lights:
                 e.refresh()
@@ -132,9 +138,12 @@ class RoomEffectSelect(SelectEntity):
 
     @callback
     def refresh(self) -> None:
-        before = (self._attr_options, self._attr_current_option, self._attr_available)
+        def snap() -> tuple:
+            return (self._attr_options, self._attr_current_option, self._attr_available,
+                    getattr(self, "_attr_extra_state_attributes", None), self._attr_translation_placeholders)
+        before = snap()
         self._compute()
-        if self.hass and self.entity_id and before != (self._attr_options, self._attr_current_option, self._attr_available):
+        if self.hass and self.entity_id and before != snap():
             self.async_write_ha_state()
 
     async def async_select_option(self, option: str) -> None:

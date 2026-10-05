@@ -34,7 +34,7 @@ async def test_ws_roundtrip(hass, hass_ws_client, js_url):
     assert (await ws.receive_json())["success"]
     await ws.send_json({"id": 2, "type": "lemur_light_effects/get"})
     r = await ws.receive_json()
-    assert r["result"] == {"favorites": [], "hidden": [], "rooms": {}, "last": {}, "icons": {}, "settings": {}, "tabs": {}}
+    assert r["result"] == {"favorites": [], "hidden": [], "rooms": {}, "last": {}, "icons": {}, "settings": {}, "tabs": {}, "recent": {}}
     await ws.send_json({"id": 3, "type": "lemur_light_effects/set", "key": "favorites", "value": ["aurora", "fire"]})
     msgs = [await ws.receive_json(), await ws.receive_json()]
     ev = next(m for m in msgs if m["type"] == "event")
@@ -43,6 +43,7 @@ async def test_ws_roundtrip(hass, hass_ws_client, js_url):
     assert res["success"]
     await ws.send_json({"id": 4, "type": "lemur_light_effects/set", "key": "rooms", "value": {"salon": ["light.a"]}})
     msgs = [await ws.receive_json(), await ws.receive_json()]
+    hass.states.async_set("light.a", "on")
     await ws.send_json({"id": 5, "type": "lemur_light_effects/last", "entities": ["light.a"], "effect": "candle"})
     msgs = [await ws.receive_json(), await ws.receive_json()]
     assert hass.data[DOMAIN].data["last"]["light.a"]["effect"] == "candle"

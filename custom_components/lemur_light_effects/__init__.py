@@ -157,9 +157,11 @@ class LemurData:
         return old
 
     @callback
-    def changed(self) -> None:
+    def changed(self, keys: list[str] | None = None) -> None:
+        """Save soon and tell open cards. With keys, only those parts are sent (cards merge per key)."""
         self.store.async_delay_save(lambda: self.data, 1.0)
-        async_dispatcher_send(self.hass, SIGNAL_UPDATE, self.data)
+        payload = self.data if keys is None else {k: self.data.get(k) for k in keys}
+        async_dispatcher_send(self.hass, SIGNAL_UPDATE, payload)
 
 
 async def _register_static(hass: HomeAssistant, icon_dir: str) -> None:
@@ -273,8 +275,8 @@ def ws_set(hass, connection, msg):
             connection.send_error(msg["id"], "invalid", "rooms must be a small object")
             return
         data.data[key] = {str(k)[:MAX_KEY]: [str(e)[:MAX_KEY] for e in v][:500] for k, v in list(value.items())[:MAX_ROOMS] if isinstance(v, list)}
-    data.changed()
-    connection.send_result(msg["id"], data.data)
+    data.changed([key])
+    connection.send_result(msg["id"], {key: data.data[key]})
 
 
 @websocket_api.websocket_command(
@@ -350,7 +352,7 @@ async def ws_icon_upload(hass, connection, msg):
     await hass.async_add_executor_job(_write)
     url = f"{URL_ICONS}/{name}?v={int(time.time())}"
     data.data["icons"][key] = url
-    data.changed()
+    data.changed(["icons"])
     connection.send_result(msg["id"], {"url": url})
 
 
@@ -373,7 +375,7 @@ async def ws_icon_delete(hass, connection, msg):
                 os.remove(path)
 
         await hass.async_add_executor_job(_rm)
-        data.changed()
+        data.changed(["icons"])
     connection.send_result(msg["id"], {"ok": True})
 
 

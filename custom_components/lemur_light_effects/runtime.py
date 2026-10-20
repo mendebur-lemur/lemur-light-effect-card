@@ -108,6 +108,7 @@ class Runtime:
             raise ValueError(f"'{effect}' is not an effect of {room['name']}")
         await engine.apply_unit(self.hass, self.settings, u)
         self._pv["key"] = u["key"]
+        self._pv["lights"] = list(u["names"])
         self._touch()
         return u
 
@@ -121,4 +122,4 @@ class Runtime:
         if restore and pv["ids"]:
             await self.hass.services.async_call("scene", "turn_on", {"entity_id": f"scene.{PREVIEW_SCENE}"}, blocking=True)
         elif not restore and pv.get("key"):
-            self.remember(pv["room"], pv["ids"], pv["key"])
+            self.remember(pv["room"], pv.get("lights") or [], pv["key"])

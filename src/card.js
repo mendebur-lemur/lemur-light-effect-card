@@ -33,7 +33,15 @@ const ICON_PH = '<svg viewBox="0 0 48 48" class="dz ph"><circle cx="24" cy="24" 
 const LANGS = ['tr', 'en', 'de', 'es', 'fr'];
 const pickLang = x => { const m = String(x || '').toLowerCase().slice(0, 2); return LANGS.includes(m) ? m : 'en'; };
 const OFF_RE = /^(off|none|stop|solid|no effect|static|normal|default)$/i;
-const norm = s => String(s).toLowerCase().replace(/^music\s*:\s*/, 'music ').replace(/[^a-z0-9À-ɏ]+/g, ' ').trim();
+// effect key of a name. Names in Latin letters keep the key they always had (favourites, tabs and fill are stored by it);
+// a name with letters that rule dropped (Cyrillic, Greek, CJK, Hebrew, Arabic...) keeps all its letters and digits instead,
+// and a name of symbols only (emoji) is keyed by its code points. engine.py norm() is the same rule.
+const norm = s => {
+  const l = String(s).toLowerCase().replace(/^music\s*:\s*/, 'music '), k = l.replace(/[^a-z0-9À-ɏ]+/g, ' ').trim();
+  if (k && !/[^\P{L}a-zÀ-ɏ]/u.test(l)) return k;
+  const u = l.replace(/[^\p{L}\p{N}]+/gu, ' ').trim(), cp = [...l].map(c => c.codePointAt(0)).filter(c => c > 127);
+  return u || (cp.length ? '#' + cp.map(c => c.toString(16)).join('-') : '');
+};
 const SYN = {
   'candlelight': 'candle', 'candle light': 'candle', 'candle flicker': 'candle', 'candleflicker': 'candle',
   'fireplace': 'fire', 'fire place': 'fire', 'fire flicker': 'fire',
@@ -71,7 +79,7 @@ const I18N = {
     favEmpty: 'Henüz favori yok. Bir efekte basılı tut (masaüstünde sağ tık) ve “Favorilere ekle”yi seç.',
     addFav: 'Favorilere ekle', remFav: 'Favorilerden çıkar', setIcon: 'Simge yükle', resetIcon: 'Varsayılan simge',
     hide: 'Efekti gizle', hidden: '{x} gizlendi', turnedOff: '{r} kapatıldı', turnedOn: '{r} açıldı',
-    stopped: 'Efekt durduruldu · {k}K %{b}', support: 'Destekleyen ışıklar', noLights: 'Bu odada ışık bulunamadı',
+    stopped: 'Efekt durduruldu · {k}K %{b}', support: 'Destekleyen ışıklar', noLights: 'Bu odada ışık bulunamadı', noLightsAll: 'Gösterilecek ışık bulunamadı',
     applied: '{r} → {x}', partial: '{x} → {a}/{b} ışık', iconSaved: 'Simge kaydedildi', iconErr: 'Simge yüklenemedi',
     err: 'Hata: {e}', toColor: '{r} → renk', localMode: 'Paylaşım için entegrasyonu kur (şu an sadece bu cihaza kaydediliyor)',
     close: 'Kapat', kel: ['Akkor', 'Sıcak', 'Yumuşak', 'Nötr', 'Gün ışığı', 'Soğuk'],
@@ -92,7 +100,7 @@ const I18N = {
     favEmpty: 'No favorites yet. Long-press an effect (right-click on desktop) and choose “Add to favorites”.',
     addFav: 'Add to favorites', remFav: 'Remove from favorites', setIcon: 'Upload icon', resetIcon: 'Default icon',
     hide: 'Hide effect', hidden: '{x} hidden', turnedOff: '{r} turned off', turnedOn: '{r} turned on',
-    stopped: 'Effect stopped · {k}K {b}%', support: 'Supported by', noLights: 'No lights in this room',
+    stopped: 'Effect stopped · {k}K {b}%', support: 'Supported by', noLights: 'No lights in this room', noLightsAll: 'No lights to show',
     applied: '{r} → {x}', partial: '{x} → {a}/{b} lights', iconSaved: 'Icon saved', iconErr: 'Could not upload icon',
     err: 'Error: {e}', toColor: '{r} → color', localMode: 'Install the integration to share (saved on this device only)',
     close: 'Close', kel: ['Incandescent', 'Warm', 'Soft', 'Neutral', 'Daylight', 'Cool'],
@@ -236,7 +244,8 @@ function homeArea(H, id) {
 // where a light shows up: its HA area unless the panel moved it (settings.layout) or it is hidden
 function lightPlace(H, S, id) {
   const A = H.areas || {}, L = (S.layout || {})[id], nk = noiseKind(H, id);
-  if (L === '_hidden') return { room: null, why: nk || 'manual' };
+  // the card's own `exclude:` (S._xc) wins over the control panel's layout
+  if (L === '_hidden' || (S._xc || []).includes(id)) return { room: null, why: L === '_hidden' && nk || 'manual' };
   if (L && (L === '_none' || A[L])) return { room: L };
   if ((S.exclude || []).includes(id)) return { room: null, why: 'manual' };
   if (nk && !(S.include || []).includes(id)) return { room: null, why: nk, auto: true };
@@ -328,8 +337,10 @@ function fillAction(S, k, id) {
 function scriptSteps(u) {
   const g = new Map(), offs = [];
   const add = (d, id) => { const k = JSON.stringify(d); if (!g.has(k)) g.set(k, { d, ids: [] }); g.get(k).ids.push(id); };
-  Object.entries(u.names).forEach(([id, a]) => {
+  // lights the effect was filled in for (u.fill: light -> action) do what was chosen for them
+  [...Object.entries(u.names), ...Object.entries(u.fill || {}).filter(([id]) => !(id in u.names))].forEach(([id, a]) => {
     if (typeof a === 'string') return add({ effect: a }, id);
+    if (!a || !a.mode || a.mode === 'skip' || a.mode === 'auto') return;
     if (a.mode === 'off') return offs.push(id);
     if (a.mode === 'fx') return add({ effect: a.fx }, id);
     const d = {};
@@ -367,18 +378,27 @@ function fxArt(u, px, S) {
 const LS_KEY = 'lemur-light-effects';
 const STORE = {
   d: { favorites: [], hidden: [], rooms: {}, last: {}, icons: {}, settings: {}, tabs: {}, recent: {} }, v: 0, mode: null, conn: null, L: new Set(), stale: null,
-  attach(hass) { const c = hass && hass.connection; if (!c || c === this.conn) return; this.conn = c; this._init(); },
+  attach(hass) { const c = hass && hass.connection; if (!c || c === this.conn) return; this.conn = c; this._try = 0; clearTimeout(this._rt); this._init(); },
   async _init() {
+    const c = this.conn;
     try {
-      const d = await this.conn.sendMessagePromise({ type: 'lemur_light_effects/get' });
-      this.mode = 'ha'; this._put(d);
-      this.conn.subscribeMessage(m => this._put(m), { type: 'lemur_light_effects/subscribe' }).catch(() => {});
+      const d = await c.sendMessagePromise({ type: 'lemur_light_effects/get' });
+      if (c !== this.conn) return;
+      this.mode = 'ha'; this._try = 0; this._put(d);
+      // subscribed again by us after a reconnect (with fresh data), not by the connection
+      c.subscribeMessage(m => this._put(m), { type: 'lemur_light_effects/subscribe' }, { resubscribe: false }).catch(() => {});
+      if (!c.__lemurR && typeof c.addEventListener === 'function') { c.__lemurR = 1; c.addEventListener('ready', () => { if (c === this.conn) { this._try = 0; clearTimeout(this._rt); this._init(); } }); }
       // a browser or app can keep an older card in its cache after an update: offer a reload
-      this.conn.sendMessagePromise({ type: 'lemur_light_effects/info' }).then(r => { if (r && r.version && r.version !== CARD_VERSION) { this.stale = r.version; this.v++; this._emit(); } }).catch(() => {});
+      c.sendMessagePromise({ type: 'lemur_light_effects/info' }).then(r => { if (r && r.version && r.version !== CARD_VERSION) { this.stale = r.version; this.v++; this._emit(); } }).catch(() => {});
     } catch (e) {
-      this.mode = 'local';
-      let d = {}; try { d = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (_) {}
-      this._put(d);
+      if (c !== this.conn) return;
+      if (!this.mode) {
+        this.mode = 'local';
+        let d = {}; try { d = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (_) {}
+        this._put(d);
+      }
+      // no integration: stay on this device. Anything else (restart, lost connection) is tried again a little later
+      if (!(e && e.code === 'unknown_command')) { const w = [2, 5, 15, 30, 60][Math.min(this._try++, 4)]; clearTimeout(this._rt); this._rt = setTimeout(() => { if (c === this.conn) this._init(); }, w * 1000); }
     }
   },
   _put(d) { if (!d || typeof d !== 'object') return; for (const k of Object.keys(this.d)) if (d[k] != null) this.d[k] = d[k]; if (d.settings != null) this.sv = (this.sv || 0) + 1; this.v++; this._emit(); },
@@ -449,9 +469,11 @@ class LemurLightEffectCard extends HTMLElement {
   }
   _mergeCfg() {
     const s = (STORE.d.settings && typeof STORE.d.settings === 'object') ? STORE.d.settings : {}, r = this._raw || {};
+    // lists may be written in YAML as one plain value: always arrays of strings here
+    const strs = v => (Array.isArray(v) ? v : v == null ? [] : [v]).filter(x => typeof x === 'string' && x);
     this._c = Object.assign({ kelvin: 3200, brightness: 40, language: 'auto', all_home: true, min_effects: 3, close: false, lan: [] }, s, r);
-    this._c.exclude = [...(s.exclude || []), ...(r.exclude || [])];
-    if (!(r.areas && r.areas.length)) this._c.areas = null;
+    this._c._xc = strs(r.exclude); this._c.exclude = [...strs(s.exclude), ...this._c._xc]; this._c.lan = strs(this._c.lan);
+    const ar = strs(r.areas), en = strs(r.entities); this._c.areas = ar.length ? ar : null; this._c.entities = en.length ? en : null;
   }
   set hass(h) {
     const first = !this._hass; this._hass = h; STORE.attach(h);
@@ -480,7 +502,7 @@ class LemurLightEffectCard extends HTMLElement {
     const ids = Object.keys(H.states).filter(x => x.startsWith('light.'));
     const rm = this._rm;
     if (rm && rm.E === E && rm.A === A && rm.D === D && rm.n === ids.length && rm.c === c && rm.l === this._lang()) return rm.list;
-    const inc = c.entities && c.entities.length ? new Set(c.entities) : null;
+    const inc = c.entities && c.entities.length ? new Set(c.entities.filter(x => !c._xc.includes(x))) : null;
     const by = {}, none = [];
     for (const id of inc ? ids.filter(x => inc.has(x)) : lightPool(H, c.include_groups)) {
       const p = lightPlace(H, c, id), room = p.room || (inc ? homeArea(H, id) : null);
@@ -518,7 +540,7 @@ class LemurLightEffectCard extends HTMLElement {
   _roomKeys(room) {
     const M = new Map();
     room.lights.filter(id => this._cap(id)).forEach(id => { for (const [k, nm] of this._parsed(id).m) if (!M.has(k) || (GOVL.has(nm) && !GOVL.has(M.get(k)))) M.set(k, nm); });
-    customUnits(this._c, this._hass, room.lights, id => this._cap(id)).forEach(u => M.set(u.k, u.rep));
+    customUnits(this._c, this._hass, room.lights.filter(id => this._av(id)), id => this._cap(id)).forEach(u => M.set(u.k, u.rep));
     return M;
   }
   _resolve(room) {
@@ -534,7 +556,17 @@ class LemurLightEffectCard extends HTMLElement {
   // ---- effects ----
   _parsed(id) { const s = this._hass.states[id], l = s && s.attributes.effect_list; return Array.isArray(l) ? parseList(l) : EMPTY_P; }
   _fx(id) { const p = this._parsed(id), H = this._hid; if (!H || !H.size) return p.m; const m = new Map(); for (const [k, n] of p.m) if (!H.has(k)) m.set(k, n); return m; }
-  _cap(id) { return fxOn(this._c, id, this._parsed(id).m.size); }
+  // a light that is unavailable plays nothing: it is not counted or sent effects
+  _av(id) { const s = this._hass.states[id]; return !!s && s.state !== 'unavailable'; }
+  _cap(id) { return this._av(id) && fxOn(this._c, id, this._parsed(id).m.size); }
+  // with light groups shown, a group and its own lights in one call would get the command twice: a group whose lights are
+  // all in the call is left out (each light gets its own command), otherwise its lights are left out (the group reaches them)
+  _dd(ids) {
+    const H = this._hass, G = ids.filter(id => Array.isArray(((H.states[id] || {}).attributes || {}).entity_id)); if (!G.length) return ids;
+    const drop = new Set();
+    G.forEach(g => { const M = H.states[g].attributes.entity_id; if (M.length && M.every(m => ids.includes(m))) drop.add(g); else M.forEach(m => { if (m !== g && ids.includes(m)) drop.add(m); }); });
+    return ids.filter(id => !drop.has(id));
+  }
   _keyOf(id, name) { const p = this._parsed(id); if (!p.r) { p.r = new Map(); for (const [k, n] of p.m) if (!p.r.has(n)) p.r.set(n, k); } const k = p.r.get(name); return k !== undefined ? k : norm(name); }
   _now(id) {
     const o = this._optFx; if (o && Date.now() < o.until && o.ids.includes(id)) return o.k;
@@ -611,6 +643,7 @@ class LemurLightEffectCard extends HTMLElement {
   // ---- service calls ----
   _call(data) {
     const err = e => this._toast(this._t('err', { e: e.message || e.code || e }));
+    data = Object.assign({}, data, { entity_id: this._dd([].concat(data.entity_id)) }); if (!data.entity_id.length) return Promise.resolve();
     const fade = +this._c.transition || 0;
     if (fade > 0 && data.effect == null) {
       // a soft change, on the lights that can fade (Ayarlar → geçiş süresi)
@@ -639,6 +672,7 @@ class LemurLightEffectCard extends HTMLElement {
       if (!Object.keys(d).length && !data._power) return;
       const key = JSON.stringify(d); if (!g.has(key)) g.set(key, { d, ids: [] }); g.get(key).ids.push(id);
     });
+    if (!g.size) return; // none of these lights can do it: nothing was sent, so nothing to show
     g.forEach(({ d, ids }) => this._call(Object.assign({ entity_id: ids }, d)));
     this._setOpt({ br: data.brightness_pct, k: data.color_temp_kelvin, rgb: data.rgb_color, hs: data.hs_color });
     if (!keepFx) STORE.last(I.filter(id => STORE.d.last[id]), null);
@@ -647,9 +681,9 @@ class LemurLightEffectCard extends HTMLElement {
   }
   _off(I) {
     if (!I.length) return; this._optFx = null;
-    const fade = +this._c.transition || 0, slow = fade > 0 ? I.filter(id => ((this._hass.states[id] || {}).attributes || {}).supported_features & 32) : [];
+    const T = this._dd(I), fade = +this._c.transition || 0, slow = fade > 0 ? T.filter(id => ((this._hass.states[id] || {}).attributes || {}).supported_features & 32) : [];
     if (slow.length) this._hass.callService('light', 'turn_off', { entity_id: slow, transition: fade }).catch(e => this._toast(this._t('err', { e: e.message || e })));
-    const rest = I.filter(id => !slow.includes(id));
+    const rest = T.filter(id => !slow.includes(id));
     if (rest.length) this._hass.callService('light', 'turn_off', { entity_id: rest }).catch(e => this._toast(this._t('err', { e: e.message || e })));
     this._opt = null; this._setOpt({ off: true }); STORE.last(I.filter(id => STORE.d.last[id]), null);
     this._render(true); this._toast(this._t('turnedOff', { r: this._room().name }));
@@ -698,7 +732,13 @@ class LemurLightEffectCard extends HTMLElement {
     ids.forEach(id => {
       const a = M[id], c = this._caps(id), s = H.states[id], off = !s || s.state !== 'on', at = (s && s.attributes) || {};
       if (a.mode === 'off') { offs.push(id); return; }
-      if (a.mode === 'fx') { const d = { effect: a.fx }; const b = off && ob ? this._brCap(ob) : nightMax(this._c); if (b && c.dim) d.brightness_pct = this._brCap(b); add(d, id); return; }
+      if (a.mode === 'fx') {
+        // same as _apply: a light that is off can come on at a set brightness; at night only lights above the ceiling are lowered
+        const d = { effect: a.fx }, nm0 = nightMax(this._c), cur = at.brightness ? Math.round(at.brightness / 2.55) : null;
+        let b = off && ob ? this._brCap(ob) : null;
+        if (nm0 && c.dim && (off || cur == null || cur > nm0)) b = Math.min(b || nm0, nm0);
+        if (b && c.dim) d.brightness_pct = b; add(d, id); return;
+      }
       const d = {};
       if (a.mode === 'color' && Array.isArray(a.rgb) && c.color) d.rgb_color = a.rgb.map(Number);
       if (a.mode === 'white') { const k = +a.k || 3000; if (c.ct) d.color_temp_kelvin = Math.max(at.min_color_temp_kelvin || 1000, Math.min(at.max_color_temp_kelvin || 12000, k)); else if (c.color) d.rgb_color = k2rgb(k); }
@@ -706,7 +746,7 @@ class LemurLightEffectCard extends HTMLElement {
       add(d, id);
     });
     g.forEach(({ d, ids: x }) => this._call(Object.assign({ entity_id: x }, d)));
-    if (offs.length) H.callService('light', 'turn_off', { entity_id: offs }).catch(e => this._toast(this._t('err', { e: e.message || e })));
+    const T = this._dd(offs); if (T.length) H.callService('light', 'turn_off', { entity_id: T }).catch(e => this._toast(this._t('err', { e: e.message || e })));
   }
   // one entry point for a tap and for Random
   _play(k, IA, IF) {
@@ -717,7 +757,8 @@ class LemurLightEffectCard extends HTMLElement {
   }
   _stop(I) {
     this._optFx = null;
-    const H = this._hass, on = I.filter(id => (H.states[id] || {}).state === 'on'), st = this._std();
+    // only lights that play effects (or play one of ours right now); a plain white light keeps its tone and brightness
+    const H = this._hass, on = I.filter(id => (H.states[id] || {}).state === 'on' && (this._cap(id) || this._now(id))), st = this._std();
     const offs = new Map();
     on.forEach(id => {
       const p = this._parsed(id), e = H.states[id].attributes.effect;
@@ -762,7 +803,13 @@ class LemurLightEffectCard extends HTMLElement {
       if (!this._raw.room && (this._c.start_tab || 'last') === 'last') { let r = null; try { r = localStorage.getItem('lemur-room'); } catch (e) {} if (r && rooms.some(x => x.id === r)) st.room = r; }
     }
     const room = this._room();
-    if (!rooms.length) { paint(R, CSS, `<div class="wrap empty-card"><div class="empty">${esc(this._t('noLights'))}</div></div>`); this._lastSig = this._sig(); return; }
+    if (!rooms.length) {
+      // still a way out of a full-screen layer
+      const X0 = this._c.close ? `<button class="x" data-close aria-label="${esc(this._t('close'))}">✕</button>` : '';
+      paint(R, CSS, `<div class="wrap empty-card">${X0}<div class="empty">${esc(this._t(this._c.areas && this._c.areas.length === 1 ? 'noLights' : 'noLightsAll'))}</div></div>`);
+      const xb = R.querySelector('[data-close]'); if (xb) xb.onclick = () => this._close();
+      this._lastSig = this._sig(); return;
+    }
     st.room = room.id;
     if (this._roomInit) try { localStorage.setItem('lemur-room', room.id); } catch (e) {}
     this._lastSig = this._sig();
@@ -773,8 +820,8 @@ class LemurLightEffectCard extends HTMLElement {
     const U = new Map();
     IF.forEach(id => { for (const [k, nm] of this._fx(id)) { let u = U.get(k); if (!u) { u = { k, names: {}, c: 0, rep: nm }; U.set(k, u); } u.names[id] = nm; u.c++; if (GOVL.has(nm) && !GOVL.has(u.rep)) u.rep = nm; } });
     // lights without the effect that were given something to do (filled in) take part too
-    U.forEach(u => { IA.forEach(id => { if (u.names[id]) return; const a = fillAction(this._c, u.k, id); if (a) (u.fill = u.fill || {})[id] = a; }); });
-    customUnits(this._c, this._hass, IA, id => this._cap(id)).forEach(u => { if (!this._hid.has(u.k)) U.set(u.k, u); });
+    U.forEach(u => { IA.forEach(id => { if (u.names[id] || !this._av(id)) return; const a = fillAction(this._c, u.k, id); if (a) (u.fill = u.fill || {})[id] = a; }); });
+    customUnits(this._c, this._hass, IA.filter(id => this._av(id)), id => this._cap(id)).forEach(u => { if (!this._hid.has(u.k)) U.set(u.k, u); });
     const hasCu = [...U.values()].some(u => u.custom);
     this._U = U;
     const all = [...U.values()], LB = new Map(), lab = u => { let x = LB.get(u); if (x === undefined) LB.set(u, x = this._label(u)); return x; };
@@ -788,11 +835,14 @@ class LemurLightEffectCard extends HTMLElement {
     const rec = this._c.show_recent === false ? [] : ((STORE.d.recent || {})[room.id] || []).map(k => U.get(k)).filter(Boolean).slice(0, 12);
     // on a phone the tab stays put (bottom bar) even before anything was played in the room
     if (rec.length || (this._mob && this._c.show_recent !== false)) { TB.recent = { id: 'recent', recent: 1, fx: rec.map(u => u.k) }; by.recent = rec; tabs.splice(favT ? tabs.indexOf(favT.id) + 1 : 1, 0, 'recent'); }
-    if (!st.cat || !tabs.includes(st.cat) || st.catAuto) {
-      const sv = this._c.start_tab || 'last', firstFx = tabs.find(k => k !== 'light' && !(TB[k] && TB[k].fav)) || 'light';
+    // the automatic start tab is picked once per room (and once more when the shared settings arrive), so playing the
+    // first effect or adding the first favourite does not move the view
+    const ak = room.id + '|' + (STORE.mode || '');
+    if (!st.cat || !tabs.includes(st.cat) || (st.catAuto && st.catKey !== ak)) {
+      const sv = this._c.start_tab || 'last', firstFx = tabs.find(k => k !== 'light' && k !== 'recent' && !(TB[k] && TB[k].fav)) || 'light';
       let lt = null; if (sv === 'last') try { lt = localStorage.getItem('lemur-tab-' + room.id); } catch (e) {}
       st.cat = sv === 'light' ? 'light' : sv === 'fav' && favT ? favT.id : sv === 'last' && lt && tabs.includes(lt) ? lt : fav.length && favT ? favT.id : firstFx;
-      st.catAuto = true;
+      st.catAuto = true; st.catKey = ak;
     }
     this._tabs = tabs;
     const mob = !!this._mob, tsz = this._c.tile_size, iszA = mob ? 54 : Math.max(64, Math.min(96, Math.round((this._w || 1080) / 15))), isz = tsz === 's' ? Math.round(iszA * .72) : tsz === 'm' ? (mob ? 54 : 80) : tsz === 'l' ? (mob ? 84 : Math.min(150, Math.round(iszA * 1.5))) : iszA;
@@ -830,7 +880,7 @@ class LemurLightEffectCard extends HTMLElement {
     }
     const roomBtn = (r, short) => `<button class="room ${r.id === st.room ? 'on' : ''}" data-room="${esc(r.id)}">${this._hi(r.icon, HOME)}<span>${esc(short && r.short ? r.short : r.name)}</span></button>`;
     const lstack = k => IA.slice(0, k).map(id => `<span>${this._hi(this._licon(id), BULB)}</span>`).join('') || '<span class="none">–</span>';
-    const nowTx = `<i class="nsw" style="background:${LL.on ? LL.fill : 'var(--deep)'}"></i><div><small>${esc(t('light'))}</small><b>${!IA.length ? esc(t('none')) : !LL.on ? esc(t('off')) : (LL.k ? LL.k + 'K' : (LL.rgb || LL.hs) ? esc(t('color')) : esc(t('mixed'))) + ' · ' + this._pc(LL.br)}</b></div>`;
+    const nowTx = `<i class="nsw" style="background:${LL.on ? LL.fill : 'var(--deep)'}"></i><div><small>${esc(t('light'))}</small><b>${!IA.length ? esc(t('none')) : !LL.on ? esc(t('off')) : (LL.k ? Math.round(+LL.k) + 'K' : (LL.rgb || LL.hs) ? esc(t('color')) : esc(t('mixed'))) + ' · ' + this._pc(LL.br)}</b></div>`;
     const nowHtml = sz => curU ? `${this._ico(curU, sz)}<div><small>${esc(t('playing'))}</small><b>${esc(lab(curU))}</b></div>` : any ? `<div><small>${esc(t('playing'))}</small><b>${esc(t('mixed'))}</b></div>` : nowTx;
     const upd = STORE.stale ? `<div class="upd"><span>${esc(t('upd', { v: STORE.stale }))}</span><button data-reload>${esc(t('reload'))}</button></div>` : '';
     const isik = st.cat === 'light', X = this._c.close ? `<button class="x" data-close aria-label="${esc(t('close'))}">✕</button>` : '';
@@ -849,7 +899,7 @@ class LemurLightEffectCard extends HTMLElement {
       let stat;
       if (curU) { const on = IA.filter(id => this._now(id) === cur).length, h = fxInfo(curU.rep).hues; stat = `<div class="mst on" style="--g:${grad(h, 50, 26, '90deg')}">${this._ico(curU, 36)}<div class="mt"><b>${esc(lab(curU))}</b><small>${esc(t('mPlaying', { n: on }))}</small></div>${stopB}</div>`; }
       else if (any) stat = `<div class="mst"><span class="mi">${M_GRID}</span><div class="mt"><b>${esc(t('mMixed'))}</b></div>${stopB}</div>`;
-      else if (LL.on) stat = `<div class="mst"><i class="nsw" style="background:${LL.fill}"></i><div class="mt"><b>${esc(t('mLight', { x: (LL.k ? LL.k + 'K' : (LL.rgb || LL.hs) ? t('color') : t('mixed')) + ' · ' + this._pc(LL.br) }))}</b></div>${randB}</div>`;
+      else if (LL.on) stat = `<div class="mst"><i class="nsw" style="background:${LL.fill}"></i><div class="mt"><b>${esc(t('mLight', { x: (LL.k ? Math.round(+LL.k) + 'K' : (LL.rgb || LL.hs) ? t('color') : t('mixed')) + ' · ' + this._pc(LL.br) }))}</b></div>${randB}</div>`;
       else stat = `<div class="mst idle"><span class="mi">${BULB}</span><div class="mt"><b>${esc(IA.length && !anyOn ? t('mOff') : t('mIdle'))}</b></div>${randB}</div>`;
       // tab title, or search + groups on the "all effects" tab
       const cnt = k => (k === 'recent' ? rec : by[k] || []).length;
@@ -932,13 +982,13 @@ class LemurLightEffectCard extends HTMLElement {
   _isik(I) {
     const L = this._light(I), n = I.length, st = this._std(), t = (k, v) => this._t(k, v), kn = t('kel');
     if (!n) return `<div class="empty">${esc(t('selectFirst'))}</div>`;
-    const fx = I.some(id => this._now(id));
+    const fx = I.some(id => this._now(id)), col = I.some(id => this._caps(id).color);
     const knob = L.on && L.hs && !fx ? `<i class="wk" style="left:${50 + Math.cos(L.hs[0] * Math.PI / 180) * L.hs[1] * .46}%;top:${50 + Math.sin(L.hs[0] * Math.PI / 180) * L.hs[1] * .46}%;background:${L.fill}"></i>` : '';
     return `<div class="isik2">
       <div class="bigbar ${L.on ? '' : 'off'}" data-hbar><i class="bf" style="width:${L.on ? L.br : 0}%;background:${L.on ? L.fill : 'transparent'}"></i><button class="bico" data-pw>${BULB}</button><div class="btx"><b>${esc(this._room().name)} · ${esc(t('lights', { n }))}</b><span id="bbv">${L.on ? this._pc(L.br) : esc(t('off'))}</span></div><small class="bstd">${esc(t('stopTo'))} ${st.k}K · ${this._pc(st.b)}</small></div>
-      <div class="ir">
+      <div class="ir ${col ? '' : 'one'}">
         <div class="isec"><div class="sec">${esc(t('white'))}</div><div class="kg2">${KELV.map(([k, c], i) => `<button class="kbx ${L.on && !fx && L.k && Math.abs(L.k - k) < 150 ? 'on' : ''}" data-wk="${k}" style="background:${c}"><b>${esc(kn[i])}</b>${k}K</button>`).join('')}</div></div>
-        <div class="isec"><div class="sec">${esc(t('color'))}</div><div class="cb2"><div class="wheel" data-wheel>${knob}</div><div class="cg2">${RENK.map(c => { const r = hex2rgb(c); const on = L.on && !fx && L.rgb && L.rgb.every((v, i) => Math.abs(v - r[i]) < 24); return `<button class="swc ${on ? 'on' : ''}" data-rgb="${r.join(',')}" style="background:${c}"></button>`; }).join('')}</div></div></div>
+        ${col ? `<div class="isec"><div class="sec">${esc(t('color'))}</div><div class="cb2"><div class="wheel" data-wheel>${knob}</div><div class="cg2">${RENK.map(c => { const r = hex2rgb(c); const on = L.on && !fx && L.rgb && L.rgb.every((v, i) => Math.abs(v - r[i]) < 24); return `<button class="swc ${on ? 'on' : ''}" data-rgb="${r.join(',')}" style="background:${c}"></button>`; }).join('')}</div></div></div>` : ''}
       </div></div>`;
   }
   _toast(x) { this._tq = { x, until: Date.now() + 2200 }; const el = this.shadowRoot && this.shadowRoot.querySelector('.toast'); if (!el) return; el.textContent = x; el.classList.add('show'); clearTimeout(this._tt); this._tt = setTimeout(() => { const e = this.shadowRoot && this.shadowRoot.querySelector('.toast'); if (e) e.classList.remove('show'); }, 2200); }
@@ -1060,7 +1110,7 @@ class LemurLightEffectCard extends HTMLElement {
       br.onpointerdown = () => { this._drag = true; };
       br.ontouchstart = () => { this._drag = true; };
       br.oninput = () => { this._drag = true; R.getElementById('brv').textContent = br.value + '%'; };
-      br.onchange = () => { this._drag = false; this._br = +br.value; const on = this._sel().filter(id => (this._hass.states[id] || {}).state === 'on'); if (on.length) this._set(on, { brightness_pct: +br.value }, null, true); this._pend = false; this._render(true); };
+      br.onchange = () => { this._drag = false; this._br = +br.value; const I = this._sel(), on = I.filter(id => (this._hass.states[id] || {}).state === 'on'); if (on.length) this._set(on, { brightness_pct: +br.value }, null, true); else if (I.length) this._set(I, { brightness_pct: +br.value, _power: true }, null, true); this._pend = false; this._render(true); };
       br.onpointerup = br.onpointercancel = () => { setTimeout(() => { if (this._drag) { this._drag = false; if (this._pend) { this._pend = false; this._render(true); } } }, 400); };
     }
   }

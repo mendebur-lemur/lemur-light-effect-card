@@ -10,6 +10,7 @@ import asyncio
 import functools
 import math
 import re
+import unicodedata
 from typing import Any
 
 from homeassistant.core import HomeAssistant, callback
@@ -31,11 +32,23 @@ NONE_OPTION = "—"
 TRANSITION_FEATURE = 32  # LightEntityFeature.TRANSITION
 
 
+_OLD_LETTER = re.compile(r"[a-zÀ-ɏ]")
+
+
 def norm(name: Any) -> str:
+    """Effect key of a name; the same rule as norm() in card.js.
+
+    Names in Latin letters keep the key they always had (favourites, tabs and fill are stored by it). A name with
+    letters that rule dropped (Cyrillic, Greek, CJK...) keeps all its letters and digits instead, and a name of
+    symbols only (emoji) is keyed by its code points."""
     s = str(name).lower()
     s = re.sub(r"^music\s*:\s*", "music ", s)
-    s = re.sub(r"[^a-z0-9À-ɏ]+", " ", s)
-    return s.strip()
+    k = re.sub(r"[^a-z0-9À-ɏ]+", " ", s).strip()
+    if k and not any(unicodedata.category(c)[0] == "L" and not _OLD_LETTER.match(c) for c in s):
+        return k
+    u = " ".join("".join(c if unicodedata.category(c)[0] in "LN" else " " for c in s).split())
+    cp = [ord(c) for c in s if ord(c) > 127]
+    return u or ("#" + "-".join(format(c, "x") for c in cp) if cp else "")
 
 
 def pretty(name: Any) -> str:
@@ -229,7 +242,8 @@ def fill_action(settings: dict[str, Any], key: str, eid: str) -> dict[str, Any] 
 def units(hass: HomeAssistant, data: dict[str, Any], room: dict[str, Any]) -> dict[str, dict[str, Any]]:
     """Everything a room can play: key -> {label, names: {light: name or action}, custom}."""
     settings = data.get("settings") or {}
-    ids = [x for x in selected(data, room) if hass.states.get(x)]
+    # an unavailable light plays nothing (the card leaves it out too)
+    ids = [x for x in selected(data, room) if (st := hass.states.get(x)) and st.state != "unavailable"]
     hid = hidden_keys(data, room["id"])
     out: dict[str, dict[str, Any]] = {}
     for eid in ids:

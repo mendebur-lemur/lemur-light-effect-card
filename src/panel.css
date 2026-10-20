@@ -53,6 +53,8 @@ ha-icon{--mdc-icon-size:100%;display:inline-flex;width:20px;height:20px}
 .lhd .ti{width:40px;height:40px;border-radius:50%;background:var(--s3);display:grid;place-items:center;color:var(--ac)}
 .strip.hidl .lhd .ti{color:var(--red)}
 .lhd em{font-style:normal;color:var(--mu);font-weight:500;font-size:.85em}
+.lnm{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.lts{display:contents}
 .lnone{color:var(--mu);font-size:13.5px;padding:0 6px}
 .lt{display:flex;align-items:center;gap:10px;height:50px;padding:0 14px 0 7px;border-radius:30px;background:var(--card);border:1px solid var(--ln);cursor:grab;font-weight:500;font-size:clamp(13.5px,1vw,15px);max-width:320px}
 .lt:hover{border-color:var(--ln3)}
@@ -153,11 +155,16 @@ ha-icon{--mdc-icon-size:100%;display:inline-flex;width:20px;height:20px}
 .where.h i{color:var(--red)}
 .emp{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--mu);padding:48px 16px;border:1.5px dashed var(--ln2);border-radius:var(--r1);text-align:center}
 .emp>svg{width:30px;height:30px;color:var(--mu2)}
+.emp.nol{padding:64px 20px}
+.emp.nol b{font-size:18px;font-weight:600;color:var(--tx)}
+.body.one{grid-template-columns:minmax(0,1fr)}
+.body.one .grid{align-content:center}
 
 /* drag and drop */
 [data-d]{touch-action:none;user-select:none;-webkit-user-select:none}
 .tb[data-d],.rb[data-d]{touch-action:pan-y}
 .rb[data-d]{touch-action:pan-x}
+.fx[data-d],.clt[data-d],.clr[data-d]{touch-action:pan-y}
 [data-d].sel{outline:2px solid var(--ac);outline-offset:-2px;background:var(--acs)!important}
 .dragsrc{opacity:.25}
 .ghost{position:fixed;left:0;top:0;pointer-events:none;z-index:100;display:flex;align-items:center;gap:10px;background:var(--s4);border:1px solid var(--ln3);border-radius:var(--r2);padding:7px 14px 7px 7px;font-weight:600;box-shadow:0 20px 44px rgba(0,0,0,.6);max-width:320px;white-space:nowrap}
@@ -252,8 +259,24 @@ ha-icon{--mdc-icon-size:100%;display:inline-flex;width:20px;height:20px}
   .rb{min-width:0}
   .tb{min-height:50px}
   .fsearch{width:auto;flex:1;max-width:none;min-width:0}
-  .lhd{border-right:0;width:100%;padding-left:2px}
-  .strip{min-height:auto}
+  .lhd{border-right:0;width:100%;padding-left:2px;height:auto;min-height:40px;gap:10px;min-width:0;overflow:hidden}
+  .lhd .ti{width:32px;height:32px;flex:none}
+  .lhd em{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .lsub{flex:0 1 auto}
+  .strip{min-height:auto;gap:8px}
+  /* the room's lights in one row that scrolls sideways, so the effects keep their room */
+  .lts{display:flex;gap:8px;width:100%;overflow-x:auto;scrollbar-width:none}
+  .lts::-webkit-scrollbar{display:none}
+  .lts>*{flex:none}
+  .lt[data-d]{touch-action:pan-x}
+  .mineb{margin-top:0;min-height:50px;padding:0 12px 0 8px}
+  .mineb .ai{width:36px;height:36px}
+  .mineb small{display:none}
+}
+/* short screens (phone on its side): the page scrolls, the effects keep a full screen of their own */
+@media (max-height: 600px){
+  .app{overflow-y:auto}
+  .body{flex:none;height:calc(100% - 10px);min-height:240px}
 }
 
 /* effect icons (src/icons2.js) */
@@ -423,6 +446,10 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .strip.mk .lt.fill .tx small{color:var(--ac)}
 .lhd .fxs{font-style:normal;font-weight:500;font-size:.82em;color:var(--tx2);background:var(--s3);padding:4px 10px;border-radius:999px;max-width:240px;overflow:hidden;text-overflow:ellipsis}
 .lhd .fxs:empty{display:none}
+/* the effect's line sits over the light count, so the strip keeps its size and the tiles below do not move */
+.lsub{position:relative;display:flex;align-items:center;min-width:0}
+.lhd .fxs{position:absolute;left:-6px;top:50%;transform:translateY(-50%);max-width:calc(100% + 12px);white-space:nowrap}
+.strip.mk .lsub em{visibility:hidden}
 .lhd .fxs.part{color:var(--ac)}
 .names.miss span{color:var(--red)}
 .names.miss span.fl{color:var(--ac)}

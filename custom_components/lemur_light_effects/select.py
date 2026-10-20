@@ -133,11 +133,15 @@ class RoomEffectSelect(SelectEntity):
         self._attr_options = [engine.NONE_OPTION, *[u["label"] for u in mine + rest]]
         k = engine.playing(self.hass, self.store.data, room, us)
         self._attr_current_option = us[k]["label"] if k and k in us else engine.NONE_OPTION
-        self._attr_translation_placeholders = {"room": room["name"]}
+        if self._attr_translation_placeholders.get("room") != room["name"]:
+            self._attr_translation_placeholders = {"room": room["name"]}
+            self.__dict__.pop("name", None)  # Entity.name is cached; let the new room name through
         self._attr_extra_state_attributes = {"room_id": room["id"], "lights": engine.selected(self.store.data, room), "effect_key": k}
 
     @callback
     def refresh(self) -> None:
+        if self.hass is None:  # disabled entity (HA sets hass to None and never adds it)
+            return
         def snap() -> tuple:
             return (self._attr_options, self._attr_current_option, self._attr_available,
                     getattr(self, "_attr_extra_state_attributes", None), self._attr_translation_placeholders)
@@ -147,6 +151,8 @@ class RoomEffectSelect(SelectEntity):
             self.async_write_ha_state()
 
     async def async_select_option(self, option: str) -> None:
+        if self.hass is None:
+            return
         room = self._room()
         if not room:
             return

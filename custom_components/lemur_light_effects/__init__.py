@@ -134,7 +134,11 @@ class LemurData:
 
     async def _import_old(self) -> dict[str, Any] | None:
         """First start: take over the data of the earlier "Ultimate Light Effect Card" if it is there."""
-        old = await Store(self.hass, STORAGE_VERSION, OLD_STORAGE_KEY).async_load()
+        try:
+            old = await Store(self.hass, STORAGE_VERSION, OLD_STORAGE_KEY).async_load()
+        except Exception:  # noqa: BLE001  (unknown or broken old file: start fresh)
+            _LOGGER.warning("Could not read the earlier Ultimate Light Effect Card data; starting fresh")
+            return None
         if not isinstance(old, dict):
             return None
         old_dir = self.hass.config.path(OLD_ICON_DIR)
@@ -216,6 +220,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     data = hass.data.pop(DOMAIN, None)
     if data is not None:
+        # a change made just before a reload is still waiting in async_delay_save; write it now
+        try:
+            await data.store.async_save(data.data)
+        except Exception:  # noqa: BLE001
+            _LOGGER.exception("Could not save before unloading")
         data.runtime.stop()
         if getattr(data, "voice", None) is not None:
             data.voice.stop()
@@ -235,6 +244,29 @@ def ws_get(hass, connection, msg):
         connection.send_error(msg["id"], "not_loaded", "Integration not loaded")
         return
     connection.send_result(msg["id"], data.data)
+
+
+# settings keys whose shape the card, the panel and engine.py rely on; a wrong shape (e.g. from a hand-edited backup) is dropped
+_SET_STR_LISTS = ("order", "hidden_areas", "exclude", "include")
+_SET_DICTS = ("layout", "fx_use", "fill", "room_icons")
+
+
+def _clean_settings(value: dict) -> dict:
+    out = dict(value)
+    for k in _SET_STR_LISTS:
+        if k in out:
+            v = out[k]
+            if isinstance(v, list):
+                out[k] = [x for x in v if isinstance(x, str)]
+            else:
+                out.pop(k)
+    for k in _SET_DICTS:
+        if k in out and not isinstance(out[k], dict):
+            out.pop(k)
+    if "custom" in out:
+        v = out["custom"]
+        out["custom"] = [c for c in v if isinstance(c, dict) and isinstance(c.get("id"), str) and isinstance(c.get("name"), str)] if isinstance(v, list) else []
+    return out
 
 
 @websocket_api.websocket_command(
@@ -258,7 +290,7 @@ def ws_set(hass, connection, msg):
         if not isinstance(value, dict) or len(json.dumps(value)) > MAX_SETTINGS_BYTES:
             connection.send_error(msg["id"], "invalid", "settings must be a small object")
             return
-        data.data[key] = value
+        data.data[key] = _clean_settings(value)
     elif key == "tabs":
         # per-room tab layout of the card; anyone may star or hide an effect from the card
         if not isinstance(value, dict) or len(json.dumps(value)) > MAX_TABS_BYTES:

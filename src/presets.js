@@ -85,9 +85,11 @@ class LemurLauncher extends HTMLElement {
     this._sig = null; this._draw();
   }
   set hass(h) {
-    this._hass = h; STORE.attach(h);
+    const first = !this._hass; this._hass = h; STORE.attach(h);
     if (LEMUR_OV && LEMUR_OV.owner === this) LEMUR_OV.card.hass = h;
     this._draw();
+    // a deep link (#isik-...) checked at connect could not open before hass arrived: try again now
+    if (first && this._cfg && this.isConnected) this._hashCheck();
   }
   _defHash() { return { mobile: 'isik-telefon', mfull: 'isik-mobil', full: 'isik-efektleri', popup: 'isik-pencere' }[this._mode]; }
   _hash() { return String(this._cfg.hash == null ? this._defHash() : this._cfg.hash).replace(/^#/, '').trim(); }

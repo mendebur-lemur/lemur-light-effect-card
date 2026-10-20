@@ -24,9 +24,10 @@ const ED_TXT = {
   }
 };
 class LemurLightEffectCardEditor extends HTMLElement {
-  constructor() { super(); this._u = () => this._extra(); }
-  connectedCallback() { STORE.L.add(this._u); }
-  disconnectedCallback() { STORE.L.delete(this._u); }
+  constructor() { super(); this._u = () => this._extra(); this._ic = () => { if (this._f) this._f.schema = this._schema(); }; }
+  // the colour icon list is built from the icon file, which may arrive after the editor opened
+  connectedCallback() { STORE.L.add(this._u); window.addEventListener('lemur-icons', this._ic); }
+  disconnectedCallback() { STORE.L.delete(this._u); window.removeEventListener('lemur-icons', this._ic); }
   setConfig(c) { this._c = Object.assign({}, c); this._r(); }
   set hass(h) { this._h = h; STORE.attach(h); if (this._f) this._f.hass = h; else this._r(); }
   _l() { const h = this._h; return pickLang((h && ((h.locale && h.locale.language) || h.language)) || 'en'); }
@@ -85,18 +86,22 @@ class LemurLightEffectCardEditor extends HTMLElement {
       const f = document.createElement('ha-form');
       f.computeLabel = s => ED_TXT[this._l()][s.name] || s.name;
       f.addEventListener('value-changed', e => {
-        const c = Object.assign({}, e.detail.value);
-        Object.keys(c).forEach(k => { if (c[k] === '' || c[k] == null || (Array.isArray(c[k]) && !c[k].length)) delete c[k]; });
+        // ha-form sends back everything it shows, defaults included: a default the user did not touch stays out of the YAML
+        // (otherwise it would override the control panel's settings on this card)
+        const c = Object.assign({}, e.detail.value), prev = this._c || {}, D = this._def();
+        Object.keys(c).forEach(k => { if (c[k] === '' || c[k] == null || (Array.isArray(c[k]) && !c[k].length) || (!(k in prev) && k in D && JSON.stringify(c[k]) === JSON.stringify(D[k]))) delete c[k]; });
         this._c = c;
         this.dispatchEvent(new CustomEvent('config-changed', { detail: { config: c }, bubbles: true, composed: true }));
       });
       this.querySelector('.lemur-f').appendChild(f); this._f = f;
     }
     this._f.hass = this._h;
-    this._f.data = Object.assign({ kelvin: 3200, brightness: 40, language: 'auto', all_home: true, min_effects: 3, close: false }, ({ full: { style: 'row', browser_fullscreen: true, hash: 'isik-efektleri' }, mfull: { style: 'row', browser_fullscreen: true, hash: 'isik-mobil' }, mbtn: { style: 'row', hash: 'isik-telefon' }, popup: { style: 'row', hash: 'isik-pencere', popup_position: 'center', popup_scale: true, popup_blur: true, popup_radius: 24, aspect: '16/10' } })[this._kind()] || {}, this._c);
+    this._f.data = Object.assign(this._def(), this._c);
     this._f.schema = this._schema();
     this._extra();
   }
+  // what the form shows when a field is not set (the card and the buttons behave the same way without it)
+  _def() { return Object.assign({ kelvin: 3200, brightness: 40, language: 'auto', all_home: true, min_effects: 3, close: false }, ({ full: { style: 'row', browser_fullscreen: true, hash: 'isik-efektleri' }, mfull: { style: 'row', browser_fullscreen: true, hash: 'isik-mobil' }, mbtn: { style: 'row', hash: 'isik-telefon' }, popup: { style: 'row', hash: 'isik-pencere', popup_position: 'center', popup_scale: true, popup_blur: true, popup_radius: 24, aspect: '16/10' } })[this._kind()] || {}); }
   _extra() {
     const x = this.querySelector('.lemur-x'); if (!x || !this._h) return;
     const T = ED_TXT[this._l()];

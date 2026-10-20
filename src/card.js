@@ -971,7 +971,8 @@ class LemurLightEffectCard extends HTMLElement {
         // the editor lives in the control panel; leave any full-screen layer and go there
         this._st.sheet = null; this._render(true);
         const url = '/lemur-light?fill=' + encodeURIComponent(k) + '&room=' + encodeURIComponent(this._st.room || '');
-        if (typeof this._onClose === 'function') try { this._onClose(); } catch (e) {}
+        // inside a button's layer: the layer closes and goes there itself (closing alone would step back in history after we moved)
+        if (typeof this._onGo === 'function') { try { this._onGo(url); } catch (e) {} return; }
         try { history.pushState(null, '', url); } catch (e) {} window.dispatchEvent(new CustomEvent('location-changed', { detail: { replace: false } }));
         return;
       }

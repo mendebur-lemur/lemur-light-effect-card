@@ -1,11 +1,11 @@
-/*! Lemur Light Effect Card v1.6.3 | GPL-3.0 */
+/*! Lemur Light Effect Card v1.6.4 | GPL-3.0 */
 (() => {
 // Home Assistant's service worker keeps a copy of every page it served. A copy made before an update still
 // points at the old card file, which the browser also keeps, so the old card can come back after an update.
 // Drop those copies (and the old files) so the next load gets this version. If an older card got here first
 // on this page, reload once so the new one takes over.
 (() => {
-  const V = '1.6.3';
+  const V = '1.6.4';
   const older = !!customElements.get('lemur-light-effect-card') && window.__LEMUR_CARD_VER !== V;
   const heal = async () => {
     if (!window.caches) return 0;
@@ -276,6 +276,12 @@ const GOVEE = {"Moonlit Night":["Mehtaplı Gece","color",[217]],"Herbal":["Bitki
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.6.4',
+    tr: ['Buton kartlarıyla (telefon, tam ekran, pencere) açılan kartta "Eksik ışıkları tamamla"ya basınca artık kontrol panelinde tamamlama ekranı açılıyor; önceden pencere kapanıp panoda kalıyordu.'],
+    en: ['Tapping "Fill in the missing lights" in a card opened from a button card (phone, full screen, window) now opens the fill-in screen in the control panel; before, the layer just closed and stayed on the dashboard.'],
+    de: ['„Fehlende Lichter ergänzen“ in einer über eine Schaltflächenkarte geöffneten Karte öffnet jetzt das Panel; vorher schloss sich nur die Ebene.'],
+    es: ['«Completar las luces que faltan» en una tarjeta abierta desde un botón ahora abre el panel; antes solo se cerraba la capa.'],
+    fr: ['« Compléter les lumières manquantes » dans une carte ouverte depuis un bouton ouvre maintenant le panneau ; avant, la fenêtre se fermait seulement.'] },
   { v: '1.6.3',
     tr: ['Kontrol panelinde her efektin altında kaç ışıkta olduğunu gösteren noktalar var; bütün ışıklarda olmayan efektler hemen fark ediliyor.',
       'Bir efektin üzerine gelince (telefonda seçince) ışık şeridinde o efekti desteklemeyen ışıklar soluklaşıyor ve "bu efekt yok" yazıyor; tamamlanmış ışıklarda yerine ne yapılacağı görünüyor.',
@@ -344,7 +350,7 @@ const CHANGES = [
 ];
 
 // ---- Lemur Light Effect Card: card ----
-const CARD_VERSION = '1.6.3';
+const CARD_VERSION = '1.6.4';
 // colour effect icons (ICON3) come from lemur-icons.json next to this file, so the card shows up before they arrive
 let ICON3 = {}, ICON3_OK = false;
 // the last few errors from this card, for Settings → Help → Report a problem (they stay in the browser unless the user sends the report)
@@ -1316,7 +1322,8 @@ class LemurLightEffectCard extends HTMLElement {
         // the editor lives in the control panel; leave any full-screen layer and go there
         this._st.sheet = null; this._render(true);
         const url = '/lemur-light?fill=' + encodeURIComponent(k) + '&room=' + encodeURIComponent(this._st.room || '');
-        if (typeof this._onClose === 'function') try { this._onClose(); } catch (e) {}
+        // inside a button's layer: the layer closes and goes there itself (closing alone would step back in history after we moved)
+        if (typeof this._onGo === 'function') { try { this._onGo(url); } catch (e) {} return; }
         try { history.pushState(null, '', url); } catch (e) {} window.dispatchEvent(new CustomEvent('location-changed', { detail: { replace: false } }));
         return;
       }
@@ -1718,6 +1725,8 @@ class LemurLauncher extends HTMLElement {
     if (LEMUR_OV || !this._hass) return;
     const b = this._build();
     b.card._onClose = () => this.close(false);
+    // leave the layer and go to another page (the control panel) without the layer's own history step undoing it
+    b.card._onGo = url => this.close(false, url);
     b.card.hass = this._hass;
     const prevOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = 'hidden';
@@ -1739,7 +1748,7 @@ class LemurLauncher extends HTMLElement {
       } catch (e) {}
     }
   }
-  close(fromNav) {
+  close(fromNav, go) {
     const st = LEMUR_OV; if (!st) return; LEMUR_OV = null;
     window.removeEventListener('keydown', st.key, true); window.removeEventListener('popstate', st.pop);
     document.removeEventListener('fullscreenchange', st.fsc); document.removeEventListener('webkitfullscreenchange', st.fsc);
@@ -1748,6 +1757,12 @@ class LemurLauncher extends HTMLElement {
     st.ov.remove();
     document.documentElement.style.overflow = st.prevOverflow;
     if (fromNav) return;
+    if (go) {
+      // the layer's history entry (if any) becomes the new page, so Back returns to the dashboard and no late history.back() undoes the move
+      try { if (st.pushed && history.state && history.state.lemurOv) history.replaceState(null, '', go); else history.pushState(null, '', go); } catch (e) {}
+      window.dispatchEvent(new CustomEvent('location-changed', { detail: { replace: false } }));
+      return;
+    }
     if (st.byHash) { history.replaceState(history.state, '', location.href.split('#')[0]); window.dispatchEvent(new Event('location-changed')); }
     else if (st.pushed && history.state && history.state.lemurOv) history.back();
   }

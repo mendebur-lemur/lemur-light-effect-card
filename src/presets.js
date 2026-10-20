@@ -187,6 +187,8 @@ class LemurLauncher extends HTMLElement {
     if (LEMUR_OV || !this._hass) return;
     const b = this._build();
     b.card._onClose = () => this.close(false);
+    // leave the layer and go to another page (the control panel) without the layer's own history step undoing it
+    b.card._onGo = url => this.close(false, url);
     b.card.hass = this._hass;
     const prevOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = 'hidden';
@@ -208,7 +210,7 @@ class LemurLauncher extends HTMLElement {
       } catch (e) {}
     }
   }
-  close(fromNav) {
+  close(fromNav, go) {
     const st = LEMUR_OV; if (!st) return; LEMUR_OV = null;
     window.removeEventListener('keydown', st.key, true); window.removeEventListener('popstate', st.pop);
     document.removeEventListener('fullscreenchange', st.fsc); document.removeEventListener('webkitfullscreenchange', st.fsc);
@@ -217,6 +219,12 @@ class LemurLauncher extends HTMLElement {
     st.ov.remove();
     document.documentElement.style.overflow = st.prevOverflow;
     if (fromNav) return;
+    if (go) {
+      // the layer's history entry (if any) becomes the new page, so Back returns to the dashboard and no late history.back() undoes the move
+      try { if (st.pushed && history.state && history.state.lemurOv) history.replaceState(null, '', go); else history.pushState(null, '', go); } catch (e) {}
+      window.dispatchEvent(new CustomEvent('location-changed', { detail: { replace: false } }));
+      return;
+    }
     if (st.byHash) { history.replaceState(history.state, '', location.href.split('#')[0]); window.dispatchEvent(new Event('location-changed')); }
     else if (st.pushed && history.state && history.state.lemurOv) history.back();
   }

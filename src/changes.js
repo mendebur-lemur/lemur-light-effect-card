@@ -1,6 +1,12 @@
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.6.4',
+    tr: ['Buton kartlarıyla (telefon, tam ekran, pencere) açılan kartta "Eksik ışıkları tamamla"ya basınca artık kontrol panelinde tamamlama ekranı açılıyor; önceden pencere kapanıp panoda kalıyordu.'],
+    en: ['Tapping "Fill in the missing lights" in a card opened from a button card (phone, full screen, window) now opens the fill-in screen in the control panel; before, the layer just closed and stayed on the dashboard.'],
+    de: ['„Fehlende Lichter ergänzen“ in einer über eine Schaltflächenkarte geöffneten Karte öffnet jetzt das Panel; vorher schloss sich nur die Ebene.'],
+    es: ['«Completar las luces que faltan» en una tarjeta abierta desde un botón ahora abre el panel; antes solo se cerraba la capa.'],
+    fr: ['« Compléter les lumières manquantes » dans une carte ouverte depuis un bouton ouvre maintenant le panneau ; avant, la fenêtre se fermait seulement.'] },
   { v: '1.6.3',
     tr: ['Kontrol panelinde her efektin altında kaç ışıkta olduğunu gösteren noktalar var; bütün ışıklarda olmayan efektler hemen fark ediliyor.',
       'Bir efektin üzerine gelince (telefonda seçince) ışık şeridinde o efekti desteklemeyen ışıklar soluklaşıyor ve "bu efekt yok" yazıyor; tamamlanmış ışıklarda yerine ne yapılacağı görünüyor.',

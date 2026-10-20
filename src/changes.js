@@ -1,6 +1,12 @@
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.6.5',
+    tr: ['Başka bir panodan (örneğin Lemur Home Dashboard) açılan efekt ekranı artık donmuyor: parlaklık, renk ve çalan efekt güncel kalıyor. Önceden parlaklığı değiştirince birkaç saniye sonra eski değer (örneğin %100) görünüyordu.'],
+    en: ['The effect screen opened from another dashboard (such as Lemur Home Dashboard) no longer freezes: brightness, colour and the playing effect stay up to date. Before, a few seconds after changing the brightness it showed the old value (e.g. 100%).'],
+    de: ['Der von einem anderen Dashboard geöffnete Effektbildschirm friert nicht mehr ein: Helligkeit, Farbe und laufender Effekt bleiben aktuell.'],
+    es: ['La pantalla de efectos abierta desde otro panel ya no se congela: brillo, color y efecto en curso se mantienen al día.'],
+    fr: ['L’écran des effets ouvert depuis un autre tableau de bord ne se fige plus : luminosité, couleur et effet en cours restent à jour.'] },
   { v: '1.6.4',
     tr: ['Kontrol paneli telefonda düzgün çalışıyor: oda ışıkları tek satırda yana kayıyor, efekt listesi her zaman görünüyor; sürüklerken sekme satırı yana da kayıyor.',
       'Buton kartlarıyla açılan kartta "Eksik ışıkları tamamla" artık kontrol panelini açıyor; tamamlanan ışıklar "Script olarak kaydet"e de giriyor.',

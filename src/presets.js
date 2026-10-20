@@ -204,6 +204,10 @@ class LemurLauncher extends HTMLElement {
     if (!byHash) { history.pushState(Object.assign({}, history.state, { lemurOv: 1 }), ''); st.pushed = true; window.addEventListener('popstate', st.pop); }
     document.addEventListener('fullscreenchange', st.fsc); document.addEventListener('webkitfullscreenchange', st.fsc);
     LEMUR_OV = st;
+    // keep the layer on the newest Home Assistant state even when whoever opened it never passes hass again
+    // (a detached button made by another dashboard, a hidden view): HA's root element always holds the current hass
+    st.fresh = () => { const g = document.querySelector('home-assistant'), h = g && g.hass; if (LEMUR_OV === st && h && h.states && h !== st.card._hass) { this._hass = h; st.card.hass = h; } };
+    st.tick = setInterval(st.fresh, 1000);
     if ((this._mode === 'full' || (this._mode === 'mfull' && narrow())) && this._cfg.browser_fullscreen !== false) {
       try {
         const rq = b.ov.requestFullscreen || b.ov.webkitRequestFullscreen;
@@ -214,6 +218,7 @@ class LemurLauncher extends HTMLElement {
   }
   close(fromNav, go) {
     const st = LEMUR_OV; if (!st) return; LEMUR_OV = null;
+    clearInterval(st.tick);
     window.removeEventListener('keydown', st.key, true); window.removeEventListener('popstate', st.pop);
     document.removeEventListener('fullscreenchange', st.fsc); document.removeEventListener('webkitfullscreenchange', st.fsc);
     try { const fe = document.fullscreenElement || document.webkitFullscreenElement; if (fe === st.ov) (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {}

@@ -19,7 +19,7 @@ const P_TXT = {
     tabDel: '“{t}” silindi, efektleri Gizli’ye geçti', tabCopied: '“{t}” sekmesi kopyalandı → {r}', tabAdded: '“{t}” sekmesi eklendi', copied: 'Sekmeler kopyalandı → {r}',
     toRoom: '{r}', toAll: 'bütün odalar', resetDone: 'Otomatik düzene dönüldü', roomOffT: 'Oda kartta gizlendi', roomOnT: 'Oda kartta gösteriliyor',
     allOffT: 'Tüm Ev kartta kapalı', allOnT: 'Tüm Ev kartta açık', order: 'Sıra güncellendi', saved: 'Kaydedildi', undone: 'Geri alındı',
-    fxMenu: 'Efekt ayrıntıları', namesOn: 'Işıklardaki adı', upIcon: 'Simge yükle', rmIcon: 'Varsayılan simge', hideFx: 'Bu odada gizle', showFx: 'Bu odada göster',
+    fxMenu: 'Efekt ayrıntıları', namesOn: 'Işıklardaki adı', noSup: 'bu efekt yok', notIn: 'bu efekte katılmıyor', fillAs: 'yerine: {x}', supN: '{n} efekt ışığının {c} tanesinde var', noSupT: 'Desteklemeyen ışıklar', fxOnN: '{x}: {c}/{n} ışıkta', upIcon: 'Simge yükle', rmIcon: 'Varsayılan simge', hideFx: 'Bu odada gizle', showFx: 'Bu odada göster',
     addFav: 'Favorilere ekle', remFav: 'Favorilerden çıkar', iconSaved: 'Simge kaydedildi', iconErr: 'Simge yüklenemedi', close: 'Kapat',
     sCard: 'Kart', icColor: 'Renkli', icMono: 'Sade', defIcon: 'Varsayılan simge', searchI: 'Simge ara', lang: 'Dil', auto: 'Otomatik',
     sStop: 'Efekt durdurulunca', white: 'Beyaz ton', bright: 'Parlaklık', sAdv: 'Gelişmiş', thr: 'Efektli ışık sayılması için en az', thrS: 'Daha az efekti olan ışıklar sadece Işık sekmesinde görünür', thrN: '{n} efekt',
@@ -88,7 +88,7 @@ const P_TXT = {
     tabDel: '“{t}” deleted, its effects moved to Hidden', tabCopied: '“{t}” tab copied → {r}', tabAdded: '“{t}” tab added', copied: 'Tabs copied → {r}',
     toRoom: '{r}', toAll: 'every room', resetDone: 'Back to the automatic layout', roomOffT: 'Room hidden in the card', roomOnT: 'Room shown in the card',
     allOffT: 'Whole home is off in the card', allOnT: 'Whole home is on in the card', order: 'Order updated', saved: 'Saved', undone: 'Undone',
-    fxMenu: 'Effect details', namesOn: 'Name on each light', upIcon: 'Upload icon', rmIcon: 'Default icon', hideFx: 'Hide in this room', showFx: 'Show in this room',
+    fxMenu: 'Effect details', namesOn: 'Name on each light', noSup: 'doesn’t have it', notIn: 'not part of this effect', fillAs: 'instead: {x}', supN: 'On {c} of {n} effect lights', noSupT: 'Lights without it', fxOnN: '{x}: on {c}/{n}', upIcon: 'Upload icon', rmIcon: 'Default icon', hideFx: 'Hide in this room', showFx: 'Show in this room',
     addFav: 'Add to favorites', remFav: 'Remove from favorites', iconSaved: 'Icon saved', iconErr: 'Could not upload icon', close: 'Close',
     sCard: 'Card', icColor: 'Colour', icMono: 'Simple', defIcon: 'Default icon', searchI: 'Search icons', lang: 'Language', auto: 'Automatic',
     sStop: 'When an effect is stopped', white: 'White tone', bright: 'Brightness', sAdv: 'Advanced', thr: 'Minimum effects to count as an effect light', thrS: 'Lights with fewer effects only appear in the Light tab', thrN: '{n} effects',
@@ -319,6 +319,46 @@ class LemurLightEffectsPanel extends HTMLElement {
     const bg = on && a.rgb_color ? rgbCss(a.rgb_color) : on && a.color_mode === 'color_temp' ? 'linear-gradient(140deg,#FFD9A8,#FFB86E)' : grad([hashHue(id), (hashHue(id) + 50) % 360], 70, 62, '135deg');
     return `<span class="dot ${on ? '' : 'off'}" style="background:${bg}">${pi('bulb')}</span>`;
   }
+  // how many of the room's effect lights have the effect (c), get it filled in instead (f), out of n
+  _cov(u) {
+    const IF = this._IF || [], S = this._set(); let c = 0, f = 0;
+    IF.forEach(id => { if (u.names[id]) c++; else if (!u.custom && fillAction(S, u.k, id)) f++; });
+    return { c, f, n: IF.length };
+  }
+  // dots under a tile when not every effect light of the room has the effect (as on the card)
+  _covHtml(u) {
+    if (u.custom) return '';
+    const v = this._cov(u); if (v.n < 2 || v.c >= v.n) return '';
+    const tip = esc(this._t('supN', { c: v.c, n: v.n }));
+    if (v.n > 6) return `<span class="cov cn" title="${tip}">${v.c}${v.f ? '+' + v.f : ''}/${v.n}</span>`;
+    return `<span class="cov" title="${tip}">${Array.from({ length: v.n }, (_, i) => `<i class="${i < v.c ? 'on' : i < v.c + v.f ? 'fl' : ''}"></i>`).join('')}</span>`;
+  }
+  // the effect the strip follows when the pointer is not on a tile: the only selected one, or the one being previewed
+  _stickyK() {
+    const U = this._U || new Map(), pk = [...this._pick].filter(k => !k.startsWith('light.') && U.has(k));
+    if (pk.length === 1) return pk[0];
+    const pv = this._pv; return pv && pv.room === this._room && pv.key && U.has(pv.key) ? pv.key : null;
+  }
+  // the light strip shows which lights of the room do not have effect k (dimmed, "doesn't have it")
+  _markStrip(k) {
+    const R = this.shadowRoot; if (!R) return;
+    const u = k && this._U && this._U.get(k), S = this._set(), t = (x, v) => this._t(x, v), st = R.querySelector('.strip');
+    this._mk = u ? k : null;
+    R.querySelectorAll('.strip .lt[data-lmenu]').forEach(el => {
+      const id = el.dataset.lmenu, sm = el.querySelector('.tx small');
+      if (sm && el.dataset.sub == null) el.dataset.sub = sm.textContent;
+      el.classList.remove('has', 'nofx', 'fill');
+      let txt = el.dataset.sub;
+      if (u && this._fxOn(id)) {
+        if (u.names[id]) el.classList.add('has');
+        else { const a = !u.custom && fillAction(S, u.k, id); el.classList.add(a ? 'fill' : 'nofx'); txt = a ? t('fillAs', { x: this._actTxt(a) }) : t(u.custom ? 'notIn' : 'noSup'); }
+      }
+      if (sm && txt != null) sm.textContent = txt;
+    });
+    const fs = R.querySelector('.strip .fxs');
+    if (fs) { const v = u && this._cov(u); fs.textContent = u ? t('fxOnN', { x: this._label(u), c: v.c, n: v.n }) : ''; fs.classList.toggle('part', !!u && v.c < v.n); }
+    if (st) st.classList.toggle('mk', !!u);
+  }
   _toast(x, undo = true) {
     this._tst = { x, undo, until: Date.now() + 4200 }; this._showToast();
   }
@@ -468,7 +508,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     if (!ids.includes(this._room)) this._room = M.order.find(a => a !== '_all') || M.order[0] || '_hidden';
     const rid = this._room, hidR = rid === '_hidden', offR = new Set(S.hidden_areas || []);
     const L = this._lightsOf(M, rid), U = hidR ? new Map() : this._effects(L), RES = hidR ? { tabs: [], hid: [] } : this._resolve(rid, U);
-    this._U = U; this._RES = RES;
+    this._U = U; this._RES = RES; this._IF = L.filter(id => this._fxOn(id));
     let tid = this._tab[rid];
     if (tid !== '_light' && tid !== '_hid' && tid !== '_allfx' && tid !== '_mine' && !RES.tabs.some(x => x.id === tid)) tid = this._tab[rid] = U.size ? '_allfx' : (RES.tabs[0] || { id: '_light' }).id;
     if (this._newTab && RES.tabs.some(x => x.id === this._newTab)) { tid = this._tab[rid] = this._newTab; }
@@ -495,7 +535,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     let stripBody;
     if (rid === '_all') stripBody = `<span class="lnone">${esc(isOff('_all') ? t('allOff') : t('allUses'))}</span><span class="grow"></span><button class="offb ${isOff('_all') ? 'is' : ''}" data-roff>${pi(isOff('_all') ? 'eye' : 'eyeoff', 's16')}${esc(isOff('_all') ? t('allOnB') : t('allOffB'))}</button>`;
     else stripBody = (L.map(chip).join('') || `<span class="lnone">${esc(hidR ? t('noHidden') : t('noLight'))}</span>`) + (hidR ? '' : `<button class="addl" data-addlight>${pi('plus', 's16')}${esc(t('addLight'))}</button>`);
-    const strip = `<div class="strip ${first ? 'first' : ''} ${hidR ? 'hidl last' : ''}" data-z="strip|${esc(rid)}"><div class="lhd"><span class="ti">${pi(hidR ? 'eyeoff' : 'bulb', 's16')}</span>${esc(head)}<em>${hidR || rid === '_all' ? L.length : esc(t('fxCnt', { n: L.length, f: L.filter(id => this._fxOn(id)).length }))}</em></div>${stripBody}</div>`;
+    const strip = `<div class="strip ${first ? 'first' : ''} ${hidR ? 'hidl last' : ''}" data-z="strip|${esc(rid)}"><div class="lhd"><span class="ti">${pi(hidR ? 'eyeoff' : 'bulb', 's16')}</span>${esc(head)}<em>${hidR || rid === '_all' ? L.length : esc(t('fxCnt', { n: L.length, f: L.filter(id => this._fxOn(id)).length }))}</em>${hidR || rid === '_all' ? '' : '<span class="fxs"></span>'}</div>${stripBody}</div>`;
 
     // tabs column
     const setb = `<div class="setb"><button data-settings><span class="si">${pi('cog', 's20')}</span><span class="at"><b>${esc(t('settings'))}</b><small>${esc(t('settingsS'))}</small></span></button></div>`;
@@ -517,7 +557,7 @@ class LemurLightEffectsPanel extends HTMLElement {
         const u = U.get(k); if (!u) return '';
         if (FILL[k] && !(o && o.where)) o = Object.assign({}, o, { where: `<small class="where fl">${pi('sparkles')}${esc(t('fillTag'))}</small>` });
         return `<div class="fx ${this._pick.has(k) ? 'sel' : ''} ${o && o.hd ? 'hd' : ''} ${pvK === k ? 'pvon' : ''}" style="--l:${grad(fxInfo(u.rep).hues, 80, 60, '90deg')}" data-d="fx|${esc(k)}" data-label="${esc(this._label(u))}" ${o && o.n ? `data-n="${esc(o.n)}"` : ''}>
-          ${favS.has(k) && !(o && o.inFav) ? `<span class="st">${pi('star')}</span>` : ''}<span class="fi">${this._ico(u, 96)}</span><span class="nm">${esc(this._label(u))}</span>${o && o.where || ''}
+          ${favS.has(k) && !(o && o.inFav) ? `<span class="st">${pi('star')}</span>` : ''}<span class="fi">${this._ico(u, 96)}</span><span class="nm">${esc(this._label(u))}</span>${o && o.where || ''}${this._covHtml(u)}
           <button class="fm" data-fxm="${esc(k)}" title="${esc(t('fxMenu'))}">${pi('more', 's16')}</button></div>`;
       };
       let grid;
@@ -563,6 +603,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     [...R.querySelectorAll('.grid,.tscroll,.rooms')].forEach((el, i) => { if (keep[i]) { el.scrollTop = keep[i][0]; el.scrollLeft = keep[i][1]; } });
     if (af === 'aq') { const q = R.getElementById('aq'); if (q) { q.focus(); try { q.setSelectionRange(ss, ss); } catch (e) {} } }
     this._filterAll();
+    this._markStrip(this._stickyK());
     const nd = R.querySelector('.dlg'); if (nd && dlgView === this._view) nd.scrollTop = dlgTop; this._dlgView = this._view;
     this._bind();
     if (this._tst) { const el = R.querySelector('.toast'); if (el) { el.style.transition = 'none'; this._showToast(); el.offsetWidth; el.style.transition = ''; } }
@@ -1109,8 +1150,10 @@ class LemurLightEffectsPanel extends HTMLElement {
     const t = (x, v) => this._t(x, v), u = this._U.get(k); if (!u) return;
     const favT = this._RES.tabs.find(x => x.fav), isFav = !!(favT && favT.fx.includes(k)), hid = this._RES.hid.includes(k), cust = STORE.d.icons && STORE.d.icons[k];
     this._iconFor = k;
-    this._popAt(el, `<div class="fxd">${this._ico(u, 52)}<div><b>${esc(this._label(u))}</b><small>${esc(u.rep)}</small></div></div>
-      <div class="t">${esc(t('namesOn'))}</div><div class="names">${Object.entries(u.names).map(([id, n]) => `<span><b>${esc(this._name(id))}</b> · ${esc(this._actTxt(n))}</span>`).join('')}</div><hr>
+    const S = this._set(), cv = this._cov(u), miss = (this._IF || []).filter(id => !u.names[id]);
+    const missH = miss.length ? `<div class="t">${esc(t('noSupT'))}</div><div class="names miss">${miss.map(id => { const a = !u.custom && fillAction(S, k, id); return `<span class="${a ? 'fl' : ''}"><b>${esc(this._name(id))}</b> · ${esc(a ? t('fillAs', { x: this._actTxt(a) }) : t(u.custom ? 'notIn' : 'noSup'))}</span>`; }).join('')}</div>` : '';
+    this._popAt(el, `<div class="fxd">${this._ico(u, 52)}<div><b>${esc(this._label(u))}</b><small>${esc(u.rep)}${cv.n ? ` · ${cv.c}/${cv.n}` : ''}</small></div></div>
+      <div class="t">${esc(t('namesOn'))}</div><div class="names">${Object.entries(u.names).map(([id, n]) => `<span><b>${esc(this._name(id))}</b> · ${esc(this._actTxt(n))}</span>`).join('')}</div>${missH}<hr>
       ${u.custom ? `<button class="it" data-ceedit="${esc(u.custom.id)}">${pi('pen', 's16')}${esc(t('editMine'))}</button>` : ''}
       ${u.custom ? '' : `<button class="it" data-fillopen="${esc(k)}">${pi('sparkles', 's16')}${esc(t('fillT'))}${(this._set().fill || {})[k] ? ` <small>· ${esc(t('fillOn'))}</small>` : ''}</button>`}
       <button class="it" data-script="${esc(k)}">${pi('script', 's16')}${esc(t('script'))}</button>
@@ -1201,6 +1244,13 @@ class LemurLightEffectsPanel extends HTMLElement {
   _bind() {
     const R = this.shadowRoot, t = (k, v) => this._t(k, v), app = R.querySelector('.app');
     app.addEventListener('pointerdown', e => this._ddown(e));
+    // pointer on an effect tile: the strip shows which lights do not have it (over the strip itself it keeps what it shows)
+    app.addEventListener('pointerover', e => {
+      if (e.pointerType === 'touch' || (this._dd && this._dd.on) || e.target.closest('.rblock')) return;
+      const tl = e.target.closest('.fxp .fx[data-d^="fx|"]'), k = tl ? tl.dataset.d.slice(3) : this._stickyK();
+      if (k !== this._mk) this._markStrip(k);
+    });
+    app.addEventListener('pointerleave', () => { const k = this._stickyK(); if (k !== this._mk) this._markStrip(k); });
     app.addEventListener('click', ev => {
       if (this._noClick && Date.now() - this._noClick < 350) return;
       const g = s => ev.target.closest(s); let x;

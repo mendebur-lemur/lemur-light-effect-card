@@ -408,3 +408,22 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .rep .rnote{color:var(--mu);font-size:12.5px;margin:10px 2px 0}
 @media (max-width:560px){.rep .rinfo div{flex-direction:column;gap:2px}.rep .rinfo span{width:auto}}
 @media (max-width: 360px){.pvb .l{display:none}}
+/* which lights have an effect: dots under the tile, the light strip follows the tile under the pointer (or the selected one) */
+.fx .cov{display:flex;justify-content:center;gap:4px;line-height:0;margin-top:-3px}
+.fx .cov i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.16)}
+.fx .cov i.on{background:var(--tx2)}
+.fx .cov i.fl{background:var(--acl)}
+.fx .cov.cn{line-height:1;font-size:11.5px;color:var(--mu);font-variant-numeric:tabular-nums}
+.fx.hd .cov{opacity:.5}
+.lt{transition:opacity .15s,border-color .15s}
+.strip.mk .lt.has{border-color:var(--acl)}
+.strip.mk .lt.nofx{opacity:.42;border-style:dashed}
+.strip.mk .lt.nofx .tx small{color:var(--red)}
+.strip.mk .lt.fill{border-style:dashed}
+.strip.mk .lt.fill .tx small{color:var(--ac)}
+.lhd .fxs{font-style:normal;font-weight:500;font-size:.82em;color:var(--tx2);background:var(--s3);padding:4px 10px;border-radius:999px;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.lhd .fxs:empty{display:none}
+.lhd .fxs.part{color:var(--ac)}
+.names.miss span{color:var(--red)}
+.names.miss span.fl{color:var(--ac)}
+.names.miss span b{color:var(--tx2)}

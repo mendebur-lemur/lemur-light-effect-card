@@ -1,6 +1,19 @@
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.6.3',
+    tr: ['Kontrol panelinde her efektin altında kaç ışıkta olduğunu gösteren noktalar var; bütün ışıklarda olmayan efektler hemen fark ediliyor.',
+      'Bir efektin üzerine gelince (telefonda seçince) ışık şeridinde o efekti desteklemeyen ışıklar soluklaşıyor ve "bu efekt yok" yazıyor; tamamlanmış ışıklarda yerine ne yapılacağı görünüyor.',
+      'Efektin ⋯ menüsünde "Desteklemeyen ışıklar" listesi.'],
+    en: ['In the control panel, dots under each effect show how many lights have it, so effects missing on some lights stand out.',
+      'Hovering an effect (selecting it on phones) dims the lights in the strip that do not have it and marks them "doesn’t have it"; filled-in lights show what they do instead.',
+      'A "Lights without it" list in the effect’s ⋯ menu.'],
+    de: ['Im Panel zeigen Punkte unter jedem Effekt, auf wie vielen Lichtern er läuft; beim Überfahren (am Handy beim Auswählen) werden Lichter ohne den Effekt abgeblendet.',
+      'Liste „Lichter ohne diesen Effekt“ im ⋯-Menü des Effekts.'],
+    es: ['En el panel, unos puntos bajo cada efecto muestran en cuántas luces está; al pasar por encima (al seleccionarlo en el móvil) se atenúan las luces que no lo tienen.',
+      'Lista «Luces sin este efecto» en el menú ⋯ del efecto.'],
+    fr: ['Dans le panneau, des points sous chaque effet indiquent sur combien de lumières il existe ; au survol (à la sélection sur téléphone) les lumières qui ne l’ont pas sont atténuées.',
+      'Liste « Lumières sans cet effet » dans le menu ⋯ de l’effet.'] },
   { v: '1.6.2',
     tr: ['Daha hızlı: kart ve panel her güncellemede bütün sayfayı yeniden kurmuyor; efekt seçince yalnızca değişen bilgi gönderiliyor; oda efekt varlıkları parlaklık ve renk değişimlerinde boşuna hesaplanmıyor.',
       'Ekran düzeltmeleri: küçük tabletlerde ve yan çevrilmiş telefonda oda satırı ve alt çubuk taşmıyor; telefonda kontrol panelindeki efekt listesi ve arama kutusu ekrana sığıyor.',

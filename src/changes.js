@@ -1,6 +1,12 @@
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.6.6',
+    tr: ['Kart artık sayfayı kendi kendine yenilemiyor ve Home Assistant\'ın tarayıcı önbelleğine dokunmuyor. Yeni sürüm gelince üstte "Yenile" düğmesi çıkıyor; sayfa yalnızca ona basınca yenileniyor. Ayarlar\'dan güncelleyip yeniden başlatınca da sayfa kendiliğinden değil, "Yenile" ile yenileniyor.'],
+    en: ['The card no longer reloads the page by itself and no longer touches Home Assistant\'s browser cache. When a new version arrives a "Reload" button appears at the top; the page only reloads when you press it. After updating and restarting from Settings, the page also waits for "Reload".'],
+    de: ['Die Karte lädt die Seite nicht mehr selbst neu und greift nicht mehr in den Browser-Cache von Home Assistant ein; neu geladen wird nur über „Neu laden“.'],
+    es: ['La tarjeta ya no recarga la página por sí sola ni toca la caché del navegador de Home Assistant; solo se recarga con «Recargar».'],
+    fr: ['La carte ne recharge plus la page d’elle-même et ne touche plus au cache du navigateur de Home Assistant ; la page ne se recharge qu’avec « Recharger ».'] },
   { v: '1.6.5',
     tr: ['Başka bir panodan (örneğin Lemur Home Dashboard) açılan efekt ekranı artık donmuyor: parlaklık, renk ve çalan efekt güncel kalıyor. Önceden parlaklığı değiştirince birkaç saniye sonra eski değer (örneğin %100) görünüyordu.'],
     en: ['The effect screen opened from another dashboard (such as Lemur Home Dashboard) no longer freezes: brightness, colour and the playing effect stay up to date. Before, a few seconds after changing the brightness it showed the old value (e.g. 100%).'],

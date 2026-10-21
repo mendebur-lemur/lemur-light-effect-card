@@ -19,7 +19,7 @@ const P_TXT = {
     tabDel: '“{t}” silindi, efektleri Gizli’ye geçti', tabCopied: '“{t}” sekmesi kopyalandı → {r}', tabAdded: '“{t}” sekmesi eklendi', copied: 'Sekmeler kopyalandı → {r}',
     toRoom: '{r}', toAll: 'bütün odalar', resetDone: 'Otomatik düzene dönüldü', roomOffT: 'Oda kartta gizlendi', roomOnT: 'Oda kartta gösteriliyor',
     allOffT: 'Tüm Ev kartta kapalı', allOnT: 'Tüm Ev kartta açık', order: 'Sıra güncellendi', saved: 'Kaydedildi', undone: 'Geri alındı',
-    fxMenu: 'Efekt ayrıntıları', namesOn: 'Işıklardaki adı', noSup: 'bu efekt yok', notIn: 'bu efekte katılmıyor', fillAs: 'yerine: {x}', supN: '{n} efekt ışığının {c} tanesinde var', noSupT: 'Desteklemeyen ışıklar', fxOnN: '{x}: {c}/{n} ışıkta', upIcon: 'Simge yükle', rmIcon: 'Varsayılan simge', hideFx: 'Bu odada gizle', showFx: 'Bu odada göster',
+    updReady: 'Home Assistant yeniden başladı. Yeni sürümü kullanmak için sayfayı yenile.', fxMenu: 'Efekt ayrıntıları', namesOn: 'Işıklardaki adı', noSup: 'bu efekt yok', notIn: 'bu efekte katılmıyor', fillAs: 'yerine: {x}', supN: '{n} efekt ışığının {c} tanesinde var', noSupT: 'Desteklemeyen ışıklar', fxOnN: '{x}: {c}/{n} ışıkta', upIcon: 'Simge yükle', rmIcon: 'Varsayılan simge', hideFx: 'Bu odada gizle', showFx: 'Bu odada göster',
     addFav: 'Favorilere ekle', remFav: 'Favorilerden çıkar', iconSaved: 'Simge kaydedildi', iconErr: 'Simge yüklenemedi', close: 'Kapat',
     sCard: 'Kart', icColor: 'Renkli', icMono: 'Sade', defIcon: 'Varsayılan simge', searchI: 'Simge ara', lang: 'Dil', auto: 'Otomatik',
     sStop: 'Efekt durdurulunca', white: 'Beyaz ton', bright: 'Parlaklık', sAdv: 'Gelişmiş', thr: 'Efektli ışık sayılması için en az', thrS: 'Daha az efekti olan ışıklar sadece Işık sekmesinde görünür', thrN: '{n} efekt',
@@ -89,7 +89,7 @@ const P_TXT = {
     tabDel: '“{t}” deleted, its effects moved to Hidden', tabCopied: '“{t}” tab copied → {r}', tabAdded: '“{t}” tab added', copied: 'Tabs copied → {r}',
     toRoom: '{r}', toAll: 'every room', resetDone: 'Back to the automatic layout', roomOffT: 'Room hidden in the card', roomOnT: 'Room shown in the card',
     allOffT: 'Whole home is off in the card', allOnT: 'Whole home is on in the card', order: 'Order updated', saved: 'Saved', undone: 'Undone',
-    fxMenu: 'Effect details', namesOn: 'Name on each light', noSup: 'doesn’t have it', notIn: 'not part of this effect', fillAs: 'instead: {x}', supN: 'On {c} of {n} effect lights', noSupT: 'Lights without it', fxOnN: '{x}: on {c}/{n}', upIcon: 'Upload icon', rmIcon: 'Default icon', hideFx: 'Hide in this room', showFx: 'Show in this room',
+    updReady: 'Home Assistant has restarted. Reload the page to use the new version.', fxMenu: 'Effect details', namesOn: 'Name on each light', noSup: 'doesn’t have it', notIn: 'not part of this effect', fillAs: 'instead: {x}', supN: 'On {c} of {n} effect lights', noSupT: 'Lights without it', fxOnN: '{x}: on {c}/{n}', upIcon: 'Upload icon', rmIcon: 'Default icon', hideFx: 'Hide in this room', showFx: 'Show in this room',
     addFav: 'Add to favorites', remFav: 'Remove from favorites', iconSaved: 'Icon saved', iconErr: 'Could not upload icon', close: 'Close',
     sCard: 'Card', icColor: 'Colour', icMono: 'Simple', defIcon: 'Default icon', searchI: 'Search icons', lang: 'Language', auto: 'Automatic',
     sStop: 'When an effect is stopped', white: 'White tone', bright: 'Brightness', sAdv: 'Advanced', thr: 'Minimum effects to count as an effect light', thrS: 'Lights with fewer effects only appear in the Light tab', thrN: '{n} effects',
@@ -701,6 +701,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     else if (U.st === 'installed') { sub = `<b class="unew">${esc(t('updDone', { v: U.latest }))}</b>${notes}`; ctl = `<button class="btn pri" data-updrs>${pi('reset', 's16')}${esc(t('updRestart'))}</button>`; }
     else if (U.st === 'ask') { sub = `<b>${esc(t('updAsk'))}</b>`; ctl = `<div class="dbtns" style="margin:0"><button class="btn" data-updno>${esc(t('cancel'))}</button><button class="btn danger" data-updyes>${esc(t('updYes'))}</button></div>`; }
     else if (U.st === 'restarting') { sub = `<b class="unew">${esc(t('updRest'))}</b>`; ctl = ''; }
+    else if (U.st === 'ready') { sub = `<b class="unew">${esc(t('updReady'))}</b>`; ctl = `<button class="btn pri" data-reload>${pi('reset', 's16')}${esc(t('reload'))}</button>`; }
     else if (U.st === 'err') { sub += ` · <span class="uerr">${esc(t('updErr', { e: U.err }))}</span>`; ctl = `<button class="btn" data-updcheck>${pi('reset', 's16')}${esc(t('updAgain'))}</button>`; }
     return `<div class="srow upd"><div class="t"><b>${esc(t('updT'))}</b><small>${sub}</small></div>${ctl}</div>`;
   }
@@ -737,7 +738,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       if (!this.isConnected || Date.now() - t0 > 600000) return;
       try {
         const v = (await this._hass.connection.sendMessagePromise({ type: 'lemur_light_effects/info' })).version;
-        if (v === want || (down && v)) { await Promise.resolve(window.__LEMUR_HEAL && window.__LEMUR_HEAL()); return location.reload(); }
+        if (v === want || (down && v)) return this._updSet({ st: 'ready', latest: v });
       } catch (e) { down = true; }
       if (this.isConnected) this._rsT = setTimeout(poll, 3000);
     };
@@ -1330,7 +1331,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       if (g('[data-resetask]')) { this._view = 'reset'; return this._render(); }
       if ((x = g('[data-closereset]')) && (x.classList.contains('btn') || !g('.dlg'))) { this._view = 'settings'; return this._render(); }
       if (g('[data-resetyes]')) return this._resetAll();
-      if (g('[data-reload]')) { try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.update())); } catch (e) {} Promise.resolve(window.__LEMUR_HEAL && window.__LEMUR_HEAL()).finally(() => setTimeout(() => location.reload(), 150)); return; }
+      if (g('[data-reload]')) { location.reload(); return; } // only when the user asks for it
       if (g('[data-news]')) { ev.preventDefault(); this._newsFrom = this._view; this._newsAll = false; this._view = 'news'; return this._render(); }
       if (g('[data-newsall]')) { this._newsAll = true; return this._render(); }
       if ((x = g('[data-closenews]')) && (x.classList.contains('btn') || !g('.dlg'))) return this._newsClose();

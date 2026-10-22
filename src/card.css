@@ -286,3 +286,13 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 @supports (height:1dvh){.wrap{height:var(--lemur-height,80dvh)}.m{height:var(--lemur-mh,80dvh)}}
 /* tablet layout in a narrow card (small tablets, phones on their side): icon-only buttons in the bottom bar */
 .nw .at{display:none}.nw .slider{min-width:90px}.nw .now{min-width:0;flex:1}.nw .cbar{flex-wrap:nowrap}
+/* delivery path badge (local network / Bluetooth / internet), top right of a tile */
+.pth{position:absolute;right:9px;top:8px;width:16px;height:16px;display:grid;place-items:center;line-height:0;opacity:.72;color:var(--mut)}
+.pth svg{width:13px;height:13px}
+.pth.p-lan{color:#5FD08A}.pth.p-ble{color:#6FA8FF}.pth.p-cloud{color:#F2A93B}
+.flm~.pth{right:27px}
+.bx.play .pth{right:30px;opacity:.95}.bx.play .flm~.pth{right:48px}
+.pth.tm{width:auto;height:auto;padding:3px 7px;border-radius:9px;font-size:11px;line-height:1;font-weight:600;background:rgba(0,0,0,.5);color:#fff;opacity:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.m .pth{right:6px;top:6px}.m .bx.play .pth{right:26px}.m .flm~.pth{right:24px}
+.shl i[class^=pth-]{font-style:normal;opacity:.8}.shl .pth-lan{color:#5FD08A}.shl .pth-ble{color:#6FA8FF}.shl .pth-cloud{color:#F2A93B}
+

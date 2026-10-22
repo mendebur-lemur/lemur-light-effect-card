@@ -27,7 +27,7 @@ const P_TXT = {
     sLook: 'Görünüm', tileSize: 'Karo boyutu', tsAuto: 'Otomatik', tsS: 'Küçük', tsM: 'Orta', tsL: 'Büyük',
     icStyle: 'Efekt simgeleri', icColorS: 'Renkli', icMonoS: 'Sade (tek renk)', showNames: 'Efekt adları', showNamesS: 'Kapalıyken karolarda sadece simge görünür',
     bg: 'Arka plan', bgDark: 'Koyu', bgBlack: 'Siyah (OLED)', bgTheme: 'Home Assistant teması', bgThemeS: 'Tema seçilirse kartın zemini ve yazıları Home Assistant temasını izler',
-    showBar: 'Renk çizgisi', showBarS: 'Karoların altındaki renkli çizgi', showDots: 'Destek noktaları', showDotsS: 'Efekti kaç ışığın desteklediğini gösteren noktalar',
+    showBar: 'Renk çizgisi', showBarS: 'Karoların altındaki renkli çizgi', showDots: 'Destek noktaları', showDotsS: 'Efekti kaç ışığın desteklediğini gösteren noktalar', showPaths: 'Gönderim yolunu göster', showPathsS: 'Efektin ışığa yerel ağdan, Bluetooth\'tan ya da internetten mi gittiğini köşede küçük bir simgeyle gösterir.', needInt: 'Bu özellik için uyumlu bir entegrasyon gerekli',
     sButtons: 'Alt çubuk', showStop: 'Durdur düğmesi', showRandom: 'Rastgele düğmesi', showRandomS: 'Geniş düzende görünür',
     sBehave: 'Davranış', fxOn: 'Kapalı ışıkta efekt seçilince', fxOnS: 'Işık bu parlaklıkta açılır', fxOnOff: 'Işığın kendi ayarı',
     startTab: 'Kart açılınca', startTabS: '“Son kullanılan”: o cihazda en son açtığın oda ve sekme', stAuto: 'Otomatik', stFav: 'Favoriler', stLast: 'Son kullanılan', stLight: 'Işık',
@@ -97,7 +97,7 @@ const P_TXT = {
     sLook: 'Appearance', tileSize: 'Tile size', tsAuto: 'Automatic', tsS: 'Small', tsM: 'Medium', tsL: 'Large',
     icStyle: 'Effect icons', icColorS: 'Colour', icMonoS: 'Simple (one colour)', showNames: 'Effect names', showNamesS: 'When off, tiles show only the icon',
     bg: 'Background', bgDark: 'Dark', bgBlack: 'Black (OLED)', bgTheme: 'Home Assistant theme', bgThemeS: 'With theme, the card background and text follow your Home Assistant theme',
-    showBar: 'Colour line', showBarS: 'The coloured line under tiles', showDots: 'Support dots', showDotsS: 'Dots showing how many lights support an effect',
+    showBar: 'Colour line', showBarS: 'The coloured line under tiles', showDots: 'Support dots', showDotsS: 'Dots showing how many lights support an effect', showPaths: 'Show delivery path', showPathsS: 'Shows a small corner icon telling whether the effect goes over the local network, Bluetooth or the internet.', needInt: 'Requires a compatible integration',
     sButtons: 'Bottom bar', showStop: 'Stop button', showRandom: 'Random button', showRandomS: 'Shown in the wide layout',
     sBehave: 'Behaviour', fxOn: 'When an effect is picked for a light that is off', fxOnS: 'The light comes on at this brightness', fxOnOff: 'Light’s own setting',
     startTab: 'When the card opens', startTabS: '“Last used”: the room and tab you last had open on that device', stAuto: 'Automatic', stFav: 'Favorites', stLast: 'Last used', stLight: 'Light',
@@ -660,6 +660,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       ${row(t('showNames'), t('showNamesS'), sw('show_names', true))}
       ${row(t('showBar'), t('showBarS'), sw('show_bar', true))}
       ${row(t('showDots'), t('showDotsS'), sw('show_dots', true))}
+      ${(() => { const sv = this._hass.services || {}, ok = !!(sv.lemur_govee_lan && sv.lemur_govee_lan.scene_paths); return ok ? row(t('showPaths'), t('showPathsS'), sw('show_paths', false)) : row(t('showPaths'), t('showPathsS'), '<button class="swt" disabled role="switch" aria-checked="false"></button>').replace('<div class="srow">', '<div class="srow dis">').replace('</small></div>', `</small><small class="need">${esc(t('needInt'))}</small></div>`); })()}
       <div class="sh2">${esc(t('sButtons'))}</div>
       ${row(t('showStop'), '', sw('show_stop', true))}
       ${row(t('showRandom'), t('showRandomS'), sw('show_random', true))}

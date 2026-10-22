@@ -41,7 +41,11 @@ const ICONS = {
   gift: '<path{s} d="M4.5 12h15v8a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20z"/><rect x="3" y="7.5" width="18" height="4.5" rx="1.2"/><path d="M11 12h2v9.5h-2zM12 7.5c-1.2-2.8-4.8-4.4-5.6-2.3-.6 1.6 2.4 2.3 5.6 2.3zm0 0c1.2-2.8 4.8-4.4 5.6-2.3.6 1.6-2.4 2.3-5.6 2.3z"/>',
   pulse: '<circle{s} cx="12" cy="12" r="9.6"/><path{l} d="M2.5 12.5h4l2.3-5 3.8 10 2.6-6.5 1.3 1.5h5"/>',
   ghost: '<path fill-rule="evenodd" d="M5 21V11a7 7 0 0 1 14 0v10l-2.3-1.8-2.4 1.8-2.3-1.8-2.3 1.8-2.4-1.8zM9.5 9.8a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm5 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z"/>',
-  generic: '<circle{s} cx="12" cy="12" r="9.6"/><circle cx="12" cy="12" r="4.6"/>'
+  generic: '<circle{s} cx="12" cy="12" r="9.6"/><circle cx="12" cy="12" r="4.6"/>',
+  // delivery paths: local network (home), short-range radio, internet (cloud)
+  p_lan: '<path{l} d="M3.5 11.2L12 4l8.5 7.2"/><path{l} d="M6 9.4v10.1h12V9.4"/><path d="M10 19.5v-4.8a2 2 0 0 1 4 0v4.8z"/>',
+  p_ble: '<circle cx="12" cy="12" r="2.4"/><path{l} d="M8.3 8.3a5.2 5.2 0 0 0 0 7.4M15.7 8.3a5.2 5.2 0 0 1 0 7.4"/><path{l}{s} d="M5.3 5.3a9.5 9.5 0 0 0 0 13.4M18.7 5.3a9.5 9.5 0 0 1 0 13.4"/>',
+  p_cloud: '<path d="M7.2 19.5a4.7 4.7 0 0 1-.8-9.33A6.1 6.1 0 0 1 18 9.9a4.8 4.8 0 0 1-.4 9.6z"/>'
 };
 for (const k in ICONS) ICONS[k] = ICONS[k].split('{s}').join(' opacity=".5"').split('{l}').join(' fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"').split('{t}').join(' fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"');
 

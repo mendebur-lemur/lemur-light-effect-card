@@ -1,6 +1,12 @@
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.7.0',
+    tr: ['Yeni: "Gönderim yolunu göster" (Ayarlar → Görünüm, varsayılan kapalı). Uyumlu bir entegrasyon varsa her efekt kutusunun köşesinde efektin ışığa yerel ağdan, Bluetooth\'tan ya da internetten mi gittiği küçük bir simgeyle görünür; efekti gönderince birkaç saniye gerçek süre yazar.'],
+    en: ['New: "Show delivery path" (Settings → Look, off by default). With a compatible integration, each effect tile shows a small corner icon telling whether the effect goes over the local network, Bluetooth or the internet; after sending it shows the real time for a few seconds.'],
+    de: ['Neu: „Übertragungsweg anzeigen“ (Einstellungen, standardmäßig aus): mit einer kompatiblen Integration zeigt jede Effektkachel, ob der Effekt über das lokale Netz, Bluetooth oder das Internet geht.'],
+    es: ['Nuevo: «Mostrar vía de envío» (Ajustes, desactivado por defecto): con una integración compatible, cada efecto muestra si llega por la red local, Bluetooth o internet.'],
+    fr: ['Nouveau : « Afficher le chemin d’envoi » (Réglages, désactivé par défaut) : avec une intégration compatible, chaque effet indique s’il passe par le réseau local, le Bluetooth ou internet.'] },
   { v: '1.6.6',
     tr: ['Kart artık sayfayı kendi kendine yenilemiyor ve Home Assistant\'ın tarayıcı önbelleğine dokunmuyor. Yeni sürüm gelince üstte "Yenile" düğmesi çıkıyor; sayfa yalnızca ona basınca yenileniyor. Ayarlar\'dan güncelleyip yeniden başlatınca da sayfa kendiliğinden değil, "Yenile" ile yenileniyor.'],
     en: ['The card no longer reloads the page by itself and no longer touches Home Assistant\'s browser cache. When a new version arrives a "Reload" button appears at the top; the page only reloads when you press it. After updating and restarting from Settings, the page also waits for "Reload".'],

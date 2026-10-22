@@ -454,3 +454,6 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .names.miss span{color:var(--red)}
 .names.miss span.fl{color:var(--ac)}
 .names.miss span b{color:var(--tx2)}
+/* a setting that needs something this home does not have */
+.srow.dis{opacity:.55}.srow.dis .swt{cursor:not-allowed}.srow .need{display:block;margin-top:3px;color:var(--ac)}
+

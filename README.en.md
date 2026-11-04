@@ -12,7 +12,7 @@ A Home Assistant dashboard card for light effects, white tones and colors that w
 - **Mixed brands in one room.** Every effect from every selected light is shown. Dots under a tile show how many lights support it, and tapping it sends the effect only to those lights. Equivalent effects are merged (Hue `candle`, WLED `Candle` and Govee `Candlelight` become one tile).
 - **Every room has its own tabs, favorites and hidden effects.** Long-press an effect on the card (right-click on desktop) to favorite it, hide it, or upload your own icon.
 - **A hand-drawn icon for every effect.** Hundreds of effects each have their own icon in one consistent style; for unknown names the closest match is picked from the effect name.
-- **One Stop button for every brand.** It sends each light's own "off" effect, then a calm white (default 3200 K, 40 %) instead of full-bright white.
+- **One Stop button for every brand.** It sends each effect light its own "off" effect, then a calm white (default 3200 K, 40 %) instead of full-bright white. Lights you only use for white are left alone.
 - **Light tab** with a brightness bar, white tones, a color wheel and swatches.
 - **Tablet and phone layouts.** On a phone everything sits under your thumb: a room box at the top (every room and how many lights are on, one tap away), what is playing with a Stop button right below it, and at the bottom a wide brightness bar and the Favorites / Recently played / All effects / White & colour tabs. The All effects tab has search. Swipe left or right to change rooms. Updates are optimistic, so taps feel instant.
 - **Four ready-made button cards:** phone screen, phone full screen, full screen and a resizable window. None of them needs browser_mod.
@@ -43,28 +43,25 @@ A Home Assistant dashboard card for light effects, white tones and colors that w
 
 ## Install
 
-You need Home Assistant 2024.1 or newer and [HACS](https://hacs.xyz/docs/use/). No other cards, themes or add-ons are required.
+You need Home Assistant 2024.4 or newer and [HACS](https://hacs.xyz/docs/use/). No other cards, themes or add-ons are required.
 
 ### 1. Download with HACS
 
-The easiest way is this button. It asks for your Home Assistant address once, then opens the repository in HACS:
+The card is in the official HACS list, so there is no repository to add. The easiest way is this button. It asks for your Home Assistant address once, then opens the card's page in HACS:
 
 [![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-light-effect-card&category=integration)
 
-1. Press **Add** in the dialog (the repository is added to HACS).
-2. Press **Download** at the bottom right, then **Download** again in the version dialog.
-3. **Settings → System → ⏻ at the top right → Restart Home Assistant**. A "Restart required" notice also appears on the Settings page; you can restart from there too.
+1. Press **Download** at the bottom right, then **Download** again in the version dialog.
+2. **Settings → System → ⏻ at the top right → Restart Home Assistant**. A "Restart required" notice also appears on the Settings page; you can restart from there too.
 
 <details>
-<summary>If the button doesn't work: add it manually</summary>
+<summary>If the button doesn't work: search in HACS</summary>
 
 1. Open **HACS** from the sidebar.
-2. **⋮** menu at the top right → **Custom repositories**.
-3. Paste this address into **Repository**:
-   `https://github.com/mendebur-lemur/lemur-light-effect-card`
-4. Choose **Integration** as **Type** and press **Add**. Close the dialog.
-5. Type **Lemur Light Effect Card** into the HACS search box and open the result.
-6. **Download** → **Download**, then restart Home Assistant.
+2. Type **Lemur** into the search box and open **Lemur Light Effect Card**.
+3. **Download** → **Download**, then restart Home Assistant.
+
+If you added the card earlier through **Custom repositories**, there is nothing to do; updates keep coming the same way.
 
 </details>
 
@@ -173,14 +170,14 @@ Every [card option](#card-options) can be added to these cards too (for example 
 
 ## Updating
 
-The easiest way is the control panel: **Settings → Version and updates → Check for updates**. If there is a new version, **Update** downloads it through HACS and **Restart** restarts Home Assistant; when it is back the page moves to the new version by itself.
+The easiest way is the control panel: **Settings → Version and updates → Check for updates**. If there is a new version, **Update** downloads it through HACS and **Restart** restarts Home Assistant; when it is back, press the **Reload** button that appears and the page moves to the new version.
 
 To do it by hand:
 
-1. **HACS → Lemur Light Effect Card → ⋮ → Update information**, then **Download** (or **Update** in the notification under Settings). HACS looks at custom repositories on its own only every 48 hours; "Update information" does it right away.
+1. **HACS → Lemur Light Effect Card → ⋮ → Update information**, then **Download** (or **Update** in the notification under Settings). HACS checks for new versions on its own from time to time; "Update information" does it right away.
 2. Restart Home Assistant.
 
-The card clears old page copies kept by the browser and the phone app itself; if an old card loads once, the page reloads once. Coming from a version older than 1.4.0, press Ctrl+F5 once on a computer, and in the phone app use **Settings → Companion app → Reset frontend cache**.
+When a new version is installed, a **Reload** button appears on top of the card and the panel in open pages; the page only reloads when you press it. If the card still looks old, press Ctrl+F5 once on a computer, and in the phone app use **Settings → Companion app → Reset frontend cache**.
 
 Your rooms, tabs, favorites and icons are kept across updates.
 
@@ -220,7 +217,7 @@ The **Settings** window at the bottom left applies to every card at home:
 
 ![Settings](docs/images/ayarlar.gif)
 
-- *Appearance:* tile size (automatic, small, medium, large), colour or simple one-colour icons, background (dark, black OLED, Home Assistant theme), effect names, colour line and support dots on/off.
+- *Appearance:* tile size (automatic, small, medium, large), colour or simple one-colour icons, background (dark, black OLED, Home Assistant theme), effect names, colour line and support dots on/off, delivery path (whether an effect reaches the light over the local network, Bluetooth or the internet; needs a compatible integration, off by default).
 - *Bottom bar:* hide the Stop and Random buttons.
 - *Behaviour:* the brightness a light that is off comes on at when an effect is picked, which tab the card opens on (last used, automatic, Favorites, Light; the default "last used" is the room and tab you last had open on that device), long press time, vibration, transition (colour, white, brightness and turning off change softly) and the **Recently used** tab (the last 12 effects played in the room, below Favorites).
 - *After Stop:* white tone and brightness.

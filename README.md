@@ -12,7 +12,7 @@ Hangi marka olursa olsun, efekt destekleyen bütün ışıkları oda oda yönete
 - **Farklı markalar aynı odada.** Seçili ışıkların bütün efektleri görünür. Kartın altındaki noktalar o efekti kaç ışığın desteklediğini gösterir; dokununca efekt yalnızca destekleyen ışıklara gider. Aynı anlama gelen efektler tek kartta birleşir (örneğin `candle`, `Candle` ve `Candlelight` tek bir "Mum Işığı" olur).
 - **Her odanın kendi sekmeleri, favorileri ve gizlenen efektleri.** Kartta bir efekte basılı tut (masaüstünde sağ tık): favorile, gizle ya da kendi simgeni yükle.
 - **Her efekte özel çizilmiş simgeler.** Yüzlerce efektin her biri için aynı stilde ayrı bir simge var; bilinmeyen adlarda efektin adına en uygun simge otomatik seçilir.
-- **Tek Durdur düğmesi.** Her ışığa kendi kapatma efektini gönderir, ardından ışıkları göz yormayan sakin bir beyaza alır (varsayılan 3200 K, %40).
+- **Tek Durdur düğmesi.** Efekt çalan her ışığa kendi kapatma efektini gönderir, ardından onları göz yormayan sakin bir beyaza alır (varsayılan 3200 K, %40). Yalnızca beyaz ışık olarak kullandığın ışıklara dokunmaz.
 - **Işık sekmesi:** parlaklık çubuğu, beyaz tonlar, renk çemberi ve hazır renkler.
 - **Tablet ve telefon düzeni.** Telefonda her şey başparmak altında: üstte oda kutusu (bütün odalar ve kaç ışığın açık olduğu bir dokunuşta), hemen altında ne çaldığı ve Durdur, altta kalın bir parlaklık çubuğu ve Favoriler / Son çalınan / Tüm efektler / Beyaz & renk sekmeleri. Tüm efektler sekmesinde arama var. Sağa-sola kaydırınca oda değişir. Dokunuşlar anında tepki verir.
 - **Dört hazır buton kartı:** telefon ekranı, telefonda tam ekran, tam ekran ve boyutu ayarlanabilen pencere. Hiçbiri browser_mod gerektirmez.
@@ -43,28 +43,25 @@ Hangi marka olursa olsun, efekt destekleyen bütün ışıkları oda oda yönete
 
 ## Kurulum
 
-Gerekenler: Home Assistant 2024.1 ya da daha yeni bir sürüm ve [HACS](https://hacs.xyz/docs/use/). Başka kart, tema ya da eklenti gerekmez.
+Gerekenler: Home Assistant 2024.4 ya da daha yeni bir sürüm ve [HACS](https://hacs.xyz/docs/use/). Başka kart, tema ya da eklenti gerekmez.
 
 ### 1. HACS ile indir
 
-En kolay yol bu düğme. Home Assistant adresini bir kez sorar, sonra depoyu doğrudan HACS'ta açar:
+Kart HACS'ın resmi listesinde; ayrıca depo eklemene gerek yok. En kolay yol bu düğme. Home Assistant adresini bir kez sorar, sonra kartın sayfasını doğrudan HACS'ta açar:
 
 [![HACS'ta aç](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-light-effect-card&category=integration)
 
-1. Açılan pencerede **Ekle**'ye bas (depo HACS'a eklenir).
-2. Sağ alttaki **İndir** düğmesine bas, sürümü seçme penceresinde tekrar **İndir**.
-3. **Ayarlar → Sistem → sağ üstteki ⏻ → Home Assistant'ı yeniden başlat**. Ayarlar sayfasında "Yeniden başlatma gerekli" uyarısı da çıkar, oradan da yapabilirsin.
+1. Sağ alttaki **İndir** düğmesine bas, sürümü seçme penceresinde tekrar **İndir**.
+2. **Ayarlar → Sistem → sağ üstteki ⏻ → Home Assistant'ı yeniden başlat**. Ayarlar sayfasında "Yeniden başlatma gerekli" uyarısı da çıkar, oradan da yapabilirsin.
 
 <details>
-<summary>Düğme çalışmazsa: elle ekleme</summary>
+<summary>Düğme çalışmazsa: HACS'ta ara</summary>
 
 1. Sol menüden **HACS**'ı aç.
-2. Sağ üstteki **⋮** menüsü → **Özel depolar** (*Custom repositories*).
-3. **Depo** alanına şu adresi yapıştır:
-   `https://github.com/mendebur-lemur/lemur-light-effect-card`
-4. **Tür** olarak **Entegrasyon** (*Integration*) seç ve **Ekle**'ye bas. Pencereyi kapat.
-5. HACS'ın arama kutusuna **Lemur Light Effect Card** yaz, sonuca tıkla.
-6. **İndir** → **İndir**, ardından Home Assistant'ı yeniden başlat.
+2. Arama kutusuna **Lemur** yaz, **Lemur Light Effect Card**'a tıkla.
+3. **İndir** → **İndir**, ardından Home Assistant'ı yeniden başlat.
+
+Daha önce kartı **Özel depolar** (*Custom repositories*) üzerinden eklediysen bir şey yapman gerekmez; güncellemeler aynı şekilde gelir.
 
 </details>
 
@@ -173,14 +170,14 @@ Bu kartlara [kart seçeneklerinin](#kart-seçenekleri) hepsi de yazılabilir (ö
 
 ## Güncelleme
 
-En kolayı kontrol panelinden: **Ayarlar → Sürüm ve güncelleme → Güncellemeleri denetle**. Yeni sürüm varsa **Güncelle** HACS üzerinden indirir, ardından **Yeniden başlat** Home Assistant'ı yeniden başlatır; açılınca sayfa kendiliğinden yeni sürüme geçer.
+En kolayı kontrol panelinden: **Ayarlar → Sürüm ve güncelleme → Güncellemeleri denetle**. Yeni sürüm varsa **Güncelle** HACS üzerinden indirir, ardından **Yeniden başlat** Home Assistant'ı yeniden başlatır; açılınca çıkan **Yenile** düğmesine basınca sayfa yeni sürüme geçer.
 
 Elle yapmak istersen:
 
-1. **HACS → Lemur Light Effect Card → ⋮ → Bilgileri güncelle**, sonra **İndir** (ya da Ayarlar'daki güncelleme bildiriminden **Güncelle**). HACS özel depolara kendiliğinden ancak 48 saatte bir bakar; "Bilgileri güncelle" bunu beklemeden yapar.
+1. **HACS → Lemur Light Effect Card → ⋮ → Bilgileri güncelle**, sonra **İndir** (ya da Ayarlar'daki güncelleme bildiriminden **Güncelle**). HACS yeni sürümleri belli aralıklarla kendisi denetler; "Bilgileri güncelle" bunu beklemeden yapar.
 2. Home Assistant'ı yeniden başlat.
 
-Kart, tarayıcının ve telefon uygulamasının sakladığı eski sayfa kopyalarını kendisi temizler; eski kart bir kez gelirse sayfa bir kez yenilenir. 1.4.0'dan eski bir sürümden geliyorsan bir kereliğine bilgisayarda Ctrl+F5 yap, telefon uygulamasında **Ayarlar → Companion app → Reset frontend cache**.
+Yeni sürüm yüklenince açık sayfalarda kartın ve panelin üstünde **Yenile** düğmesi çıkar; sayfa yalnızca ona basınca yenilenir. Kart hâlâ eski görünürse bilgisayarda bir kez Ctrl+F5 yap, telefon uygulamasında **Ayarlar → Companion app → Reset frontend cache**.
 
 Odaların, sekmelerin, favorilerin ve simgelerin güncellemede silinmez.
 
@@ -220,7 +217,7 @@ Sol alttaki **Ayarlar** penceresi evdeki bütün kartlara uygulanır:
 
 ![Ayarlar](docs/images/tr/ayarlar.gif)
 
-- *Görünüm:* karo boyutu (otomatik, küçük, orta, büyük), renkli ya da sade (tek renk) simgeler, arka plan (koyu, siyah OLED, Home Assistant teması), efekt adları, renk çizgisi ve destek noktaları aç/kapat.
+- *Görünüm:* karo boyutu (otomatik, küçük, orta, büyük), renkli ya da sade (tek renk) simgeler, arka plan (koyu, siyah OLED, Home Assistant teması), efekt adları, renk çizgisi ve destek noktaları aç/kapat, gönderim yolu (efektin ışığa yerel ağdan, Bluetooth'tan ya da internetten mi gittiği; uyumlu bir entegrasyon gerekir, varsayılan kapalı).
 - *Alt çubuk:* Durdur ve Rastgele düğmelerini gizleme.
 - *Davranış:* kapalı bir ışığa efekt seçilince hangi parlaklıkta açılacağı, kart açılınca hangi sekmenin geleceği (son kullanılan, otomatik, Favoriler, Işık; varsayılan "son kullanılan": o cihazda en son açık olan oda ve sekme), uzun basma süresi, titreşim, geçiş süresi (renk, beyaz, parlaklık ve kapatma yumuşak geçer) ve **Son kullanılanlar** sekmesi (odada son oynatılan 12 efekt, Favoriler'in altında).
 - *Durdur sonrası* beyaz ton ve parlaklık.

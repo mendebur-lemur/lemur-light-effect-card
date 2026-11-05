@@ -473,7 +473,7 @@ REPO_API = "https://api.github.com/repos/mendebur-lemur/lemur-light-effect-card/
 @websocket_api.require_admin
 @websocket_api.async_response
 async def ws_latest(hass, connection, msg):
-    """Newest release on GitHub, for installs without HACS (the panel's "check for updates")."""
+    """Newest release on GitHub, for installs without HACS or Marketplace (the panel's "check for updates")."""
     from homeassistant.helpers.aiohttp_client import async_get_clientsession
     import aiohttp
 

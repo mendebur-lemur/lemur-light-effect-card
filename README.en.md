@@ -43,9 +43,11 @@ A Home Assistant dashboard card for light effects, white tones and colors that w
 
 ## Install
 
-You need Home Assistant 2024.4 or newer and [HACS](https://hacs.xyz/docs/use/). No other cards, themes or add-ons are required.
+You need Home Assistant 2024.4 or newer and [HACS](https://hacs.xyz/docs/use/) (not needed on Home Assistant 2026.11 and later, where Settings → **Marketplace** replaced it). No other cards, themes or add-ons are required.
 
 ### 1. Download with HACS
+
+**Home Assistant 2026.11 and later:** Settings → **Marketplace** replaces HACS, nothing to install. Search for "Lemur Light Effect Card" in Marketplace and press **Download**; the button below opens Marketplace too. The next steps are the same.
 
 The card is in the official HACS list, so there is no repository to add. The easiest way is this button. It asks for your Home Assistant address once, then opens the card's page in HACS:
 
@@ -170,11 +172,11 @@ Every [card option](#card-options) can be added to these cards too (for example 
 
 ## Updating
 
-The easiest way is the control panel: **Settings → Version and updates → Check for updates**. If there is a new version, **Update** downloads it through HACS and **Restart** restarts Home Assistant; when it is back, press the **Reload** button that appears and the page moves to the new version.
+The easiest way is the control panel: **Settings → Version and updates → Check for updates**. If there is a new version, **Update** downloads it through HACS or Marketplace and **Restart** restarts Home Assistant; when it is back, press the **Reload** button that appears and the page moves to the new version.
 
 To do it by hand:
 
-1. **HACS → Lemur Light Effect Card → ⋮ → Update information**, then **Download** (or **Update** in the notification under Settings). HACS checks for new versions on its own from time to time; "Update information" does it right away.
+1. **HACS → Lemur Light Effect Card → ⋮ → Update information**, then **Download** (or **Update** in the notification under Settings). On Home Assistant 2026.11 and later the same steps are under **Settings → Marketplace**. New versions are also checked on their own from time to time; "Update information" does it right away.
 2. Restart Home Assistant.
 
 When a new version is installed, a **Reload** button appears on top of the card and the panel in open pages; the page only reloads when you press it. If the card still looks old, press Ctrl+F5 once on a computer, and in the phone app use **Settings → Companion app → Reset frontend cache**.
@@ -223,7 +225,7 @@ The **Settings** window at the bottom left applies to every card at home:
 - *After Stop:* white tone and brightness.
 - *Night mode:* a brightness ceiling between two times (effects, Stop and the brightness bar never go above it).
 - *Rooms and lights:* show Home Assistant light groups, the minimum number of effects a light needs.
-- *Version and updates:* the installed version; check for a new one, download it with HACS and restart Home Assistant.
+- *Version and updates:* the installed version; check for a new one, download it with HACS or Marketplace and restart Home Assistant.
 - *What's new:* after an update the panel shows what the new version brings once; later it opens from the **What's new** link in the Version row.
 - *Help → Report a problem:* you write what happened; a GitHub issue opens with the version, browser, screen, light counts, light integrations (can be switched off) and recent errors filled in. Nothing personal such as room or light names is added. No GitHub account? Copy the text instead.
 - *Backup:* download the whole setup (rooms, tabs, favorites, your own effects, settings, icons) as one file and restore it when you like.

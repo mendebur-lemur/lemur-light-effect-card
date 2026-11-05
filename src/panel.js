@@ -58,7 +58,7 @@ const P_TXT = {
     rCard: 'Kart', rInt: 'Entegrasyon', rHa: 'Home Assistant', rBrowser: 'Tarayıcı', rScreen: 'Ekran', rLang: 'Dil', rTouch: 'dokunmatik', rNoTouch: 'dokunmatik değil', rApp: 'HA uygulaması',
     rRooms: 'Odalar', rLights: 'Işıklar', rFx: 'efektli', rMine: 'Kendi efektler', rFill: 'Tamamlanan efektler', rPlat: 'Işık entegrasyonları', rErr: 'Son hatalar', rNoErr: 'yok',
     rWhat: 'Ne oldu?', rInfoH: 'Bilgiler',
-    sVer: 'Sürüm ve güncelleme', updT: 'Sürüm', updInst: 'Yüklü: v{v}', updCheck: 'Güncellemeleri denetle', updChecking: 'Denetleniyor…', updOk: 'güncel', updAt: 'son kontrol {t}', updNew: 'v{v} hazır', updNotes: 'Yenilikler', updGo: 'Güncelle', updGh: 'GitHub’da aç', updIng: 'v{v} indiriliyor…', updDone: 'v{v} indirildi. Home Assistant yeniden başlayınca devreye girer.', updRestart: 'Yeniden başlat', updAsk: 'Home Assistant yeniden başlasın mı? Bir iki dakika ışık kontrolü ve otomasyonlar durur.', updYes: 'Evet, yeniden başlat', updRest: 'Yeniden başlatılıyor… Açılınca sayfa kendiliğinden yenilenir.', updErr: 'Denetlenemedi: {e}', updAgain: 'Tekrar denetle', updNoHacs: 'HACS ile kurulmadığı için buradan yüklenemiyor',
+    sVer: 'Sürüm ve güncelleme', updT: 'Sürüm', updInst: 'Yüklü: v{v}', updCheck: 'Güncellemeleri denetle', updChecking: 'Denetleniyor…', updOk: 'güncel', updAt: 'son kontrol {t}', updNew: 'v{v} hazır', updNotes: 'Yenilikler', updGo: 'Güncelle', updGh: 'GitHub’da aç', updIng: 'v{v} indiriliyor…', updDone: 'v{v} indirildi. Home Assistant yeniden başlayınca devreye girer.', updRestart: 'Yeniden başlat', updAsk: 'Home Assistant yeniden başlasın mı? Bir iki dakika ışık kontrolü ve otomasyonlar durur.', updYes: 'Evet, yeniden başlat', updRest: 'Yeniden başlatılıyor… Açılınca sayfa kendiliğinden yenilenir.', updErr: 'Denetlenemedi: {e}', updAgain: 'Tekrar denetle', updNoHacs: 'HACS ya da Marketplace ile kurulmadığı için buradan yüklenemiyor',
     pvB: 'Önizleme', pvT: 'Açıkken tıkladığın efekt ışıklarda hemen çalar', pvOn: 'Önizleme açık', pvWhere: 'tıkladığın efekt şu odanın ışıklarında çalar:', pvNow: 'şu an: {x}', pvBack: 'Eski haline dön', pvKeep: 'Böyle bırak', pvBackT: 'Işıklar önizlemeden önceki haline döndü', pvKeepT: 'Son efekt çalmaya devam ediyor', pvErr: 'Önizleme çalışmadı: {e}', pvNoRoom: 'Önizleme için bir oda seç',
     fade: 'Geçiş süresi', fadeS: 'Renk, beyaz, parlaklık ve kapatma yumuşak geçsin (destekleyen ışıklarda)', fadeNo: 'Yok',
     showRecent: 'Son kullanılanlar sekmesi', showRecentS: 'Odada son oynatılan efektler, Favoriler’in yanında',
@@ -128,7 +128,7 @@ const P_TXT = {
     rCard: 'Card', rInt: 'Integration', rHa: 'Home Assistant', rBrowser: 'Browser', rScreen: 'Screen', rLang: 'Language', rTouch: 'touch', rNoTouch: 'no touch', rApp: 'HA app',
     rRooms: 'Rooms', rLights: 'Lights', rFx: 'with effects', rMine: 'Own effects', rFill: 'Filled-in effects', rPlat: 'Light integrations', rErr: 'Recent errors', rNoErr: 'none',
     rWhat: 'What happened?', rInfoH: 'Details',
-    sVer: 'Version and updates', updT: 'Version', updInst: 'Installed: v{v}', updCheck: 'Check for updates', updChecking: 'Checking…', updOk: 'up to date', updAt: 'checked {t}', updNew: 'v{v} is ready', updNotes: 'What’s new', updGo: 'Update', updGh: 'Open on GitHub', updIng: 'Downloading v{v}…', updDone: 'v{v} is downloaded. It takes effect when Home Assistant restarts.', updRestart: 'Restart', updAsk: 'Restart Home Assistant? Light control and automations stop for a minute or two.', updYes: 'Yes, restart', updRest: 'Restarting… The page reloads by itself when it is back.', updErr: 'Could not check: {e}', updAgain: 'Check again', updNoHacs: 'Not installed with HACS, so it cannot be installed from here',
+    sVer: 'Version and updates', updT: 'Version', updInst: 'Installed: v{v}', updCheck: 'Check for updates', updChecking: 'Checking…', updOk: 'up to date', updAt: 'checked {t}', updNew: 'v{v} is ready', updNotes: 'What’s new', updGo: 'Update', updGh: 'Open on GitHub', updIng: 'Downloading v{v}…', updDone: 'v{v} is downloaded. It takes effect when Home Assistant restarts.', updRestart: 'Restart', updAsk: 'Restart Home Assistant? Light control and automations stop for a minute or two.', updYes: 'Yes, restart', updRest: 'Restarting… The page reloads by itself when it is back.', updErr: 'Could not check: {e}', updAgain: 'Check again', updNoHacs: 'Not installed with HACS or Marketplace, so it cannot be installed from here',
     pvB: 'Preview', pvT: 'While it is on, the effect you click plays on the lights right away', pvOn: 'Preview on', pvWhere: 'the effect you click plays on the lights of:', pvNow: 'now: {x}', pvBack: 'Put lights back', pvKeep: 'Keep it', pvBackT: 'The lights are back as they were before the preview', pvKeepT: 'The last effect keeps playing', pvErr: 'Preview did not work: {e}', pvNoRoom: 'Pick a room for the preview',
     fade: 'Transition', fadeS: 'Colour, white, brightness and turning off change softly (lights that support it)', fadeNo: 'None',
     showRecent: 'Recently used tab', showRecentS: 'Effects played lately in the room, next to Favorites',
@@ -690,7 +690,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       ${row(t('resetAll'), t('resetAllS'), `<button class="btn danger" data-resetask>${pi('trash', 's16')}${esc(t('resetAll'))}</button>`)}
     </div></div>`;
   }
-  // ---- version and updates: HACS (refresh, install) when it is there, GitHub otherwise ----
+  // ---- version and updates: HACS or Marketplace (refresh, install) when it is there, GitHub otherwise ----
   _updRow() {
     const t = (k, v) => this._t(k, v), U = this._upd || { st: 'idle' }, cur = U.cur || CARD_VERSION;
     const notes = U.url ? ` · <a href="${esc(U.url)}" target="_blank" rel="noopener">${esc(t('updNotes'))}</a>` : '';
@@ -709,9 +709,11 @@ class LemurLightEffectsPanel extends HTMLElement {
   _updSet(o) { this._upd = Object.assign({}, this._upd, o); if (this._view === 'settings') this._render(); }
   _updEnt() {
     const S = this._hass.states;
-    // only the update entity HACS made for this repository (a look-alike entity from another integration is ignored)
+    // only the update entity HACS (or Marketplace, which replaced it in Home Assistant 2026.11) made for this repository;
+    // a look-alike entity from another integration is ignored
     const E = this._hass.entities || {}, ours = s => /^https:\/\/github\.com\/mendebur-lemur\/lemur-light-effect-card(\/|$)/.test(String(s.attributes.release_url || ''));
-    return Object.values(S).find(s => s.entity_id.startsWith('update.') && ours(s) && (!E[s.entity_id] || E[s.entity_id].platform === 'hacs')) || (S['update.lemur_light_effect_card_update'] && ours(S['update.lemur_light_effect_card_update']) ? S['update.lemur_light_effect_card_update'] : null);
+    const store = id => !E[id] || E[id].platform === 'hacs' || E[id].platform === 'marketplace';
+    return Object.values(S).find(s => s.entity_id.startsWith('update.') && ours(s) && store(s.entity_id)) || (S['update.lemur_light_effect_card_update'] && ours(S['update.lemur_light_effect_card_update']) ? S['update.lemur_light_effect_card_update'] : null);
   }
   async _updCheck() {
     const c = this._hass.connection, vnum = v => String(v || '').replace(/^v/i, '').split('.').map(n => parseInt(n, 10) || 0);
@@ -719,8 +721,11 @@ class LemurLightEffectsPanel extends HTMLElement {
     this._updSet({ st: 'checking', err: null });
     try {
       let cur = CARD_VERSION; try { cur = (await c.sendMessagePromise({ type: 'lemur_light_effects/info' })).version || cur; } catch (e) {}
-      // HACS: same as "Update information" in its menu, so its update entity knows about the newest release
-      try { const L = await c.sendMessagePromise({ type: 'hacs/repositories/list' }); const r = (L || []).find(x => /^mendebur-lemur\/lemur-light-effect-card$/i.test(x.full_name || '')); if (r) { await c.sendMessagePromise({ type: 'hacs/repository/refresh', repository: String(r.id) }); await new Promise(z => setTimeout(z, 900)); } } catch (e) {}
+      // same as "Update information" in the store's menu, so its update entity knows about the newest release.
+      // Home Assistant 2026.11 replaced HACS with Marketplace: same commands, prefix marketplace/ instead of hacs/
+      for (const pre of ['marketplace', 'hacs']) {
+        try { const L = await c.sendMessagePromise({ type: pre + '/repositories/list' }); const r = (L || []).find(x => /^mendebur-lemur\/lemur-light-effect-card$/i.test(x.full_name || '')); if (r) { await c.sendMessagePromise({ type: pre + '/repository/refresh', repository: String(r.id) }); await new Promise(z => setTimeout(z, 900)); } break; } catch (e) {}
+      }
       const ent = this._updEnt();
       let latest = ent && ent.attributes.latest_version, url = ent && ent.attributes.release_url;
       if (!latest) { const g = await c.sendMessagePromise({ type: 'lemur_light_effects/latest' }); latest = g.version; url = g.url; }

@@ -43,9 +43,11 @@ Hangi marka olursa olsun, efekt destekleyen bütün ışıkları oda oda yönete
 
 ## Kurulum
 
-Gerekenler: Home Assistant 2024.4 ya da daha yeni bir sürüm ve [HACS](https://hacs.xyz/docs/use/). Başka kart, tema ya da eklenti gerekmez.
+Gerekenler: Home Assistant 2024.4 ya da daha yeni bir sürüm ve [HACS](https://hacs.xyz/docs/use/) (Home Assistant 2026.11 ve sonrasında gerekmez; yerini Ayarlar → **Marketplace** aldı). Başka kart, tema ya da eklenti gerekmez.
 
 ### 1. HACS ile indir
+
+**Home Assistant 2026.11 ve sonrası:** HACS yerine Ayarlar → **Marketplace** var, ayrıca kurmana gerek yok. Marketplace'te "Lemur Light Effect Card" diye arat ve **İndir**'e bas; aşağıdaki düğme de Marketplace'i açar. Sonraki adımlar aynı.
 
 Kart HACS'ın resmi listesinde; ayrıca depo eklemene gerek yok. En kolay yol bu düğme. Home Assistant adresini bir kez sorar, sonra kartın sayfasını doğrudan HACS'ta açar:
 
@@ -170,11 +172,11 @@ Bu kartlara [kart seçeneklerinin](#kart-seçenekleri) hepsi de yazılabilir (ö
 
 ## Güncelleme
 
-En kolayı kontrol panelinden: **Ayarlar → Sürüm ve güncelleme → Güncellemeleri denetle**. Yeni sürüm varsa **Güncelle** HACS üzerinden indirir, ardından **Yeniden başlat** Home Assistant'ı yeniden başlatır; açılınca çıkan **Yenile** düğmesine basınca sayfa yeni sürüme geçer.
+En kolayı kontrol panelinden: **Ayarlar → Sürüm ve güncelleme → Güncellemeleri denetle**. Yeni sürüm varsa **Güncelle** HACS ya da Marketplace üzerinden indirir, ardından **Yeniden başlat** Home Assistant'ı yeniden başlatır; açılınca çıkan **Yenile** düğmesine basınca sayfa yeni sürüme geçer.
 
 Elle yapmak istersen:
 
-1. **HACS → Lemur Light Effect Card → ⋮ → Bilgileri güncelle**, sonra **İndir** (ya da Ayarlar'daki güncelleme bildiriminden **Güncelle**). HACS yeni sürümleri belli aralıklarla kendisi denetler; "Bilgileri güncelle" bunu beklemeden yapar.
+1. **HACS → Lemur Light Effect Card → ⋮ → Bilgileri güncelle**, sonra **İndir** (ya da Ayarlar'daki güncelleme bildiriminden **Güncelle**). Home Assistant 2026.11 ve sonrasında aynı adımlar **Ayarlar → Marketplace**'te. Yeni sürümler belli aralıklarla kendiliğinden de denetlenir; "Bilgileri güncelle" bunu beklemeden yapar.
 2. Home Assistant'ı yeniden başlat.
 
 Yeni sürüm yüklenince açık sayfalarda kartın ve panelin üstünde **Yenile** düğmesi çıkar; sayfa yalnızca ona basınca yenilenir. Kart hâlâ eski görünürse bilgisayarda bir kez Ctrl+F5 yap, telefon uygulamasında **Ayarlar → Companion app → Reset frontend cache**.
@@ -223,7 +225,7 @@ Sol alttaki **Ayarlar** penceresi evdeki bütün kartlara uygulanır:
 - *Durdur sonrası* beyaz ton ve parlaklık.
 - *Gece modu:* seçtiğin saatler arasında parlaklık üst sınırı (efektler, Durdur ve parlaklık çubuğu bu sınırı aşmaz).
 - *Odalar ve ışıklar:* Home Assistant ışık gruplarını gösterme, bir ışığın efektli sayılması için gereken en az efekt sayısı.
-- *Sürüm ve güncelleme:* yüklü sürüm; yeni sürümü denetleme, HACS ile indirme ve Home Assistant'ı yeniden başlatma.
+- *Sürüm ve güncelleme:* yüklü sürüm; yeni sürümü denetleme, HACS ya da Marketplace ile indirme ve Home Assistant'ı yeniden başlatma.
 - *Yenilikler:* güncellemeden sonra panel ilk açılışta yeni sürümle gelenleri bir kez gösterir; sonra Sürüm satırındaki **Yenilikler** bağlantısıyla açılır.
 - *Yardım → Sorun bildir:* ne olduğunu yazarsın; sürüm, tarayıcı, ekran, ışık sayıları, ışık entegrasyonları (istersen kapatılır) ve son hatalar eklenmiş hazır bir GitHub kaydı açılır. Oda ve ışık adları gibi kişisel bilgiler eklenmez. GitHub hesabın yoksa metni kopyalayabilirsin.
 - *Yedek:* bütün düzeni (odalar, sekmeler, favoriler, kendi efektlerin, ayarlar, simgeler) tek dosya olarak indir, istediğinde geri yükle.

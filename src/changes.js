@@ -1,6 +1,12 @@
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.7.1',
+    tr: ['Home Assistant 2026.11 ile HACS\'ın yerini alan Marketplace desteklendi: Ayarlar → Sürüm ve güncelleme yeni sürümü Marketplace üzerinden de denetliyor ve indiriyor.'],
+    en: ['Support for Marketplace, which replaced HACS in Home Assistant 2026.11: Settings → Version and updates checks for and downloads new versions through Marketplace too.'],
+    de: ['Unterstützung für Marketplace (ersetzt HACS ab Home Assistant 2026.11): Einstellungen → Version und Updates prüft und lädt neue Versionen auch über Marketplace.'],
+    es: ['Compatibilidad con Marketplace, que sustituye a HACS desde Home Assistant 2026.11: Ajustes → Versión y actualizaciones busca e instala nuevas versiones también desde Marketplace.'],
+    fr: ['Prise en charge de Marketplace, qui remplace HACS depuis Home Assistant 2026.11 : Réglages → Version et mises à jour vérifie et télécharge aussi les nouvelles versions via Marketplace.'] },
   { v: '1.7.0',
     tr: ['Yeni: "Gönderim yolunu göster" (Ayarlar → Görünüm, varsayılan kapalı). Uyumlu bir entegrasyon varsa her efekt kutusunun köşesinde efektin ışığa yerel ağdan, Bluetooth\'tan ya da internetten mi gittiği küçük bir simgeyle görünür; efekti gönderince birkaç saniye gerçek süre yazar.'],
     en: ['New: "Show delivery path" (Settings → Look, off by default). With a compatible integration, each effect tile shows a small corner icon telling whether the effect goes over the local network, Bluetooth or the internet; after sending it shows the real time for a few seconds.'],

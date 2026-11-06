@@ -1,6 +1,12 @@
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.7.3',
+    tr: ['Kurulum ve güncelleme dosyası küçüldü (yaklaşık 65 MB yerine 0,5 MB): yavaş bağlantıda Marketplace\'ten indirirken zaman aşımı olmaz.'],
+    en: ['The install and update download is much smaller (about 0.5 MB instead of 65 MB), so it no longer times out in the Marketplace on slow connections.'],
+    de: ['Der Download für Installation und Update ist viel kleiner (etwa 0,5 MB statt 65 MB), daher gibt es bei langsamer Verbindung im Marketplace keine Zeitüberschreitung mehr.'],
+    es: ['La descarga de instalación y actualización es mucho más pequeña (unos 0,5 MB en lugar de 65 MB), así que ya no se agota el tiempo en Marketplace con conexiones lentas.'],
+    fr: ['Le téléchargement d’installation et de mise à jour est bien plus léger (environ 0,5 Mo au lieu de 65 Mo) : il n’expire plus dans Marketplace sur une connexion lente.'] },
   { v: '1.7.2',
     tr: ['Kontrol panelinin üst çubuğunda, Önizleme\'nin yanında "Yıldız ver" düğmesi: kartı beğendiysen GitHub sayfasını açar. Aynı bağlantı Yenilikler penceresinde de var.'],
     en: ['A "Star" button in the control panel\'s top bar, next to Preview: if you like the card, it opens its GitHub page. The same link is in the What\'s new window.'],

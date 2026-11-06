@@ -4,7 +4,7 @@
 
 A Home Assistant dashboard card for light effects, white tones and colors that works with **any light brand**: Govee, Philips Hue, WLED, Yeelight, LIFX, Tuya and anything else that exposes `effect_list`.
 
-![Lemur Light Effect Card in action](docs/images/demo.gif)
+![Lemur Light Effect Card in action](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/demo.gif)
 
 **Quick install:** [open in HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-light-effect-card&category=integration) → Download → restart Home Assistant → [add the integration](https://my.home-assistant.io/redirect/config_flow_start/?domain=lemur_light_effects). Step-by-step guide with videos [below](#install).
 
@@ -73,7 +73,7 @@ If you added the card earlier through **Custom repositories**, there is nothing 
 
 Without the button: **Settings → Devices & services → Add integration** → type "Light" or "Lemur" → **Lemur Light Effect Card** → **Submit** → **Finish**. There are no questions; your lights are found automatically.
 
-![Adding the integration](docs/images/adim-1.gif)
+![Adding the integration](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/adim-1.gif)
 
 ### 3. Arrange your rooms in the control panel
 
@@ -83,7 +83,7 @@ Without the button: **Settings → Devices & services → Add integration** → 
 - Click a light to move it to another room, hide it in the card, or switch **Use for effects** on or off.
 - Made a mistake? **Undo** (or Ctrl+Z).
 
-![Control panel](docs/images/adim-2.gif)
+![Control panel](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/adim-2.gif)
 
 ### 4. Add the card to a dashboard
 
@@ -93,7 +93,7 @@ Without the button: **Settings → Devices & services → Add integration** → 
 
 The card registers itself; you don't need to add anything under *Resources*. The video adds the **Full screen button**:
 
-![Adding the card to a dashboard](docs/images/adim-3.gif)
+![Adding the card to a dashboard](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/adim-3.gif)
 
 To add the card itself in YAML:
 
@@ -105,7 +105,7 @@ type: custom:lemur-light-effect-card
 
 These sit on the dashboard as a small button and open the effects screen when tapped. All four work without browser_mod or any other add-on, and close with the phone's back button, Esc or ✕. In the card picker they are listed as **Lemur Light Effect Card · …**.
 
-![The four button cards](docs/images/adim-4.gif)
+![The four button cards](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/adim-4.gif)
 
 | Card | What it opens | Best for |
 |---|---|---|
@@ -166,7 +166,7 @@ aspect: 16/10
 
 Style, colour and icon are picked in the **Appearance** section of the card's visual editor:
 
-![Button styles: row, tile, coloured tile, icon only](docs/images/buttons.png)
+![Button styles: row, tile, coloured tile, icon only](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/buttons.png)
 
 Every [card option](#card-options) can be added to these cards too (for example `areas`, `kelvin`, `accent`); it is passed on to the screen they open.
 
@@ -196,8 +196,8 @@ Your rooms, tabs, favorites and icons are kept across updates.
 
 | Tablet | Phone |
 |---|---|
-| ![Effects of a room, grouped by category](docs/images/card.png) | ![Phone layout](docs/images/telefon.gif) |
-| ![Light tab: white tones, color wheel, swatches](docs/images/card-light.png) | |
+| ![Effects of a room, grouped by category](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/card.png) | ![Phone layout](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/telefon.gif) |
+| ![Light tab: white tones, color wheel, swatches](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/card-light.png) | |
 
 ## Control panel
 
@@ -217,7 +217,7 @@ Installing the integration adds an **Lemur Light Effect Card** page to the Home 
 
 The **Settings** window at the bottom left applies to every card at home:
 
-![Settings](docs/images/ayarlar.gif)
+![Settings](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/ayarlar.gif)
 
 - *Appearance:* tile size (automatic, small, medium, large), colour or simple one-colour icons, background (dark, black OLED, Home Assistant theme), effect names, colour line and support dots on/off, delivery path (whether an effect reaches the light over the local network, Bluetooth or the internet; needs a compatible integration, off by default).
 - *Bottom bar:* hide the Stop and Random buttons.
@@ -242,13 +242,13 @@ In the panel, **Create effect** right below **All effects** lets you make your o
 
 Once saved it shows in the card under **My effects** like any other effect; one tap and only the lights you added do their part. You can also drag your effects from the list onto any tab.
 
-![Create effect](docs/images/efekt-olustur.gif)
+![Create effect](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/efekt-olustur.gif)
 
 | Room layout | All effects |
 |---|---|
-| ![Room layout](docs/images/panel-editor.png) | ![All effects](docs/images/panel-all-effects.png) |
+| ![Room layout](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/panel-editor.png) | ![All effects](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/panel-all-effects.png) |
 | **Settings** | **Create effect** |
-| ![Settings](docs/images/panel-settings.png) | ![Create effect](docs/images/panel-create.png) |
+| ![Settings](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/panel-settings.png) | ![Create effect](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/panel-create.png) |
 
 ### Fill in the missing lights
 
@@ -348,6 +348,6 @@ The code is licensed under **[GPL-3.0](LICENSE)** with the additional attributio
 - Any project that uses or builds on this code must **release its own source code under the same license**; it cannot be turned into a closed-source product.
 - Copies and modified versions must keep this attribution line: *Based on Lemur Light Effect Card by mendeburlemur — https://github.com/mendebur-lemur/lemur-light-effect-card*
 
-Images, videos and documentation are licensed under **[CC BY-NC-SA 4.0](docs/LICENSE.md)**: they can be shared with credit, for non-commercial purposes and under the same license.
+Images, videos and documentation are licensed under **[CC BY-NC-SA 4.0](https://github.com/mendebur-lemur/lemur-light-effect-card/blob/main/docs/LICENSE.md)**: they can be shared with credit, for non-commercial purposes and under the same license.
 
 v1.5.0 and earlier were released under the MIT license; MIT still applies to those versions.

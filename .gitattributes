@@ -1,0 +1,10 @@
+# Marketplace/HACS installs from the GitHub release zip (archive/refs/tags/vX.Y.Z.zip).
+# Keep only what an install needs: custom_components/, README*, LICENSE, NOTICE.md, hacs.json.
+docs/ export-ignore
+src/ export-ignore
+tests/ export-ignore
+.github/ export-ignore
+build.py export-ignore
+pytest.ini export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore

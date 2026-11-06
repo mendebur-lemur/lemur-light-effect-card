@@ -4,7 +4,7 @@ Türkçe · **[English](README.en.md)**
 
 Hangi marka olursa olsun, efekt destekleyen bütün ışıkları oda oda yöneten bir Home Assistant kartı. Efektler, beyaz tonlar ve renkler tek yerde.
 
-![Lemur Light Effect Card kullanımda](docs/images/tr/demo.gif)
+![Lemur Light Effect Card kullanımda](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/demo.gif)
 
 **Hızlı kurulum:** [HACS'ta aç](https://my.home-assistant.io/redirect/hacs_repository/?owner=mendebur-lemur&repository=lemur-light-effect-card&category=integration) → İndir → Home Assistant'ı yeniden başlat → [entegrasyonu ekle](https://my.home-assistant.io/redirect/config_flow_start/?domain=lemur_light_effects). Adım adım anlatım ve videolar [aşağıda](#kurulum).
 
@@ -73,7 +73,7 @@ Daha önce kartı **Özel depolar** (*Custom repositories*) üzerinden eklediyse
 
 Düğmeyi kullanmıyorsan: **Ayarlar → Cihazlar ve hizmetler → Entegrasyon ekle** → "Işık" ya da "Lemur" yaz → **Lemur Light Effect Card** → **Gönder** → **Bitir**. Soru sorulmaz, evdeki ışıklar kendiliğinden bulunur.
 
-![Entegrasyonu ekleme](docs/images/tr/adim-1.gif)
+![Entegrasyonu ekleme](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/adim-1.gif)
 
 ### 3. Kontrol panelinde odalarını düzenle
 
@@ -83,7 +83,7 @@ Sol menüde **Lemur Işık Efekt Kartı** belirir (yalnızca yöneticiler görü
 - Bir ışığa tıkla: başka odaya taşı, kartta gizle ya da **Efektlerde kullan**'ı aç/kapat.
 - Hata yaparsan **Geri al** (ya da Ctrl+Z).
 
-![Kontrol paneli](docs/images/tr/adim-2.gif)
+![Kontrol paneli](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/adim-2.gif)
 
 ### 4. Kartı panona ekle
 
@@ -93,7 +93,7 @@ Sol menüde **Lemur Işık Efekt Kartı** belirir (yalnızca yöneticiler görü
 
 Kart kendini kaydeder; *Kaynaklar* (*Resources*) menüsüne bir şey eklemene gerek yok. Videoda **Tam ekran butonu** ekleniyor:
 
-![Kartı panoya ekleme](docs/images/tr/adim-3.gif)
+![Kartı panoya ekleme](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/adim-3.gif)
 
 YAML ile eklemek istersen kartın kendisi:
 
@@ -105,7 +105,7 @@ type: custom:lemur-light-effect-card
 
 Panoda küçük bir buton olarak durur, dokununca efekt ekranını açar. Dördü de browser_mod ya da başka bir eklenti olmadan çalışır; telefonun geri tuşu, Esc tuşu ve ✕ ile kapanır. Kart seçicide **Lemur Işık Efekt Kartı · …** adıyla görünürler.
 
-![Dört buton kartı](docs/images/tr/adim-4.gif)
+![Dört buton kartı](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/adim-4.gif)
 
 | Kart | Ne açar | Kimin için |
 |---|---|---|
@@ -166,7 +166,7 @@ aspect: 16/10
 
 Biçim, renk ve simge kartın görsel düzenleyicisindeki **Görünüm** bölümünden seçilir:
 
-![Buton görünümleri: yatay, kutu, renkli kutu, sadece simge](docs/images/tr/buttons.png)
+![Buton görünümleri: yatay, kutu, renkli kutu, sadece simge](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/buttons.png)
 
 Bu kartlara [kart seçeneklerinin](#kart-seçenekleri) hepsi de yazılabilir (örneğin `areas`, `kelvin`, `accent`); açılan ekrana aktarılır.
 
@@ -196,8 +196,8 @@ Odaların, sekmelerin, favorilerin ve simgelerin güncellemede silinmez.
 
 | Tablet | Telefon |
 |---|---|
-| ![Bir odanın efektleri, kategorilere ayrılmış](docs/images/tr/card.png) | ![Telefon düzeni](docs/images/tr/telefon.gif) |
-| ![Işık sekmesi: beyaz tonlar, renk çemberi, hazır renkler](docs/images/tr/card-light.png) | |
+| ![Bir odanın efektleri, kategorilere ayrılmış](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/card.png) | ![Telefon düzeni](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/telefon.gif) |
+| ![Işık sekmesi: beyaz tonlar, renk çemberi, hazır renkler](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/card-light.png) | |
 
 ## Kontrol paneli
 
@@ -217,7 +217,7 @@ Entegrasyonu kurunca Home Assistant'ın sol menüsüne **Lemur Işık Efekt Kart
 
 Sol alttaki **Ayarlar** penceresi evdeki bütün kartlara uygulanır:
 
-![Ayarlar](docs/images/tr/ayarlar.gif)
+![Ayarlar](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/ayarlar.gif)
 
 - *Görünüm:* karo boyutu (otomatik, küçük, orta, büyük), renkli ya da sade (tek renk) simgeler, arka plan (koyu, siyah OLED, Home Assistant teması), efekt adları, renk çizgisi ve destek noktaları aç/kapat, gönderim yolu (efektin ışığa yerel ağdan, Bluetooth'tan ya da internetten mi gittiği; uyumlu bir entegrasyon gerekir, varsayılan kapalı).
 - *Alt çubuk:* Durdur ve Rastgele düğmelerini gizleme.
@@ -242,13 +242,13 @@ Panelde **Tüm efektler**'in hemen altındaki **Efekt oluştur** ile kendi efekt
 
 Kaydedince kartta **Efektlerim** sekmesinde normal bir efekt gibi görünür; dokununca sadece eklediğin ışıklar kendine düşeni yapar. Oluşturduğun efektleri listeden sürükleyip istediğin sekmeye de taşıyabilirsin.
 
-![Efekt oluştur](docs/images/tr/efekt-olustur.gif)
+![Efekt oluştur](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/efekt-olustur.gif)
 
 | Oda düzeni | Tüm efektler |
 |---|---|
-| ![Oda düzeni](docs/images/tr/panel-editor.png) | ![Tüm efektler](docs/images/tr/panel-all-effects.png) |
+| ![Oda düzeni](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/panel-editor.png) | ![Tüm efektler](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/panel-all-effects.png) |
 | **Ayarlar** | **Efekt oluştur** |
-| ![Ayarlar](docs/images/tr/panel-settings.png) | ![Efekt oluştur](docs/images/tr/panel-create.png) |
+| ![Ayarlar](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/panel-settings.png) | ![Efekt oluştur](https://raw.githubusercontent.com/mendebur-lemur/lemur-light-effect-card/main/docs/images/tr/panel-create.png) |
 
 ### Eksik ışıkları tamamla
 
@@ -349,6 +349,6 @@ Kod **[GPL-3.0](LICENSE)** lisansıyla ve [NOTICE.md](NOTICE.md) dosyasındaki e
 - Bu kodu kullanan ya da üzerine geliştiren her proje **kendi kaynak kodunu da aynı lisansla açmak** zorundadır; kapalı kaynak bir ürüne dönüştürülemez.
 - Kopyalar ve geliştirilmiş sürümler şu atıf satırını korumak zorundadır: *Based on Lemur Light Effect Card by mendeburlemur — https://github.com/mendebur-lemur/lemur-light-effect-card*
 
-Görseller, videolar ve dokümanlar **[CC BY-NC-SA 4.0](docs/LICENSE.md)** lisansıyla yayınlanır: kaynak göstererek, ticari olmayan amaçla ve aynı lisansla paylaşılabilir.
+Görseller, videolar ve dokümanlar **[CC BY-NC-SA 4.0](https://github.com/mendebur-lemur/lemur-light-effect-card/blob/main/docs/LICENSE.md)** lisansıyla yayınlanır: kaynak göstererek, ticari olmayan amaçla ve aynı lisansla paylaşılabilir.
 
 v1.5.0 ve önceki sürümler MIT lisansıyla yayınlanmıştı; o sürümler için MIT geçerli kalır.

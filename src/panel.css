@@ -456,4 +456,14 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .names.miss span b{color:var(--tx2)}
 /* a setting that needs something this home does not have */
 .srow.dis{opacity:.55}.srow.dis .swt{cursor:not-allowed}.srow .need{display:block;margin-top:3px;color:var(--ac)}
+/* "Star on GitHub": a plain link next to the preview switch and in What's new (nothing is counted) */
+.stb{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px 0 10px;border-radius:var(--r3);border:1px solid var(--ln2);background:var(--s2);font-size:13px;font-weight:500;color:var(--tx);text-decoration:none;white-space:nowrap}
+.stb:hover{border-color:var(--ln3)}
+.narrow .stb .l{display:none}.narrow .stb{padding:0 9px}
+.stb svg,.nstar>svg,.nstar .btn svg{color:#F5C542}
+@media (max-width: 600px){.stb .l{display:none}.stb{padding:0 9px}}
+.nstar .btn{text-decoration:none}
+.nstar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--s1);border:1px solid var(--ln);border-radius:var(--r2);padding:12px 14px;margin:12px 0 0}
+.nstar>span{flex:1 1 200px;color:var(--tx2);font-size:13.5px;line-height:1.4}
+.nstar>svg{flex:none}
 

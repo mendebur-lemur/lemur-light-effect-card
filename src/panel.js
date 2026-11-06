@@ -49,7 +49,7 @@ const P_TXT = {
     save: 'Kaydet', del: 'Sil', bri: 'Parlaklık', ceNameErr: 'Bir ad yaz', ceSaved: '“{x}” kaydedildi', ceHint: 'Kartta “Efektlerim” sekmesinde görünür.',
     m_auto: 'Otomatik', m_fx: 'Efekt', m_color: 'Renk', m_white: 'Beyaz', m_off: 'Kapat', m_skip: 'Dokunma', supBase: 'temel efekti oynatır', noBase: 'temel efekt yok', autoIs: 'otomatik: {x}',
     upd: 'Yeni sürüm yüklendi ({v}). Ekranı yenile.', reload: 'Yenile',
-    newsT: 'Yenilikler', newsV: 'v{v} ile gelenler', newsOld: 'Önceki sürümler', newsAll: 'Bütün notlar GitHub\'da', newsOk: 'Tamam', newsLink: 'Yenilikler',
+    newsT: 'Yenilikler', newsV: 'v{v} ile gelenler', newsOld: 'Önceki sürümler', newsAll: 'Bütün notlar GitHub\'da', newsOk: 'Tamam', starB: 'Yıldız ver', starT: 'Beğendiysen GitHub\'da yıldız ver', starNews: 'Kartı beğendiysen GitHub\'da bir yıldız vermen geliştirmeye destek olur.', starGh: 'GitHub\'da yıldız ver', newsLink: 'Yenilikler',
     sHelp: 'Yardım', repT: 'Sorun bildir', repS: 'Sürüm ve cihaz bilgisiyle GitHub\'da kayıt açar; ne olduğunu yazman yeter',
     repQ: 'Ne oldu?', repPh: 'Ne yaptın, ne bekliyordun, ne oldu? Örnek: Yatak odasında Kuzey Işıkları\'na basınca abajur yanmıyor.',
     repInfo: 'Kayda eklenecek bilgiler', repInfoS: 'Kişisel bilgi yok: oda ve ışık adları, adresin ya da hesabın eklenmez.',
@@ -119,7 +119,7 @@ const P_TXT = {
     save: 'Save', del: 'Delete', bri: 'Brightness', ceNameErr: 'Type a name', ceSaved: '“{x}” saved', ceHint: 'It shows in the card under “My effects”.',
     m_auto: 'Automatic', m_fx: 'Effect', m_color: 'Colour', m_white: 'White', m_off: 'Turn off', m_skip: 'Leave as is', supBase: 'plays the base effect', noBase: 'no base effect', autoIs: 'automatic: {x}',
     upd: 'A new version is installed ({v}). Reload the page.', reload: 'Reload',
-    newsT: 'What\'s new', newsV: 'New in v{v}', newsOld: 'Earlier versions', newsAll: 'All notes on GitHub', newsOk: 'OK', newsLink: 'What\'s new',
+    newsT: 'What\'s new', newsV: 'New in v{v}', newsOld: 'Earlier versions', newsAll: 'All notes on GitHub', newsOk: 'OK', starB: 'Star', starT: 'Like it? Give it a star on GitHub', starNews: 'If you like the card, a star on GitHub helps its development.', starGh: 'Star on GitHub', newsLink: 'What\'s new',
     sHelp: 'Help', repT: 'Report a problem', repS: 'Opens a GitHub issue with the version and device details; you only write what happened',
     repQ: 'What happened?', repPh: 'What did you do, what did you expect, what happened? Example: tapping Aurora in the bedroom doesn\'t turn on the bedside lamp.',
     repInfo: 'Details added to the issue', repInfoS: 'Nothing personal: no room or light names, address or account.',
@@ -181,6 +181,7 @@ const hexRgb = h => [1, 3, 5].map(i => parseInt(String(h).slice(i, i + 2), 16) |
 const slug = s => String(s).toLocaleLowerCase('tr').replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ş/g, 's').replace(/ü/g, 'u').normalize('NFKD').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'x';
 const pi = (n, c = 's') => `<svg class="${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${PI[n]}</svg>`;
 // what a dragged item may be dropped on
+const REPO_URL = 'https://github.com/mendebur-lemur/lemur-light-effect-card';
 const DND_ACCEPT = { light: ['room', 'strip'], fx: ['tab'], tab: ['tab', 'room'], room: ['room'], cl: ['cz'] };
 const newId = () => 't' + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
 const clone = o => JSON.parse(JSON.stringify(o == null ? null : o));
@@ -611,6 +612,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     }
     const pv = this._pv, pvU = pv && pv.key ? U.get(pv.key) : null;
     const top = `<div class="top"><span class="mb"></span><span class="lg">${pi('sparkles', 's16')}</span><h1>${esc(t('title'))}</h1><span class="grow"></span>
+      <a class="stb" href="${REPO_URL}" target="_blank" rel="noopener" title="${esc(t('starT'))}" aria-label="${esc(t('starT'))}">${pi('star', 's16')}<span class="l">${esc(t('starB'))}</span></a>
       ${noL ? '' : `<button class="pvb ${pv ? 'on' : ''}" data-pv title="${esc(t('pvT'))}" aria-pressed="${pv ? 'true' : 'false'}">${pi('play', 's16')}<span class="l">${esc(t('pvB'))}</span><i class="sw2"><i></i></i></button>`}
       <button class="btn ic" data-undo title="${esc(t('undoK'))}" ${this._undo.length ? '' : 'disabled'}>${pi('undo', 's16')}</button>
       ${hidR || noL ? '' : `<button class="btn ic" data-more title="${esc(t('more'))}">${pi('more', 's16')}</button>`}
@@ -787,7 +789,8 @@ class LemurLightEffectsPanel extends HTMLElement {
       <div class="dh"><span class="si">${pi('sparkles', 's20')}</span><b>${t('newsT')}</b><span class="grow"></span><button class="btn ic" data-closenews title="${t('close')}">${pi('x', 's16')}</button></div>
       ${CHANGES.length ? one(CHANGES[0], true) : ''}
       ${rest.length ? (this._newsAll ? rest.map(c => one(c, false)).join('') : `<button class="lnk" data-newsall>${t('newsOld')} ›</button>`) : ''}
-      <div class="dbtns"><a class="btn" href="https://github.com/mendebur-lemur/lemur-light-effect-card/releases" target="_blank" rel="noopener">${pi('ext', 's16')}${t('newsAll')}</a><span class="grow"></span><button class="btn pri" data-closenews>${t('newsOk')}</button></div>
+      <div class="nstar">${pi('star', 's20')}<span>${t('starNews')}</span><a class="btn" href="${REPO_URL}" target="_blank" rel="noopener">${pi('star', 's16')}${t('starGh')}</a></div>
+      <div class="dbtns"><a class="btn" href="${REPO_URL}/releases" target="_blank" rel="noopener">${pi('ext', 's16')}${t('newsAll')}</a><span class="grow"></span><button class="btn pri" data-closenews>${t('newsOk')}</button></div>
     </div></div>`;
   }
 

@@ -1,6 +1,12 @@
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.7.2',
+    tr: ['Kontrol panelinin üst çubuğunda, Önizleme\'nin yanında "Yıldız ver" düğmesi: kartı beğendiysen GitHub sayfasını açar. Aynı bağlantı Yenilikler penceresinde de var.'],
+    en: ['A "Star" button in the control panel\'s top bar, next to Preview: if you like the card, it opens its GitHub page. The same link is in the What\'s new window.'],
+    de: ['Ein „Stern geben“-Knopf in der oberen Leiste des Panels neben der Vorschau öffnet die GitHub-Seite der Karte; derselbe Link steht im Fenster „Neuigkeiten“.'],
+    es: ['Un botón «Dar estrella» en la barra superior del panel, junto a Vista previa, abre la página de GitHub de la tarjeta; el mismo enlace está en la ventana de novedades.'],
+    fr: ['Un bouton « Étoile » dans la barre du haut du panneau, à côté d’Aperçu, ouvre la page GitHub de la carte ; le même lien figure dans la fenêtre des nouveautés.'] },
   { v: '1.7.1',
     tr: ['Home Assistant 2026.11 ile HACS\'ın yerini alan Marketplace desteklendi: Ayarlar → Sürüm ve güncelleme yeni sürümü Marketplace üzerinden de denetliyor ve indiriyor.'],
     en: ['Support for Marketplace, which replaced HACS in Home Assistant 2026.11: Settings → Version and updates checks for and downloads new versions through Marketplace too.'],

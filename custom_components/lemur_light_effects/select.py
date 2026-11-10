@@ -11,6 +11,7 @@ from typing import Any
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EVENT_STATE_CHANGED
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers import entity_registry as er
@@ -56,8 +57,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEnt
 
     @callback
     def refresh(*_: Any) -> None:
+        # the rooms of the whole house are worked out once for all entities, not once per entity
+        rooms = {r["id"]: r for r in engine.rooms(hass, store.data.get("settings") or {})}
         for e in ents.values():
-            e.refresh()
+            e.refresh(rooms)
 
     deb = Debouncer(hass, _LOGGER, cooldown=1.0, immediate=False, function=sync)
 
@@ -65,8 +68,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEnt
     def later(*_: Any) -> None:
         hass.async_create_task(deb.async_call())
 
+    @callback
+    def store_changed(payload: Any = None) -> None:
+        # what was played last changes the current option only; rooms and options stay as they are
+        if isinstance(payload, dict) and payload and set(payload) <= {"last", "recent", "icons"}:
+            if "last" in payload:
+                refresh()
+            return
+        later()
+
     sync()
-    entry.async_on_unload(async_dispatcher_connect(hass, SIGNAL_UPDATE, later))
+    entry.async_on_unload(async_dispatcher_connect(hass, SIGNAL_UPDATE, store_changed))
     entry.async_on_unload(hass.bus.async_listen(ar.EVENT_AREA_REGISTRY_UPDATED, later))
     entry.async_on_unload(hass.bus.async_listen(er.EVENT_ENTITY_REGISTRY_UPDATED, later))
     entry.async_on_unload(deb.async_shutdown)
@@ -81,6 +93,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, add: AddEnt
         old, new = ev.data.get("old_state"), ev.data.get("new_state")
         if old is None or new is None:
             later()  # a light came or went: rooms may change
+        elif (old.state in ("unavailable", "unknown")) != (new.state in ("unavailable", "unknown")):
+            # at start-up lights are often unreachable for a moment; their room gets its entity when they arrive
+            if not any(eid in e.lights for e in ents.values()) or any(eid in e.lights and not e.has_options for e in ents.values()):
+                later()
         else:
             a, b = old.attributes, new.attributes
             # brightness and colour changes don't change the options or what is playing
@@ -114,11 +130,17 @@ class RoomEffectSelect(SelectEntity):
         self._units: dict[str, dict[str, Any]] = {}
         self._compute()
 
-    def _room(self) -> dict[str, Any] | None:
+    def _room(self, rooms: dict[str, dict[str, Any]] | None = None) -> dict[str, Any] | None:
+        if rooms is not None:
+            return rooms.get(self.room_id)
         return next((r for r in engine.rooms(self.hass, self.store.data.get("settings") or {}) if r["id"] == self.room_id), None)
 
-    def _compute(self) -> None:
-        room = self._room()
+    @property
+    def has_options(self) -> bool:
+        return len(self._attr_options or []) > 1
+
+    def _compute(self, rooms: dict[str, dict[str, Any]] | None = None) -> None:
+        room = self._room(rooms)
         if not room:
             self._attr_available = False
             self._attr_options = [engine.NONE_OPTION]
@@ -139,14 +161,14 @@ class RoomEffectSelect(SelectEntity):
         self._attr_extra_state_attributes = {"room_id": room["id"], "lights": engine.selected(self.store.data, room), "effect_key": k}
 
     @callback
-    def refresh(self) -> None:
+    def refresh(self, rooms: dict[str, dict[str, Any]] | None = None) -> None:
         if self.hass is None:  # disabled entity (HA sets hass to None and never adds it)
             return
         def snap() -> tuple:
             return (self._attr_options, self._attr_current_option, self._attr_available,
                     getattr(self, "_attr_extra_state_attributes", None), self._attr_translation_placeholders)
         before = snap()
-        self._compute()
+        self._compute(rooms)
         if self.hass and self.entity_id and before != snap():
             self.async_write_ha_state()
 
@@ -157,8 +179,11 @@ class RoomEffectSelect(SelectEntity):
         if not room:
             return
         rt = self.store.runtime
-        if option == engine.NONE_OPTION:
-            await rt.stop_room(room)
-        else:
-            await rt.play(room, option)
+        try:
+            if option == engine.NONE_OPTION:
+                await rt.stop_room(room)
+            else:
+                await rt.play(room, option)
+        except ValueError as err:
+            raise HomeAssistantError(str(err)) from err
         self.refresh()

@@ -62,6 +62,7 @@ const ICON_BTN = {
 // button colour from the card config: an HA colour name, or a plain CSS colour (#hex, rgb(), hsl()); anything else is ignored
 const uiColor = v => { const s = String(v || '').trim(); if (!s) return ''; if (/^[a-z-]{1,30}$/.test(s)) return !/^(white|black|transparent)$/.test(s) ? `var(--${s}-color, ${s})` : s; return /^(#[0-9a-f]{3,8}|(rgb|rgba|hsl|hsla)\([\d\s.,%]{1,40}\))$/i.test(s) ? s : ''; };
 const BTN_STYLES = ['row', 'tile', 'icon'];
+const CAN_MIX = (() => { try { return !!(window.CSS && CSS.supports && CSS.supports('color', 'color-mix(in srgb, red 50%, blue)')); } catch (e) { return false; } })();
 class LemurLauncher extends HTMLElement {
   static get mode() { return 'full'; }
   static getConfigElement() { return document.createElement('lemur-light-effect-card-editor'); }
@@ -106,14 +107,15 @@ class LemurLauncher extends HTMLElement {
     const st = this._style(), col = uiColor(c.color), ck = String(c.color_icon || '').replace(/^c:/, '');
     const art = ck && ICON3[ck] ? ICON3[ck] : '', mdi = !art && /^[a-z]+:[\w-]+$/.test(String(c.icon || '')) ? c.icon : '';
     const sig = [title, sub, st, col, ck, mdi, ICON3_OK].join('|'); if (sig === this._sig) return; this._sig = sig;
-    const glow = col ? `color-mix(in srgb, ${col} 26%, transparent)` : 'rgba(240,169,59,.18)';
-    const tileBg = art ? 'rgba(255,255,255,.06)' : col ? `linear-gradient(145deg, color-mix(in srgb, ${col} 80%, white), ${col})` : tile([30, 320, 260]);
+    // color-mix is missing on older tablets: there the button keeps the plain colour and the default glow
+    const glow = col && CAN_MIX ? `color-mix(in srgb, ${col} 26%, transparent)` : 'rgba(240,169,59,.18)';
+    const tileBg = art ? 'rgba(255,255,255,.06)' : col ? (CAN_MIX ? `linear-gradient(145deg, color-mix(in srgb, ${col} 80%, white), ${col})` : col) : tile([30, 320, 260]);
     const ico = art || (mdi ? `<ha-icon icon="${esc(mdi)}"></ha-icon>` : svg('sparkle'));
     R.innerHTML = `<style>:host{display:block;height:100%}
       button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:14px;width:100%;height:100%;min-height:64px;padding:10px 14px;border-radius:var(--ha-card-border-radius,18px);background:var(--lemur-bg,#131416);color:#ECEDEF;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;transition:transform .12s}
       button:active{transform:scale(.98)}
       button:focus-visible{outline:2px solid #F0A93B;outline-offset:2px}
-      button::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 120% at 0% 50%,${glow},transparent 70%);pointer-events:none}
+      button::before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;background:radial-gradient(60% 120% at 0% 50%,${glow},transparent 70%);pointer-events:none}
       .t{width:44px;height:44px;flex:none;border-radius:30%;display:grid;place-items:center;color:#fff;background:${tileBg};--mdc-icon-size:26px}
       .t svg{width:58%;height:58%}
       .t svg.dz{width:92%;height:92%}
@@ -141,7 +143,7 @@ class LemurLauncher extends HTMLElement {
     const c = this._cfg, mode = this._mode, anim = !reducedMotion();
     const ov = document.createElement('div');
     ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
-    ov.style.cssText = 'position:fixed;inset:0;z-index:2147483000;display:flex;overscroll-behavior:contain;-webkit-tap-highlight-color:transparent';
+    ov.style.cssText = 'position:fixed;top:0;right:0;bottom:0;left:0;z-index:2147483000;display:flex;overscroll-behavior:contain;-webkit-tap-highlight-color:transparent';
     if (mode === 'full') {
       ov.style.cssText += ';flex-direction:column;background:#0B0C0F;--lemur-radius:0';
       const card = document.createElement('lemur-light-effect-card');
@@ -152,7 +154,7 @@ class LemurLauncher extends HTMLElement {
     }
     const blur = c.popup_blur === false ? '' : 'backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);';
     const back = document.createElement('div');
-    back.style.cssText = `position:absolute;inset:0;background:rgba(0,0,0,.55);${blur}${anim ? 'animation:lemurFade .2s ease-out' : ''}`;
+    back.style.cssText = `position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.55);${blur}${anim ? 'animation:lemurFade .2s ease-out' : ''}`;
     back.addEventListener('click', () => this.close(false));
     const box = document.createElement('div');
     const sty = document.createElement('style');

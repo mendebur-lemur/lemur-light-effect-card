@@ -20,7 +20,7 @@ const P_TXT = {
     toRoom: '{r}', toAll: 'bütün odalar', resetDone: 'Otomatik düzene dönüldü', roomOffT: 'Oda kartta gizlendi', roomOnT: 'Oda kartta gösteriliyor',
     allOffT: 'Tüm Ev kartta kapalı', allOnT: 'Tüm Ev kartta açık', order: 'Sıra güncellendi', saved: 'Kaydedildi', undone: 'Geri alındı',
     updReady: 'Home Assistant yeniden başladı. Yeni sürümü kullanmak için sayfayı yenile.', fxMenu: 'Efekt ayrıntıları', namesOn: 'Işıklardaki adı', noSup: 'bu efekt yok', notIn: 'bu efekte katılmıyor', fillAs: 'yerine: {x}', supN: '{n} efekt ışığının {c} tanesinde var', noSupT: 'Desteklemeyen ışıklar', fxOnN: '{x}: {c}/{n} ışıkta', upIcon: 'Simge yükle', rmIcon: 'Varsayılan simge', hideFx: 'Bu odada gizle', showFx: 'Bu odada göster',
-    addFav: 'Favorilere ekle', remFav: 'Favorilerden çıkar', iconSaved: 'Simge kaydedildi', iconErr: 'Simge yüklenemedi', close: 'Kapat',
+    addFav: 'Favorilere ekle', remFav: 'Favorilerden çıkar', iconSaved: 'Simge kaydedildi', iconErr: 'Simge yüklenemedi', saveErr: 'Kaydedilemedi. Ekran, kayıtlı haline döndü.', bkBig: 'Dosya çok büyük (en çok 8 MB).', close: 'Kapat',
     sCard: 'Kart', icColor: 'Renkli', icMono: 'Sade', defIcon: 'Varsayılan simge', searchI: 'Simge ara', lang: 'Dil', auto: 'Otomatik',
     sStop: 'Efekt durdurulunca', white: 'Beyaz ton', bright: 'Parlaklık', sAdv: 'Gelişmiş', thr: 'Efektli ışık sayılması için en az', thrS: 'Daha az efekti olan ışıklar sadece Işık sekmesinde görünür', thrN: '{n} efekt',
     local: 'Entegrasyon yüklenmemiş görünüyor; değişiklikler kaydedilemez.',
@@ -90,7 +90,7 @@ const P_TXT = {
     toRoom: '{r}', toAll: 'every room', resetDone: 'Back to the automatic layout', roomOffT: 'Room hidden in the card', roomOnT: 'Room shown in the card',
     allOffT: 'Whole home is off in the card', allOnT: 'Whole home is on in the card', order: 'Order updated', saved: 'Saved', undone: 'Undone',
     updReady: 'Home Assistant has restarted. Reload the page to use the new version.', fxMenu: 'Effect details', namesOn: 'Name on each light', noSup: 'doesn’t have it', notIn: 'not part of this effect', fillAs: 'instead: {x}', supN: 'On {c} of {n} effect lights', noSupT: 'Lights without it', fxOnN: '{x}: on {c}/{n}', upIcon: 'Upload icon', rmIcon: 'Default icon', hideFx: 'Hide in this room', showFx: 'Show in this room',
-    addFav: 'Add to favorites', remFav: 'Remove from favorites', iconSaved: 'Icon saved', iconErr: 'Could not upload icon', close: 'Close',
+    addFav: 'Add to favorites', remFav: 'Remove from favorites', iconSaved: 'Icon saved', iconErr: 'Could not upload icon', saveErr: 'Could not save. The screen shows what is stored.', bkBig: 'The file is too large (8 MB at most).', close: 'Close',
     sCard: 'Card', icColor: 'Colour', icMono: 'Simple', defIcon: 'Default icon', searchI: 'Search icons', lang: 'Language', auto: 'Automatic',
     sStop: 'When an effect is stopped', white: 'White tone', bright: 'Brightness', sAdv: 'Advanced', thr: 'Minimum effects to count as an effect light', thrS: 'Lights with fewer effects only appear in the Light tab', thrN: '{n} effects',
     local: 'The integration does not seem to be loaded; changes cannot be saved.',
@@ -182,17 +182,45 @@ const slug = s => String(s).toLocaleLowerCase('tr').replace(/ç/g, 'c').replace(
 const pi = (n, c = 's') => `<svg class="${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${PI[n]}</svg>`;
 // what a dragged item may be dropped on
 const REPO_URL = 'https://github.com/mendebur-lemur/lemur-light-effect-card';
+// a link we show must stay inside our own repository on GitHub (no .. to climb out of it, nothing odd in it)
+const ourUrl = u => typeof u === 'string' && u.length < 300 && /^https:\/\/github\.com\/mendebur-lemur\/lemur-light-effect-card(\/[\w\-./]*)?$/.test(u) && u.indexOf('..') < 0;
 const DND_ACCEPT = { light: ['room', 'strip'], fx: ['tab'], tab: ['tab', 'room'], room: ['room'], cl: ['cz'] };
 const newId = () => 't' + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
 const clone = o => JSON.parse(JSON.stringify(o == null ? null : o));
 // settings with every list and map in the shape the panel expects (a restored backup or another client may hold anything)
 const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+const cleanNum = v => { if (typeof v === 'boolean' || (typeof v !== 'number' && typeof v !== 'string')) return null; const f = parseFloat(v); return isFinite(f) && Math.abs(f) < 1e9 && String(v).trim() !== '' && !isNaN(+v) ? f : null; };
+// what one light does in an own effect or a fill rule: only known fields, in their types (same rules as __init__.py)
+function cleanAction(a) {
+  if (!isObj(a)) return null;
+  const o = {};
+  if (typeof a.mode === 'string') o.mode = a.mode.slice(0, 20);
+  if (typeof a.fx === 'string') o.fx = a.fx.slice(0, 200);
+  if (Array.isArray(a.rgb) && a.rgb.length === 3 && a.rgb.every(x => cleanNum(x) != null)) o.rgb = a.rgb.map(x => Math.max(0, Math.min(255, Math.trunc(cleanNum(x)))));
+  ['k', 'br'].forEach(k => { const n = cleanNum(a[k]); if (n != null) o[k] = n; });
+  return o;
+}
+const cleanActions = v => { const o = {}; if (isObj(v)) Object.keys(v).slice(0, 1000).forEach(id => { const c = cleanAction(v[id]); if (c) o[id.slice(0, 200)] = c; }); return o; };
+// one room's tab layout from a backup file, in the shape the server keeps (_clean_tabs)
+function cleanRoomTabs(v) {
+  const o = {}, str = x => typeof x === 'string';
+  if (Array.isArray(v.tabs)) o.tabs = v.tabs.filter(t => isObj(t) && str(t.id)).slice(0, 100).map(t => { const c = { id: t.id.slice(0, 80) }; ['name', 'icon', 'auto'].forEach(k => { if (str(t[k])) c[k] = t[k].slice(0, 200); }); ['fav', 'recent'].forEach(k => { if (t[k]) c[k] = 1; }); c.fx = (Array.isArray(t.fx) ? t.fx : []).filter(str).slice(0, 2000); return c; });
+  if (Array.isArray(v.hid)) o.hid = v.hid.filter(str).slice(0, 2000);
+  if (str(v.light_icon)) o.light_icon = v.light_icon.slice(0, 200);
+  return o;
+}
 function cleanSettings(S) {
   if (!isObj(S)) return {};
   const o = Object.assign({}, S);
   ['order', 'hidden_areas', 'exclude', 'include'].forEach(k => { if (o[k] == null) return; if (Array.isArray(o[k])) o[k] = o[k].filter(x => typeof x === 'string'); else delete o[k]; });
   ['layout', 'fx_use', 'fill', 'room_icons'].forEach(k => { if (o[k] != null && !isObj(o[k])) delete o[k]; });
-  if (o.custom != null) { if (Array.isArray(o.custom)) o.custom = o.custom.filter(c => isObj(c) && typeof c.id === 'string' && typeof c.name === 'string'); else delete o.custom; }
+  ['layout', 'room_icons'].forEach(k => { if (o[k]) { const n = {}; Object.keys(o[k]).forEach(a => { if (typeof o[k][a] === 'string') n[a] = o[k][a]; }); o[k] = n; } });
+  if (o.fx_use) { const n = {}; Object.keys(o.fx_use).forEach(a => { const v = o.fx_use[a]; if (typeof v === 'boolean' || typeof v === 'number' || typeof v === 'string') n[a] = v; }); o.fx_use = n; }
+  if (o.fill) { const n = {}; Object.keys(o.fill).slice(0, 2000).forEach(k => { const f = o.fill[k]; if (!isObj(f)) return; const c = { lights: cleanActions(f.lights) }, a = cleanAction(f.all); if (a) c.all = a; n[k.slice(0, 200)] = c; }); o.fill = n; }
+  if (o.custom != null) {
+    if (Array.isArray(o.custom)) o.custom = o.custom.filter(c => isObj(c) && typeof c.id === 'string' && typeof c.name === 'string').slice(0, 500).map(c => { const n = Object.assign({}, c); n.lights = cleanActions(c.lights); if ('fallback' in n) { const fb = cleanAction(n.fallback); if (fb) n.fallback = fb; else delete n.fallback; } if ('base' in n && typeof n.base !== 'string') delete n.base; return n; });
+    else delete o.custom;
+  }
   return o;
 }
 
@@ -218,6 +246,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     this._lc = this._lc || (() => setTimeout(() => this._fillFromUrl(), 50)); window.addEventListener('location-changed', this._lc);
     setTimeout(() => this._fillFromUrl(), 200);
     STORE.L.add(this._onStore);
+    this._onErr = this._onErr || (() => { if (this._hass) { this._undo.length = 0; this._toast(this._t('saveErr'), false); } }); window.addEventListener('lemur-save-error', this._onErr);
     window.addEventListener('pointermove', this._pm, { passive: false });
     window.addEventListener('pointerup', this._pu); window.addEventListener('pointercancel', this._pu);
     window.addEventListener('keydown', this._kd);
@@ -225,7 +254,7 @@ class LemurLightEffectsPanel extends HTMLElement {
   }
   disconnectedCallback() {
     if (this._pv) this._pvEnd(true, true);
-    window.removeEventListener('location-changed', this._lc);
+    window.removeEventListener('location-changed', this._lc); window.removeEventListener('lemur-save-error', this._onErr);
     STORE.L.delete(this._onStore);
     window.removeEventListener('pointermove', this._pm); window.removeEventListener('pointerup', this._pu);
     window.removeEventListener('pointercancel', this._pu); window.removeEventListener('touchmove', this._tm);
@@ -268,10 +297,23 @@ class LemurLightEffectsPanel extends HTMLElement {
   }
 
   // ---- undo: every change keeps a copy of settings and tabs from before ----
-  _snap() { this._undo.push({ settings: clone(this._set()), tabs: clone(STORE.d.tabs || {}) }); if (this._undo.length > 40) this._undo.shift(); }
+  // Undo puts back only what that change touched (rooms of the tab layout, single settings), so a star given on a
+  // tablet or an edit in another window in the meantime stays.
+  _snap() {
+    const u = { settings: clone(this._set()), tabs: clone(STORE.d.tabs || {}) };
+    this._undo.push(u); if (this._undo.length > 40) this._undo.shift();
+    // the change itself follows in this same turn: note right after it which parts differ
+    Promise.resolve().then(() => {
+      const diff = (a, b) => { const ks = new Set([...Object.keys(a || {}), ...Object.keys(b || {})]); return [...ks].filter(k => JSON.stringify((a || {})[k]) !== JSON.stringify((b || {})[k])); };
+      u.ch = { settings: diff(u.settings, this._set()), tabs: diff(u.tabs, STORE.d.tabs || {}) };
+    });
+  }
   _undoIt() {
     const u = this._undo.pop(); if (!u) return;
-    STORE.set('settings', u.settings); STORE.set('tabs', u.tabs); this._pick.clear(); this._toast(this._t('undone'), false);
+    const back = (now, old, keys) => { const n = Object.assign({}, now); keys.forEach(k => { if (old && k in old) n[k] = old[k]; else delete n[k]; }); return n; };
+    if (u.ch) { STORE.set('settings', back(this._set(), u.settings, u.ch.settings)); STORE.set('tabs', back(STORE.d.tabs || {}, u.tabs, u.ch.tabs)); }
+    else { STORE.set('settings', u.settings); STORE.set('tabs', u.tabs); }
+    this._pick.clear(); this._toast(this._t('undone'), false);
   }
   _save(patch, msg) {
     this._snap();
@@ -713,7 +755,7 @@ class LemurLightEffectsPanel extends HTMLElement {
     const S = this._hass.states;
     // only the update entity HACS (or Marketplace, which replaced it in Home Assistant 2026.11) made for this repository;
     // a look-alike entity from another integration is ignored
-    const E = this._hass.entities || {}, ours = s => /^https:\/\/github\.com\/mendebur-lemur\/lemur-light-effect-card(\/|$)/.test(String(s.attributes.release_url || ''));
+    const E = this._hass.entities || {}, ours = s => ourUrl(s.attributes.release_url);
     const store = id => !E[id] || E[id].platform === 'hacs' || E[id].platform === 'marketplace';
     return Object.values(S).find(s => s.entity_id.startsWith('update.') && ours(s) && store(s.entity_id)) || (S['update.lemur_light_effect_card_update'] && ours(S['update.lemur_light_effect_card_update']) ? S['update.lemur_light_effect_card_update'] : null);
   }
@@ -733,7 +775,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       if (!latest) { const g = await c.sendMessagePromise({ type: 'lemur_light_effects/latest' }); latest = g.version; url = g.url; }
       latest = String(latest || '').replace(/^v/i, '');
       const at = new Date().toLocaleTimeString(this._l(), { hour: '2-digit', minute: '2-digit' });
-      if (!/^https:\/\/github\.com\/mendebur-lemur\/lemur-light-effect-card(\/|$)/.test(String(url || ''))) url = null;   // links only to our own releases
+      if (!ourUrl(url)) url = null;   // links only to our own releases
       this._updSet(newer(latest, cur) ? { st: 'new', cur, latest, url, ent: ent ? ent.entity_id : null, at } : { st: 'ok', cur, latest, url, at });
     } catch (e) { this._updSet({ st: 'err', err: (e && (e.message || e.code)) || String(e) }); }
   }
@@ -883,9 +925,11 @@ class LemurLightEffectsPanel extends HTMLElement {
     this._snap();
     const D = isObj(b.data) ? b.data : {}, strs = v => (Array.isArray(v) ? v.filter(x => typeof x === 'string') : []);
     STORE.set('settings', cleanSettings(D.settings));
-    STORE.set('tabs', isObj(D.tabs) ? D.tabs : {});
+    const tabs = {}; if (isObj(D.tabs)) Object.keys(D.tabs).slice(0, 500).forEach(r => { if (isObj(D.tabs[r])) tabs[r] = cleanRoomTabs(D.tabs[r]); });
+    STORE.set('tabs', tabs);
     STORE.set('favorites', strs(D.favorites)); STORE.set('hidden', strs(D.hidden));
-    STORE.set('rooms', isObj(D.rooms) ? D.rooms : {});
+    const rooms = {}; if (isObj(D.rooms)) Object.keys(D.rooms).slice(0, 500).forEach(r => { if (Array.isArray(D.rooms[r])) rooms[r] = D.rooms[r].filter(x => typeof x === 'string').slice(0, 500); });
+    STORE.set('rooms', rooms);
     const keep = isObj(b.icons) ? b.icons : {};
     for (const k of Object.keys(STORE.d.icons || {})) if (!keep[k]) await STORE.iconDel(k);
     for (const [k, url] of Object.entries(keep)) { const m = String(url).match(/^data:(image\/(png|jpeg|webp|gif));base64,(.+)$/); if (m) try { await STORE.icon(k, m[1], m[3]); } catch (e) {} }
@@ -1463,6 +1507,7 @@ class LemurLightEffectsPanel extends HTMLElement {
       if (x.id === 'nf' || x.id === 'nt') return this._save({ [x.id === 'nf' ? 'night_from' : 'night_to']: x.value || null });
       if (x.id === 'bkf') {
         const f = x.files && x.files[0]; x.value = ''; if (!f) return;
+        if (f.size > 8 * 1024 * 1024) return this._toast(this._t('bkBig'), false);
         const rd = new FileReader(); rd.onload = () => { let b = null; try { b = JSON.parse(rd.result); } catch (e) {} if (!b || b.format !== 'lemur-light-effects-backup' || !b.data) return this._toast(this._t('bkErr'), false); this._bk = b; this._view = 'restore'; this._render(); }; rd.readAsText(f); return;
       }
       if (this._fill) {

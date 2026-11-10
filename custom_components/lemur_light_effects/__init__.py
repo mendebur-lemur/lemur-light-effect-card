@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import base64
 import json
-import hashlib
+import secrets
 import logging
 import os
 import shutil
@@ -53,6 +53,8 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# "preview" is not in DEFAULT_DATA on purpose: it is only in the file while a control panel preview is open, so a
+# restart in the middle can still put the lights back (runtime.py); cards never see it.
 DEFAULT_DATA: dict[str, Any] = {
     "favorites": [],
     "hidden": [],
@@ -121,6 +123,8 @@ class LemurData:
         self.store: Store = Store(hass, STORAGE_VERSION, STORAGE_KEY)
         self.data: dict[str, Any] = {k: (v.copy() if hasattr(v, "copy") else v) for k, v in DEFAULT_DATA.items()}
         self.icon_dir = hass.config.path(ICON_DIR)
+        self.pending_preview: dict[str, Any] | None = None   # lights to put back after a restart during a preview
+        self.preview_save: dict[str, Any] | None = None       # the same while a preview is open
 
     async def async_load(self) -> None:
         stored = await self.store.async_load()
@@ -131,6 +135,13 @@ class LemurData:
                 val = stored.get(key)
                 if isinstance(val, type(default)):
                     self.data[key] = val
+            if isinstance(stored.get("preview"), dict) and stored["preview"]:
+                self.pending_preview = stored["preview"]
+            try:   # a file from an older version or an edit by hand: same shape rules as a write
+                self.data["settings"] = _clean_settings(self.data["settings"])
+            except Exception:  # noqa: BLE001
+                _LOGGER.exception("Stored settings could not be checked; starting with empty settings")
+                self.data["settings"] = {}
 
     async def _import_old(self) -> dict[str, Any] | None:
         """First start: take over the data of the earlier "Ultimate Light Effect Card" if it is there."""
@@ -160,10 +171,15 @@ class LemurData:
         _LOGGER.info("Imported the data of the earlier Ultimate Light Effect Card")
         return old
 
+    def for_file(self) -> dict[str, Any]:
+        return {**self.data, "preview": self.preview_save} if self.preview_save else self.data
+
     @callback
     def changed(self, keys: list[str] | None = None) -> None:
         """Save soon and tell open cards. With keys, only those parts are sent (cards merge per key)."""
-        self.store.async_delay_save(lambda: self.data, 1.0)
+        self.store.async_delay_save(self.for_file, 1.0)
+        if keys is not None and not keys:
+            return   # only the file changes (preview snapshot)
         payload = self.data if keys is None else {k: self.data.get(k) for k in keys}
         async_dispatcher_send(self.hass, SIGNAL_UPDATE, payload)
 
@@ -195,7 +211,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if not hass.data.get(f"{DOMAIN}_static"):
         await _register_static(hass, data.icon_dir)
         add_extra_js_url(hass, f"{URL_BASE}/{CARD_FILE}?v={VERSION}")
-        for handler in (ws_get, ws_set, ws_last, ws_icon_upload, ws_icon_delete, ws_subscribe, ws_info, ws_preview, ws_latest):
+        for handler in (ws_get, ws_set, ws_patch, ws_last, ws_icon_upload, ws_icon_delete, ws_subscribe, ws_info, ws_preview, ws_latest):
             websocket_api.async_register_command(hass, handler)
         _register_services(hass)
         hass.data[f"{DOMAIN}_static"] = True
@@ -222,10 +238,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if data is not None:
         # a change made just before a reload is still waiting in async_delay_save; write it now
         try:
-            await data.store.async_save(data.data)
+            data.runtime.stop()
+            await data.runtime.preview_end(True)
+            await data.store.async_save(data.for_file())
         except Exception:  # noqa: BLE001
             _LOGGER.exception("Could not save before unloading")
-        data.runtime.stop()
         if getattr(data, "voice", None) is not None:
             data.voice.stop()
     async_remove_panel(hass, PANEL_URL)
@@ -251,7 +268,51 @@ _SET_STR_LISTS = ("order", "hidden_areas", "exclude", "include")
 _SET_DICTS = ("layout", "fx_use", "fill", "room_icons")
 
 
+def _num(v: Any) -> float | None:
+    if isinstance(v, bool) or not isinstance(v, (int, float, str)):
+        return None
+    try:
+        f = float(v)
+    except ValueError:
+        return None
+    return f if f == f and abs(f) < 1e9 else None
+
+
+def _clean_action(a: Any) -> dict | None:
+    """What one light does in an own effect or a fill rule: only the fields engine.py and the card read, in their types."""
+    if not isinstance(a, dict):
+        return None
+    out: dict[str, Any] = {}
+    if isinstance(a.get("mode"), str):
+        out["mode"] = a["mode"][:20]
+    if isinstance(a.get("fx"), str):
+        out["fx"] = a["fx"][:MAX_KEY]
+    rgb = a.get("rgb")
+    if isinstance(rgb, list) and len(rgb) == 3 and all(_num(x) is not None for x in rgb):
+        out["rgb"] = [max(0, min(255, int(_num(x)))) for x in rgb]
+    for k in ("k", "br"):
+        n = _num(a.get(k))
+        if n is not None:
+            out[k] = n
+    return out
+
+
+def _clean_actions(v: Any) -> dict:
+    """light -> action"""
+    out = {}
+    if isinstance(v, dict):
+        for eid, a in list(v.items())[:1000]:
+            c = _clean_action(a)
+            if isinstance(eid, str) and c is not None:
+                out[eid[:MAX_KEY]] = c
+    return out
+
+
 def _clean_settings(value: dict) -> dict:
+    """Settings in the shape the card, the panel and engine.py rely on.
+
+    A wrong shape (a hand-edited backup, another client) is dropped here, so it cannot stop playing, the room
+    selects or voice commands later. Unknown keys with plain values pass through for newer cards."""
     out = dict(value)
     for k in _SET_STR_LISTS:
         if k in out:
@@ -263,9 +324,51 @@ def _clean_settings(value: dict) -> dict:
     for k in _SET_DICTS:
         if k in out and not isinstance(out[k], dict):
             out.pop(k)
+    for k in ("layout", "room_icons"):   # light -> room, room -> icon
+        if k in out:
+            out[k] = {a: b for a, b in out[k].items() if isinstance(a, str) and isinstance(b, str)}
+    if "fx_use" in out:                   # light -> on/off
+        out["fx_use"] = {a: b for a, b in out["fx_use"].items() if isinstance(a, str) and isinstance(b, (bool, int, str))}
+    if "fill" in out:                     # effect -> {all: action, lights: {light: action}}
+        fill = {}
+        for key, f in list(out["fill"].items())[:2000]:
+            if not isinstance(key, str) or not isinstance(f, dict):
+                continue
+            c: dict[str, Any] = {"lights": _clean_actions(f.get("lights"))}
+            a = _clean_action(f.get("all"))
+            if a is not None:
+                c["all"] = a
+            fill[key[:MAX_KEY]] = c
+        out["fill"] = fill
     if "custom" in out:
         v = out["custom"]
-        out["custom"] = [c for c in v if isinstance(c, dict) and isinstance(c.get("id"), str) and isinstance(c.get("name"), str)] if isinstance(v, list) else []
+        custom = []
+        for c in v if isinstance(v, list) else []:
+            if not (isinstance(c, dict) and isinstance(c.get("id"), str) and isinstance(c.get("name"), str)):
+                continue
+            c = dict(c)
+            c["lights"] = _clean_actions(c.get("lights"))
+            if "fallback" in c:
+                fb = _clean_action(c["fallback"])
+                if fb is None:
+                    c.pop("fallback")
+                else:
+                    c["fallback"] = fb
+            if "base" in c and not isinstance(c["base"], str):
+                c.pop("base")
+            custom.append(c)
+            if len(custom) >= 500:
+                break
+        out["custom"] = custom
+    return out
+
+
+def _tabs_shape(cfg: Any) -> dict[str, tuple]:
+    """Tab id -> what a visitor may not change (name, icon, kind)."""
+    out = {}
+    for t in (cfg or {}).get("tabs") or [] if isinstance(cfg, dict) else []:
+        if isinstance(t, dict) and isinstance(t.get("id"), str):
+            out[t["id"]] = (t.get("name"), t.get("icon"), t.get("auto"), bool(t.get("fav")), bool(t.get("recent")))
     return out
 
 
@@ -283,10 +386,11 @@ def ws_set(hass, connection, msg):
         connection.send_error(msg["id"], "not_loaded", "Integration not loaded")
         return
     key, value = msg["key"], msg["value"]
+    # replacing a whole key is for administrators (restore, reset, older panels); cards change one room with .../patch
+    if not connection.user.is_admin:
+        connection.send_error(msg["id"], "unauthorized", "Only administrators can replace " + key)
+        return
     if key == "settings":
-        if not connection.user.is_admin:
-            connection.send_error(msg["id"], "unauthorized", "Only administrators can change settings")
-            return
         if not isinstance(value, dict) or len(json.dumps(value)) > MAX_SETTINGS_BYTES:
             connection.send_error(msg["id"], "invalid", "settings must be a small object")
             return
@@ -309,6 +413,78 @@ def ws_set(hass, connection, msg):
         data.data[key] = {str(k)[:MAX_KEY]: [str(e)[:MAX_KEY] for e in v][:500] for k, v in list(value.items())[:MAX_ROOMS] if isinstance(v, list)}
     data.changed([key])
     connection.send_result(msg["id"], {key: data.data[key]})
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "lemur_light_effects/patch",
+        vol.Required("key"): vol.In(["rooms", "settings", "tabs"]),
+        vol.Optional("set", default=dict): dict,
+        vol.Optional("remove", default=list): [str],
+    }
+)
+@callback
+def ws_patch(hass, connection, msg):
+    """Change parts of one key: single rooms of tabs / rooms, single settings.
+
+    Two screens that edit different rooms or different settings no longer overwrite each other. Anyone may star or
+    hide an effect and pick a room's lights from the card, so one room's tabs and lights can be written by any user,
+    but only an administrator may remove a room's layout, rename or delete its tabs, or change settings."""
+    data = _data(hass)
+    if data is None:
+        connection.send_error(msg["id"], "not_loaded", "Integration not loaded")
+        return
+    key, sets, remove = msg["key"], msg["set"], msg["remove"]
+    admin = connection.user.is_admin
+    if len(sets) > MAX_ROOMS or len(remove) > MAX_ROOMS:
+        connection.send_error(msg["id"], "invalid", "too many parts")
+        return
+    if key == "settings" or remove:
+        if not admin:
+            connection.send_error(msg["id"], "unauthorized", "Only administrators can change this")
+            return
+    cur = data.data[key] if isinstance(data.data.get(key), dict) else {}
+    new = dict(cur)
+    if key == "settings":
+        new.update(sets)
+        for k in remove:
+            new.pop(k, None)
+        if len(json.dumps(new)) > MAX_SETTINGS_BYTES:
+            connection.send_error(msg["id"], "invalid", "settings must be a small object")
+            return
+        new = _clean_settings(new)
+    else:
+        for rid, v in sets.items():
+            rid = str(rid)[:MAX_KEY]
+            if not admin and rid not in ("_all", "_none") and not ar.async_get(hass).async_get_area(rid):
+                connection.send_error(msg["id"], "invalid", "unknown room")
+                return
+            if key == "tabs":
+                if not isinstance(v, dict):
+                    connection.send_error(msg["id"], "invalid", "a room's tabs must be an object")
+                    return
+                v = _clean_tabs(v)
+                if not admin:
+                    # a visitor's card may move effects between tabs (star, hide) and add tabs the first time a
+                    # room is saved, but every tab that exists keeps its name, icon and kind
+                    old_shape, new_shape = _tabs_shape(cur.get(rid)), _tabs_shape(v)
+                    if any(new_shape.get(i) != sh for i, sh in old_shape.items()):
+                        connection.send_error(msg["id"], "unauthorized", "Only administrators can rename or remove tabs")
+                        return
+                new[rid] = v
+            else:
+                if not isinstance(v, list):
+                    connection.send_error(msg["id"], "invalid", "a room's lights must be a list")
+                    return
+                new[rid] = [str(e)[:MAX_KEY] for e in v][:500]
+        for rid in remove:
+            new.pop(rid, None)
+        if len(new) > MAX_ROOMS or len(json.dumps(new)) > MAX_TABS_BYTES:
+            connection.send_error(msg["id"], "invalid", key + " must be a small object")
+            return
+    data.data[key] = new
+    data.changed([key])
+    connection.send_result(msg["id"], {key: new})
 
 
 @websocket_api.websocket_command(
@@ -369,7 +545,7 @@ async def ws_icon_upload(hass, connection, msg):
     if key not in data.data["icons"] and len(data.data["icons"]) >= MAX_ICONS:
         connection.send_error(msg["id"], "too_many", f"At most {MAX_ICONS} uploaded icons")
         return
-    name = hashlib.sha1(key.encode()).hexdigest()[:16] + "." + ext
+    name = secrets.token_hex(8) + "." + ext   # not derived from the effect name: the folder is served without login
     path = os.path.join(data.icon_dir, name)
     old = data.data["icons"].get(key)
 
@@ -467,6 +643,8 @@ async def ws_preview(hass, connection, msg):
 
 
 REPO_API = "https://api.github.com/repos/mendebur-lemur/lemur-light-effect-card/releases/latest"
+REPO_WEB = "https://github.com/mendebur-lemur/lemur-light-effect-card/"
+MAX_RELEASE_BYTES = 1_000_000
 
 
 @websocket_api.websocket_command({vol.Required("type"): "lemur_light_effects/latest"})
@@ -484,11 +662,23 @@ async def ws_latest(hass, connection, msg):
             if resp.status != 200:
                 connection.send_error(msg["id"], "github", f"GitHub answered {resp.status}")
                 return
-            d = await resp.json()
+            raw = b""
+            async for chunk in resp.content.iter_chunked(65536):
+                raw += chunk
+                if len(raw) > MAX_RELEASE_BYTES:
+                    connection.send_error(msg["id"], "github", "The answer from GitHub is too large")
+                    return
+        d = json.loads(raw)
     except Exception as err:  # noqa: BLE001 - network errors of any kind end up in the panel as text
-        connection.send_error(msg["id"], "github", str(err) or type(err).__name__)
+        connection.send_error(msg["id"], "github", (str(err) or type(err).__name__)[:200])
         return
-    connection.send_result(msg["id"], {"version": str(d.get("tag_name") or "").lstrip("v"), "url": d.get("html_url"), "installed": VERSION})
+    if not isinstance(d, dict):
+        connection.send_error(msg["id"], "github", "Unexpected answer from GitHub")
+        return
+    url = d.get("html_url")
+    if not (isinstance(url, str) and url.startswith(REPO_WEB) and ".." not in url and len(url) < 300):
+        url = REPO_WEB + "releases"
+    connection.send_result(msg["id"], {"version": str(d.get("tag_name") or "").lstrip("v")[:40], "url": url, "installed": VERSION})
 
 
 PLAY_SCHEMA = vol.Schema(

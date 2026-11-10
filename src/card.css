@@ -11,7 +11,7 @@ ha-icon{--mdc-icon-size:100%;display:inline-flex;width:24px;height:24px;flex:non
 .empty{color:var(--mut);padding:24px 4px;grid-column:1/-1;line-height:1.45}
 
 /* ambient glow */
-.glow{position:absolute;inset:-10%;filter:blur(80px);opacity:.6;z-index:0;pointer-events:none;transition:opacity .4s;-webkit-mask:radial-gradient(ellipse 90% 90% at 60% 40%,#000 0,transparent 80%);mask:radial-gradient(ellipse 90% 90% at 60% 40%,#000 0,transparent 80%)}
+.glow{position:absolute;top:-10%;right:-10%;bottom:-10%;left:-10%;filter:blur(80px);opacity:.6;z-index:0;pointer-events:none;transition:opacity .4s;-webkit-mask:radial-gradient(ellipse 90% 90% at 60% 40%,#000 0,transparent 80%);mask:radial-gradient(ellipse 90% 90% at 60% 40%,#000 0,transparent 80%)}
 .glow.soft{opacity:.2}
 .wrap>.top,.wrap>.mid,.wrap>.cbar{position:relative;z-index:1}
 
@@ -105,7 +105,7 @@ ha-icon{--mdc-icon-size:100%;display:inline-flex;width:24px;height:24px;flex:non
 .swc.on,.kbx.on{border:2px solid #fff;box-shadow:0 0 0 2px rgba(240,169,59,.75)}
 
 /* light picker + effect sheet */
-.shade{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:3}
+.shade{position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.5);z-index:3}
 .panel,.sheet{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-height:90%;overflow:auto;background:var(--card2);border:1px solid var(--line);border-radius:22px;z-index:4;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .panel{width:min(580px,92%)}
 .sheet{width:min(440px,92%);padding:18px;display:flex;flex-direction:column;gap:14px}
@@ -180,7 +180,7 @@ svg.q *{stroke:var(--c)}
 svg.q .q-w{fill:var(--c);stroke:none}
 svg.q .q-t{stroke-width:2.4}
 svg.q .q-g{fill:var(--c);fill-opacity:.16;stroke:none}
-svg.q .q-f{fill:var(--c);stroke:color-mix(in srgb,var(--c) 60%,#fff)}
+svg.q .q-f{fill:var(--c);stroke:var(--c);stroke:color-mix(in srgb,var(--c) 60%,#fff)}
 svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .ic.ico{box-shadow:none;border-radius:50%}
 .ic.ico svg.q{width:100%;height:100%}
@@ -296,3 +296,9 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .m .pth{right:6px;top:6px}.m .bx.play .pth{right:26px}.m .flm~.pth{right:24px}
 .shl i[class^=pth-]{font-style:normal;opacity:.8}.shl .pth-lan{color:#5FD08A}.shl .pth-ble{color:#6FA8FF}.shl .pth-cloud{color:#F2A93B}
 
+
+/* touch targets: the look stays, the area that takes a tap is at least 40 px (touch screens only) */
+@media (pointer:coarse){
+  .mbt,.mchip,.act,.lstack{position:relative}
+  .mbt::after,.mchip::after,.act::after,.lstack::after{content:"";position:absolute;left:0;right:0;top:50%;height:100%;min-height:40px;transform:translateY(-50%)}
+}

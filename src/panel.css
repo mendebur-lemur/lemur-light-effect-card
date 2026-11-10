@@ -216,7 +216,7 @@ ha-icon{--mdc-icon-size:100%;display:inline-flex;width:20px;height:20px}
 .fxd small{color:var(--mu);font-size:12px}
 .names{display:flex;flex-direction:column;gap:4px;padding:0 6px 6px;font-size:12.5px;color:var(--tx2)}
 .names span b{font-weight:500;color:var(--tx)}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:70;display:grid;place-items:center;padding:24px}
+.modal{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:70;display:grid;place-items:center;padding:24px}
 .dlg{width:min(900px,100%);max-height:100%;overflow:auto;background:var(--bg);border:1px solid var(--ln2);border-radius:18px;padding:18px 24px 18px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
 .dh{display:flex;align-items:center;gap:12px;padding-bottom:6px}
 .dh b{font-size:18px;font-weight:600}
@@ -286,7 +286,7 @@ svg.q *{stroke:var(--c)}
 svg.q .q-w{fill:var(--c);stroke:none}
 svg.q .q-t{stroke-width:2.4}
 svg.q .q-g{fill:var(--c);fill-opacity:.16;stroke:none}
-svg.q .q-f{fill:var(--c);stroke:color-mix(in srgb,var(--c) 60%,#fff)}
+svg.q .q-f{fill:var(--c);stroke:var(--c);stroke:color-mix(in srgb,var(--c) 60%,#fff)}
 svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .ic.ico,.fx .ic.ico,.ghost .ic.ico,.fxd .ic.ico{border-radius:50%;box-shadow:none;background:radial-gradient(circle at 50% 30%,#2a2c32,#141518 78%)}
 .ic.ico svg.q,.fx .ic.ico svg.q,.ghost .ic.ico svg.q,.fxd .ic.ico svg.q{width:100%;height:100%}
@@ -467,3 +467,16 @@ svg.q .q-h,svg.q .q-h *{stroke:#1a1b1f;stroke-width:5.1;fill:none}
 .nstar>span{flex:1 1 200px;color:var(--tx2);font-size:13.5px;line-height:1.4}
 .nstar>svg{flex:none}
 
+
+/* the top bar on a phone: buttons keep their size, the title gives way */
+.top>.btn,.top>.pvb,.top>.stb,.top>.mb{flex:none}
+.top h1{min-width:0;flex:0 1 auto}
+@media (max-width: 600px){.top{gap:6px}.top h1{display:none}}
+@media (max-width: 430px){.pvb .l{display:none}}
+@media (max-width: 300px){.top>.stb{display:none}}
+/* touch targets: the look stays, the area that takes a tap is at least 40 px (touch screens only) */
+@media (pointer:coarse){
+  .btn,.stb,.pvb,.lx,.segs button,.lnk,.tb .ed,a[data-news]{position:relative}
+  .btn::after,.stb::after,.pvb::after,.lx::after,.segs button::after,.lnk::after,.tb .ed::after,a[data-news]::after,.fx .fm::before{content:"";position:absolute;left:50%;top:50%;width:100%;min-width:40px;height:100%;min-height:40px;transform:translate(-50%,-50%)}
+  .swt::before{content:"";position:absolute;left:0;right:0;top:-8px;bottom:-8px}
+}

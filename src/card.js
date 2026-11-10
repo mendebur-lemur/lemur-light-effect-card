@@ -4,9 +4,11 @@ const CARD_VERSION = '0.1.0';
 let ICON3 = {}, ICON3_OK = false;
 // the last few errors from this card, for Settings → Help → Report a problem (they stay in the browser unless the user sends the report)
 const LERR = window.__LEMUR_ERR || (window.__LEMUR_ERR = []);
+// error text can name entities (which often carry room or device names), addresses and hosts: those parts are blanked
+const lerrClean = m => String(m).replace(/\b[a-z]+:\/\/[^\s"'<>)]+/gi, '[adres]').replace(/\b[a-z][a-z0-9_]*\.[a-z0-9_]{2,}\b/g, x => /^(light|switch|sensor|binary_sensor|select|update|scene|script|automation|input_[a-z]+|media_player|climate|cover|fan|number|button|person|device_tracker|zone|group|camera|lock|vacuum|weather|sun|timer|counter|notify|homeassistant|lemur_[a-z_]+)\./.test(x) ? x.split('.')[0] + '.…' : x).replace(/\b\d{1,3}(\.\d{1,3}){3}\b/g, '[ip]');
 if (!window.__LEMUR_ERRH) {
   window.__LEMUR_ERRH = 1;
-  const addErr = (m, where) => { if (!/lemur/i.test(String(where || '') + String(m || ''))) return; LERR.push(new Date().toTimeString().slice(0, 8) + ' ' + String(m || '?').split('\n')[0].slice(0, 160)); if (LERR.length > 5) LERR.shift(); };
+  const addErr = (m, where) => { if (!/lemur/i.test(String(where || '') + String(m || ''))) return; LERR.push(new Date().toTimeString().slice(0, 8) + ' ' + lerrClean(String(m || '?').split('\n')[0]).slice(0, 160)); if (LERR.length > 5) LERR.shift(); };
   window.addEventListener('error', e => addErr(e.message + (e.lineno ? ' @' + e.lineno : ''), e.filename));
   window.addEventListener('unhandledrejection', e => { const r = e.reason; addErr((r && r.message) || r, r && r.stack); });
 }
@@ -14,7 +16,7 @@ const ICON_URL = (() => { try { const el = document.currentScript || [...documen
 // Colour icons are inserted as markup, so only clean drawings are accepted: one <svg>…</svg> with no script, event
 // handlers, javascript: links, embedded documents/images or links to other files (same rules as lemur-icons/birlestir.py).
 // A damaged or tampered icon file then shows plain icons instead of running code.
-const ICON_BAD = /<script|<foreignObject|<iframe|<object|<embed|<image|<a[\s>]|<use[^>]*href\s*=\s*["'](?!#)|\son[a-z]+\s*=|javascript:|data:text|href\s*=\s*["'](?!#)|xlink:href\s*=\s*["'](?!#)|url\(\s*["']?(?!#)/i;
+const ICON_BAD = /<script|<foreignObject|<iframe|<object|<embed|<image|<img|<style|<animate|<set[\s/>]|<a[\s/>]|[\s/"']on[a-z]+\s*=|javascript:|data:text|&#|@import|href\s*=\s*(?!["']#)|url\(\s*["']?(?!#)/i;
 const safeSvg = v => typeof v === 'string' && v.length < 20000 && /^\s*<svg[\s>][\s\S]*<\/svg>\s*$/i.test(v) && !ICON_BAD.test(v) && (v.match(/<svg[\s>]/gi) || []).length === 1;
 const safeIcons = d => { const o = {}; if (d && typeof d === 'object' && !Array.isArray(d)) for (const k of Object.keys(d)) if (/^[a-z0-9_]{1,60}$/.test(k) && safeSvg(d[k])) o[k] = d[k]; return o; };
 // uploaded effect pictures: only our own icon folder or an inline raster image (backup restore)
@@ -36,10 +38,15 @@ const OFF_RE = /^(off|none|stop|solid|no effect|static|normal|default)$/i;
 // effect key of a name. Names in Latin letters keep the key they always had (favourites, tabs and fill are stored by it);
 // a name with letters that rule dropped (Cyrillic, Greek, CJK, Hebrew, Arabic...) keeps all its letters and digits instead,
 // and a name of symbols only (emoji) is keyed by its code points. engine.py norm() is the same rule.
+// \p{…} in a regular expression literal stops the whole file from loading on browsers that lack it, so these two are
+// built at run time; without them names in other scripts fall back to the Latin key
+let RX_NONLATIN = null, RX_LETNUM = null;
+try { RX_NONLATIN = new RegExp('[^\\P{L}a-zÀ-ɏ]', 'u'); RX_LETNUM = new RegExp('[^\\p{L}\\p{N}]+', 'gu'); } catch (e) {}
 const norm = s => {
   const l = String(s).toLowerCase().replace(/^music\s*:\s*/, 'music '), k = l.replace(/[^a-z0-9À-ɏ]+/g, ' ').trim();
-  if (k && !/[^\P{L}a-zÀ-ɏ]/u.test(l)) return k;
-  const u = l.replace(/[^\p{L}\p{N}]+/gu, ' ').trim(), cp = [...l].map(c => c.codePointAt(0)).filter(c => c > 127);
+  if (k && (!RX_NONLATIN || !RX_NONLATIN.test(l))) return k;
+  if (!RX_LETNUM) return k;
+  const u = l.replace(RX_LETNUM, ' ').trim(), cp = [...l].map(c => c.codePointAt(0)).filter(c => c > 127);
   return u || (cp.length ? '#' + cp.map(c => c.toString(16)).join('-') : '');
 };
 const SYN = {
@@ -80,7 +87,7 @@ const I18N = {
     addFav: 'Favorilere ekle', remFav: 'Favorilerden çıkar', setIcon: 'Simge yükle', resetIcon: 'Varsayılan simge',
     hide: 'Efekti gizle', hidden: '{x} gizlendi', turnedOff: '{r} kapatıldı', turnedOn: '{r} açıldı',
     stopped: 'Efekt durduruldu · {k}K %{b}', support: 'Destekleyen ışıklar', pLan: 'Yerel ağ', pBle: 'Bluetooth', pCloud: 'İnternet', pSec: '{s} sn', noLights: 'Bu odada ışık bulunamadı', noLightsAll: 'Gösterilecek ışık bulunamadı',
-    applied: '{r} → {x}', partial: '{x} → {a}/{b} ışık', iconSaved: 'Simge kaydedildi', iconErr: 'Simge yüklenemedi',
+    applied: '{r} → {x}', partial: '{x} → {a}/{b} ışık', iconSaved: 'Simge kaydedildi', iconErr: 'Simge yüklenemedi', saveErr: 'Kaydedilemedi. Ekran, kayıtlı haline döndü.',
     err: 'Hata: {e}', toColor: '{r} → renk', localMode: 'Paylaşım için entegrasyonu kur (şu an sadece bu cihaza kaydediliyor)',
     close: 'Kapat', kel: ['Akkor', 'Sıcak', 'Yumuşak', 'Nötr', 'Gün ışığı', 'Soğuk'],
     upd: 'Yeni sürüm yüklendi ({v}). Ekranı yenile.', reload: 'Yenile', recent: 'Son kullanılanlar',
@@ -101,7 +108,7 @@ const I18N = {
     addFav: 'Add to favorites', remFav: 'Remove from favorites', setIcon: 'Upload icon', resetIcon: 'Default icon',
     hide: 'Hide effect', hidden: '{x} hidden', turnedOff: '{r} turned off', turnedOn: '{r} turned on',
     stopped: 'Effect stopped · {k}K {b}%', support: 'Supported by', pLan: 'Local network', pBle: 'Bluetooth', pCloud: 'Internet', pSec: '{s} s', noLights: 'No lights in this room', noLightsAll: 'No lights to show',
-    applied: '{r} → {x}', partial: '{x} → {a}/{b} lights', iconSaved: 'Icon saved', iconErr: 'Could not upload icon',
+    applied: '{r} → {x}', partial: '{x} → {a}/{b} lights', iconSaved: 'Icon saved', iconErr: 'Could not upload icon', saveErr: 'Could not save. The screen shows what is stored.',
     err: 'Error: {e}', toColor: '{r} → color', localMode: 'Install the integration to share (saved on this device only)',
     close: 'Close', kel: ['Incandescent', 'Warm', 'Soft', 'Neutral', 'Daylight', 'Cool'],
     upd: 'A new version is installed ({v}). Reload the page.', reload: 'Reload', recent: 'Recently used',
@@ -377,6 +384,7 @@ function fxArt(u, px, S) {
 
 // ---- shared store (integration websocket, localStorage fallback) ----
 const LS_KEY = 'lemur-light-effects';
+const PATCH_KEYS = { tabs: 1, rooms: 1, settings: 1 };
 const STORE = {
   d: { favorites: [], hidden: [], rooms: {}, last: {}, icons: {}, settings: {}, tabs: {}, recent: {} }, v: 0, mode: null, conn: null, L: new Set(), stale: null,
   attach(hass) { const c = hass && hass.connection; if (!c || c === this.conn) return; this.conn = c; this._try = 0; clearTimeout(this._rt); this._init(); },
@@ -402,11 +410,46 @@ const STORE = {
       if (!(e && e.code === 'unknown_command')) { const w = [2, 5, 15, 30, 60][Math.min(this._try++, 4)]; clearTimeout(this._rt); this._rt = setTimeout(() => { if (c === this.conn) this._init(); }, w * 1000); }
     }
   },
-  _put(d) { if (!d || typeof d !== 'object') return; for (const k of Object.keys(this.d)) if (d[k] != null) this.d[k] = d[k]; if (d.settings != null) this.sv = (this.sv || 0) + 1; this.v++; this._emit(); },
+  // what the server holds, part by part (a room of tabs / rooms, one setting), so a change sends only the parts that differ
+  _j: {}, _q: null, noPatch: false,
+  _parts(key, v) { const o = {}; if (v && typeof v === 'object' && !Array.isArray(v)) for (const k of Object.keys(v)) o[k] = JSON.stringify(v[k]); this._j[key] = o; },
+  _put(d) { if (!d || typeof d !== 'object') return; for (const k of Object.keys(this.d)) if (d[k] != null) { this.d[k] = d[k]; if (PATCH_KEYS[k]) this._parts(k, d[k]); } if (d.settings != null) this.sv = (this.sv || 0) + 1; this.v++; this._emit(); },
   _emit() { this.L.forEach(f => { try { f(); } catch (e) { console.error(e); } }); },
-  _local() { if (this.mode !== 'ha') try { localStorage.setItem(LS_KEY, JSON.stringify(this.d)); } catch (e) {} },
+  _local() { if (this.mode !== 'ha') try { localStorage.setItem(LS_KEY, JSON.stringify(this.d)); } catch (e) { this._fail('local', e, true); } },
   _send(m) { return this.mode === 'ha' ? this.conn.sendMessagePromise(m) : Promise.resolve(); },
-  set(key, val) { this.d[key] = val; if (key === 'settings') this.sv = (this.sv || 0) + 1; this.v++; this._emit(); this._local(); return this._send({ type: 'lemur_light_effects/set', key, value: val }).catch(e => console.warn('LEMUR', e)); },
+  // a change the server did not take (too large, not allowed, connection lost): say so and show what is really stored
+  _fail(key, e, local) {
+    console.warn('LEMUR', key, e);
+    const tell = () => { try { window.dispatchEvent(new CustomEvent('lemur-save-error', { detail: { key, code: e && e.code } })); } catch (x) {} };
+    if (local || this.mode !== 'ha') return tell();
+    const c = this.conn;
+    c.sendMessagePromise({ type: 'lemur_light_effects/get' }).then(d => { if (c === this.conn) this._put(d); }).catch(() => {}).then(tell);
+  },
+  set(key, val) {
+    this.d[key] = val; if (key === 'settings') this.sv = (this.sv || 0) + 1; this.v++; this._emit(); this._local();
+    if (this.mode !== 'ha') return Promise.resolve();
+    const whole = () => ({ type: 'lemur_light_effects/set', key, value: this.d[key] });
+    let m = null;
+    if (PATCH_KEYS[key] && !this.noPatch && val && typeof val === 'object' && !Array.isArray(val)) {
+      const was = this._j[key] || {}, set = {}, remove = [], now = {};
+      for (const k of Object.keys(val)) { now[k] = JSON.stringify(val[k]); if (now[k] !== was[k]) set[k] = val[k]; }
+      for (const k of Object.keys(was)) if (!(k in now)) remove.push(k);
+      this._j[key] = now;
+      if (!Object.keys(set).length && !remove.length) return Promise.resolve();
+      m = { type: 'lemur_light_effects/patch', key, set, remove };
+    }
+    const c = this.conn, go = () => {
+      if (c !== this.conn) return;
+      return c.sendMessagePromise(m && !this.noPatch ? m : whole()).catch(e => {
+        // an integration from before 1.8 (the card updated first, Home Assistant not restarted yet) only knows whole keys
+        if (m && e && e.code === 'unknown_command' && !this.noPatch) { this.noPatch = true; return c.sendMessagePromise(whole()); }
+        throw e;
+      });
+    };
+    // one after the other, in the order they were made
+    this._q = (this._q || Promise.resolve()).then(go).catch(e => this._fail(key, e));
+    return this._q;
+  },
   last(ents, effect, room) {
     if (!ents.length) return; const ts = Date.now() / 1000;
     ents.forEach(e => { if (effect) this.d.last[e] = { effect, ts }; else delete this.d.last[e]; });
@@ -439,10 +482,12 @@ class LemurLightEffectCard extends HTMLElement {
   constructor() { super(); this._onStore = () => { if (STORE.sv !== this._msv) { this._msv = STORE.sv; this._mergeCfg(); } this._kick(); }; this._lastFx = {}; }
   connectedCallback() {
     STORE.L.add(this._onStore); if (this._hass) this._render(true);
+    this._onErr = this._onErr || (() => { if (this.shadowRoot && this._hass) this._toast(this._t('saveErr')); }); window.addEventListener('lemur-save-error', this._onErr);
+    if (this._ro) this._ro.observe(this);
     // delivery paths can change (a Bluetooth link drops and the effect goes over the internet): quietly refresh once a minute
     clearInterval(this._pthT); this._pthT = setInterval(() => { if (this._pIds && this._pathsOn()) this._paths(this._pIds); }, 60000);
   }
-  disconnectedCallback() { STORE.L.delete(this._onStore); clearInterval(this._pthT); clearTimeout(this._pTT); }
+  disconnectedCallback() { STORE.L.delete(this._onStore); clearInterval(this._pthT); clearTimeout(this._pTT); clearTimeout(this._tt); clearTimeout(this._tt2); clearTimeout(this._lpT); window.removeEventListener('lemur-save-error', this._onErr); if (this._ro) this._ro.disconnect(); }
   static getConfigElement() { return document.createElement('lemur-light-effect-card-editor'); }
   static getStubConfig() { return {}; }
   getCardSize() { return 12; }

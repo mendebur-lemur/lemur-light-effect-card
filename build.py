@@ -41,7 +41,7 @@ console.info('%c LEMUR LIGHT EFFECT CARD %c v' + CARD_VERSION + ' ', 'background
 dst = root / "custom_components/lemur_light_effects/frontend/lemur-light-effect-card.js"
 dst.write_text(out)
 # ---- colour icons ----
-# The master copy of every Lemur colour icon lives in ../lemur-icons (Hakan's computer, not in git).
+# The master copy of every Lemur colour icon lives in ../lemur-icons (the maintainer's computer, not in git).
 # When that folder is there, its files replace the copies kept in src/; without it the src/ copies are used.
 ICONS = root.parent / "lemur-icons"
 I3_HEAD = "// Effect icons drawn with Claude Design (dev/icongen/design). Key = effect key with spaces as _.\nconst ICON3 = "

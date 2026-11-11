@@ -206,15 +206,30 @@ async def test_www_made_by_someone_else_in_this_run_is_not_served_yet(hass, www,
 
 @pytest.mark.parametrize("had_www", [True, False])
 async def test_served_is_read_from_home_assistant_routes(hass, had_www):
-    """The real check (not the stand-in): /local is there only when www existed when the frontend started."""
+    """The real check (not the stand-in) against Home Assistant's own routes.
+
+    The frontend registers /local at start, and only when www is there then (frontend/__init__.py). The frontend
+    package itself is not installed with the test tools, so its registration is done here the same way.
+    """
     import os
+    from homeassistant.components.http import StaticPathConfig
     folder = hass.config.path("www")
+    assert await async_setup_component(hass, "http", {})
+    assert REAL_LOCAL_SERVED(hass) is False
     if had_www:
         os.makedirs(folder, exist_ok=True)
-    elif os.path.isdir(folder):
-        os.rmdir(folder)
+        await hass.http.async_register_static_paths([StaticPathConfig("/local", folder, True)])
+    os.makedirs(folder, exist_ok=True)                                 # created later in the run: changes nothing
+    assert REAL_LOCAL_SERVED(hass) is had_www
+
+
+async def test_served_with_the_real_frontend(hass):
+    """Where the frontend package is installed (a developer computer): the same with the real frontend."""
+    pytest.importorskip("hass_frontend")
+    import os
+    folder = hass.config.path("www")
+    os.makedirs(folder, exist_ok=True)
     assert await async_setup_component(hass, "http", {})
     assert await async_setup_component(hass, "frontend", {})
     await hass.async_block_till_done()
-    os.makedirs(folder, exist_ok=True)                                 # created later in the run: changes nothing
-    assert REAL_LOCAL_SERVED(hass) is had_www
+    assert REAL_LOCAL_SERVED(hass) is True

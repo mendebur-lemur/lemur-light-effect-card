@@ -32,7 +32,7 @@ from . import engine
 from .runtime import Runtime
 from .voice import async_setup_voice
 from .const import (
-    CARD_FILE,
+    LOADER_FILE,
     DOMAIN,
     ICON_DIR,
     MAX_ICON_BYTES,
@@ -202,15 +202,23 @@ async def _register_static(hass: HomeAssistant, icon_dir: str) -> None:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     data = LemurData(hass)
-    await data.async_load()
     await hass.async_add_executor_job(lambda: os.makedirs(data.icon_dir, exist_ok=True))
+    # The files come first: a page opened while Home Assistant is still starting only gets our file once this ran.
+    # Every page loads the small loader; it loads the card file and tries again when that download fails.
+    # The second address is a spare copy for the case that the first download of the loader itself fails.
+    loader = f"{URL_BASE}/{LOADER_FILE}?v={VERSION}"
+    first = not hass.data.get(f"{DOMAIN}_static")
+    if not hass.data.get(f"{DOMAIN}_files"):
+        await _register_static(hass, data.icon_dir)
+        add_extra_js_url(hass, loader)
+        add_extra_js_url(hass, loader + "&b=1")
+        hass.data[f"{DOMAIN}_files"] = True
+    await data.async_load()
     hass.data[DOMAIN] = data
     data.runtime = Runtime(hass, data)
     data.runtime.start()
 
-    if not hass.data.get(f"{DOMAIN}_static"):
-        await _register_static(hass, data.icon_dir)
-        add_extra_js_url(hass, f"{URL_BASE}/{CARD_FILE}?v={VERSION}")
+    if first:
         for handler in (ws_get, ws_set, ws_patch, ws_last, ws_icon_upload, ws_icon_delete, ws_subscribe, ws_info, ws_preview, ws_latest):
             websocket_api.async_register_command(hass, handler)
         _register_services(hass)
@@ -223,7 +231,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             webcomponent_name=PANEL_ELEMENT,
             sidebar_title="Lemur Işık Efekt Kartı" if turkish else "Lemur Light Effect Card",
             sidebar_icon="mdi:lightbulb-auto",
-            module_url=f"{URL_BASE}/{CARD_FILE}?v={VERSION}",
+            module_url=loader,  # the panel element is filled in when the card file arrives
             require_admin=True,
             config={},
         )

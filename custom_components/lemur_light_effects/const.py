@@ -1,13 +1,14 @@
 """Constants for Lemur Light Effect Card."""
 
 DOMAIN = "lemur_light_effects"
-VERSION = "1.8.0"
+VERSION = "1.8.1"
 STORAGE_KEY = DOMAIN
 STORAGE_VERSION = 1
 SIGNAL_UPDATE = f"{DOMAIN}_update"
 URL_BASE = "/lemur_light_effects"
 URL_ICONS = "/lemur_light_effects_icons"
 CARD_FILE = "lemur-light-effect-card.js"
+LOADER_FILE = "lemur-light-effect-loader.js"  # loads CARD_FILE and tries again when the download fails
 ICON_DIR = "lemur_light_effects_icons"
 MAX_ICON_BYTES = 512 * 1024
 PANEL_URL = "lemur-light"

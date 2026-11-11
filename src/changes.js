@@ -1,6 +1,17 @@
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.8.1',
+    tr: ['Kartın dosyası ilk açılışta inemezse (yavaş ağ, yeni açılan tablet, yeniden başlatmanın hemen sonrası) artık kendiliğinden yeniden deneniyor; kartlar ve bu panel sayfayı yenilemeden yerine geliyor.',
+      'Home Assistant yeniden başlarken açık kalan ekranlar ortak düzeni ve canlı güncellemeleri kendiliğinden geri alıyor.'],
+    en: ['If the card file cannot be downloaded on first load (slow network, a tablet that just woke up, right after a restart) it is now tried again by itself; the cards and this panel appear without reloading the page.',
+      'Screens that stay open while Home Assistant restarts get the shared layout and live updates back by themselves.'],
+    de: ['Lässt sich die Kartendatei beim ersten Laden nicht herunterladen (langsames Netz, gerade aufgewachtes Tablet, direkt nach einem Neustart), wird es jetzt von selbst erneut versucht; Karten und dieses Panel erscheinen ohne Neuladen der Seite.',
+      'Bildschirme, die während eines Neustarts von Home Assistant offen bleiben, erhalten das gemeinsame Layout und die Live-Aktualisierungen von selbst zurück.'],
+    es: ['Si el archivo de la tarjeta no se puede descargar al abrir (red lenta, una tableta recién encendida, justo después de reiniciar), ahora se reintenta solo; las tarjetas y este panel aparecen sin recargar la página.',
+      'Las pantallas que siguen abiertas mientras Home Assistant se reinicia recuperan solas el diseño compartido y las actualizaciones en vivo.'],
+    fr: ['Si le fichier de la carte ne peut pas être téléchargé à l’ouverture (réseau lent, tablette qui vient de se réveiller, juste après un redémarrage), un nouvel essai est fait automatiquement ; les cartes et ce panneau apparaissent sans recharger la page.',
+      'Les écrans restés ouverts pendant le redémarrage de Home Assistant retrouvent d’eux-mêmes la disposition partagée et les mises à jour en direct.'] },
   { v: '1.8.0',
     tr: ['İki ekran artık birbirinin değişikliğini ezmiyor: her kayıt yalnız değişen odayı ya da ayarı gönderir. Geri al da yalnız kendi değişikliğini geri alır.',
       'Kayıt başarısız olursa bildirim çıkar ve ekran kayıtlı haline döner.',

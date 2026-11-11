@@ -40,6 +40,8 @@ console.info('%c LEMUR LIGHT EFFECT CARD %c v' + CARD_VERSION + ' ', 'background
 """
 dst = root / "custom_components/lemur_light_effects/frontend/lemur-light-effect-card.js"
 dst.write_text(out)
+# the small file Home Assistant loads on every page: it loads the card file and tries again when the download fails
+(dst.parent / "lemur-light-effect-loader.js").write_text((src / "loader.js").read_text(encoding="utf-8").replace("__VERSION__", version), encoding="utf-8")
 # ---- colour icons ----
 # The master copy of every Lemur colour icon lives in ../lemur-icons (the maintainer's computer, not in git).
 # When that folder is there, its files replace the copies kept in src/; without it the src/ copies are used.

@@ -19,7 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - run: python3 build.py && node --check custom_components/lemur_light_effects/frontend/lemur-light-effect-card.js && git diff --exit-code custom_components/lemur_light_effects/frontend
+      - run: python3 build.py && node --check custom_components/lemur_light_effects/frontend/lemur-light-effect-card.js && node --check custom_components/lemur_light_effects/frontend/lemur-light-effect-loader.js && git diff --exit-code custom_components/lemur_light_effects/frontend
+      # the loader: a failed download is tried again, a healthy page is left alone, every retry has a limit
+      - run: node --test tests/frontend_loader.test.js
   # the tests used to run only on the developer's computer
   tests:
     runs-on: ubuntu-latest

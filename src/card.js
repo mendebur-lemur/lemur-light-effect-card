@@ -387,27 +387,43 @@ const LS_KEY = 'lemur-light-effects';
 const PATCH_KEYS = { tabs: 1, rooms: 1, settings: 1 };
 const STORE = {
   d: { favorites: [], hidden: [], rooms: {}, last: {}, icons: {}, settings: {}, tabs: {}, recent: {} }, v: 0, mode: null, conn: null, L: new Set(), stale: null,
-  attach(hass) { const c = hass && hass.connection; if (!c || c === this.conn) return; this.conn = c; this._try = 0; clearTimeout(this._rt); this._init(); },
+  attach(hass) {
+    const c = hass && hass.connection; if (!c) return;
+    if (c === this.conn) {
+      // the data did not come (Home Assistant was still starting) and the integration has appeared since: ask again, a few times at most
+      if (this.mode === 'local' && !this._busy && (this._seen || 0) < 3 && hass.config && Array.isArray(hass.config.components) && hass.config.components.indexOf('lemur_light_effects') >= 0) { this._seen = (this._seen || 0) + 1; clearTimeout(this._rt); this._init(); }
+      return;
+    }
+    this.conn = c; this._try = 0; this._unk = 0; this._seen = 0; clearTimeout(this._rt);
+    // after a reconnect we ask again ourselves (fresh data and a new subscription), also when the first answer never came
+    if (!c.__lemurR && typeof c.addEventListener === 'function') { c.__lemurR = 1; c.addEventListener('ready', () => { if (c === this.conn) { this._try = 0; this._unk = 0; clearTimeout(this._rt); this._init(); } }); }
+    this._init();
+  },
   async _init() {
-    const c = this.conn;
+    const c = this.conn; const run = this._run = (this._run || 0) + 1;
+    this._busy = true;
     try {
       const d = await c.sendMessagePromise({ type: 'lemur_light_effects/get' });
       if (c !== this.conn) return;
-      this.mode = 'ha'; this._try = 0; this._put(d);
+      if (run === this._run) this._busy = false;
+      this.mode = 'ha'; this._try = 0; this._unk = 0; this._put(d);
       // subscribed again by us after a reconnect (with fresh data), not by the connection
       c.subscribeMessage(m => this._put(m), { type: 'lemur_light_effects/subscribe' }, { resubscribe: false }).catch(() => {});
-      if (!c.__lemurR && typeof c.addEventListener === 'function') { c.__lemurR = 1; c.addEventListener('ready', () => { if (c === this.conn) { this._try = 0; clearTimeout(this._rt); this._init(); } }); }
       // a browser or app can keep an older card in its cache after an update: offer a reload
       c.sendMessagePromise({ type: 'lemur_light_effects/info' }).then(r => { if (r && r.version && r.version !== CARD_VERSION) { this.stale = r.version; this.v++; this._emit(); } }).catch(() => {});
     } catch (e) {
       if (c !== this.conn) return;
+      if (run === this._run) this._busy = false;
       if (!this.mode) {
         this.mode = 'local';
         let d = {}; try { d = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (_) {}
         this._put(d);
       }
-      // no integration: stay on this device. Anything else (restart, lost connection) is tried again a little later
-      if (!(e && e.code === 'unknown_command')) { const w = [2, 5, 15, 30, 60][Math.min(this._try++, 4)]; clearTimeout(this._rt); this._rt = setTimeout(() => { if (c === this.conn) this._init(); }, w * 1000); }
+      // Anything that is not a clear "no" (restart, lost connection) is tried again a little later (30 times at most, about 25 minutes; a reconnect starts the count again).
+      // "Unknown command" means no integration and we stay on this device; but Home Assistant also answers that while it is
+      // still starting, so that is asked again too, 8 times at most (about 5 minutes).
+      const unk = !!(e && e.code === 'unknown_command');
+      if (unk ? (this._unk = (this._unk || 0) + 1) <= 8 : this._try < 30) { const w = [2, 5, 15, 30, 60][Math.min(this._try++, 4)]; clearTimeout(this._rt); this._rt = setTimeout(() => { if (c === this.conn) this._init(); }, w * 1000); }
     }
   },
   // what the server holds, part by part (a room of tabs / rooms, one setting), so a change sends only the parts that differ

@@ -243,6 +243,9 @@ class LemurLightEffectsPanel extends HTMLElement {
     this._fillOpen(k, r);
   }
   connectedCallback() {
+    // Home Assistant may create the panel before this file has arrived (the loader, v1.8.1): what it set on the plain
+    // element then hides our setters, so hand those values over once
+    for (const k of ['panel', 'route', 'narrow', 'hass']) if (Object.prototype.hasOwnProperty.call(this, k)) { const v = this[k]; delete this[k]; this[k] = v; }
     this._lc = this._lc || (() => setTimeout(() => this._fillFromUrl(), 50)); window.addEventListener('location-changed', this._lc);
     setTimeout(() => this._fillFromUrl(), 200);
     STORE.L.add(this._onStore);

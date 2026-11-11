@@ -28,7 +28,7 @@ async def _setup(hass):
 
 async def test_ws_roundtrip(hass, hass_ws_client, js_url):
     await _setup(hass)
-    assert js_url.call_args[0][1].startswith("/lemur_light_effects/lemur-light-effect-card.js?v=")
+    assert js_url.call_args_list[0][0][1].startswith("/lemur_light_effects/lemur-light-effect-loader.js?v=")
     ws = await hass_ws_client(hass)
     await ws.send_json({"id": 1, "type": "lemur_light_effects/subscribe"})
     assert (await ws.receive_json())["success"]
@@ -95,7 +95,10 @@ async def test_settings_and_panel(hass, hass_ws_client, js_url):
     await _setup(hass)
     kw = js_url.panel.call_args.kwargs
     assert kw["frontend_url_path"] == "lemur-light" and kw["require_admin"] is True
-    assert kw["module_url"].startswith("/lemur_light_effects/lemur-light-effect-card.js?v=")
+    # every page and the panel load the small loader; it loads the card file and tries again when the download fails
+    assert kw["module_url"].startswith("/lemur_light_effects/lemur-light-effect-loader.js?v=")
+    urls = [c.args[1] for c in js_url.call_args_list]
+    assert urls == [kw["module_url"], kw["module_url"] + "&b=1"]
     ws = await hass_ws_client(hass)
     await ws.send_json({"id": 1, "type": "lemur_light_effects/set", "key": "settings",
                         "value": {"kelvin": 2700, "order": ["salon"], "exclude": ["light.x"]}})

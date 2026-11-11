@@ -6,6 +6,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from homeassistant.setup import async_setup_component
 
 from custom_components.lemur_light_effects.const import DOMAIN, VERSION
+from custom_components.lemur_light_effects.resources import _local_served as REAL_LOCAL_SERVED
 
 URL = f"/local/lemur_light_effects/lemur-light-effect-loader.js?v={VERSION}"
 OTHERS = [
@@ -13,6 +14,14 @@ OTHERS = [
     {"id": "b", "type": "module", "url": "/local/lemur_home_dashboard/lemur-home-dashboard-loader.js?v=0.34.0"},
     {"id": "c", "type": "css", "url": "/local/lemur_light_effects.css"},      # looks alike, is not ours
 ]
+
+
+@pytest.fixture(autouse=True)
+def local_route(www):
+    """/local is served when www was there before the test set things up (as Home Assistant does at start)."""
+    state = {}
+    with patch("custom_components.lemur_light_effects.resources._local_served", side_effect=lambda hass: state.setdefault("v", www.is_dir())):
+        yield state
 
 
 @pytest.fixture(autouse=True)
@@ -118,7 +127,7 @@ async def test_yaml_dashboards_are_left_alone(hass, www):
     assert y.data == [{"type": "module", "url": "/local/x.js"}]
 
 
-async def test_no_row_while_www_is_new(hass, www):
+async def test_no_row_while_www_is_new(hass, www, local_route):
     """Home Assistant serves /local only when www was there at start; a row now would be a 404 on every page."""
     res = FakeResources(OTHERS)
     entry = await _setup(hass, res)
@@ -127,7 +136,7 @@ async def test_no_row_while_www_is_new(hass, www):
     assert await hass.config_entries.async_reload(entry.entry_id)      # www is there now, but this run still does not serve it
     await hass.async_block_till_done()
     assert res.writes == []
-    hass.data.pop(f"{DOMAIN}_www_new")                                 # the next start
+    local_route["v"] = True                                            # the next start
     assert await hass.config_entries.async_reload(entry.entry_id)
     await hass.async_block_till_done()
     assert res.urls()[-1] == URL
@@ -182,3 +191,30 @@ async def test_with_the_real_dashboard_component(hass, www):
     assert await hass.config_entries.async_remove(entry.entry_id)
     await hass.async_block_till_done()
     assert [i for i in res.async_items() if "lemur_light_effects" in i["url"]] == []
+
+
+async def test_www_made_by_someone_else_in_this_run_is_not_served_yet(hass, www, local_route):
+    """The other Lemur integration created www a moment ago: the folder is there, /local is not served yet."""
+    local_route["v"] = False
+    www.mkdir()
+    res = FakeResources(OTHERS)
+    await _setup(hass, res)
+    assert res.writes == [] and URL not in res.urls()
+    assert (www / "lemur_light_effects" / "lemur-light-effect-loader.js").is_file()
+
+
+
+@pytest.mark.parametrize("had_www", [True, False])
+async def test_served_is_read_from_home_assistant_routes(hass, had_www):
+    """The real check (not the stand-in): /local is there only when www existed when the frontend started."""
+    import os
+    folder = hass.config.path("www")
+    if had_www:
+        os.makedirs(folder, exist_ok=True)
+    elif os.path.isdir(folder):
+        os.rmdir(folder)
+    assert await async_setup_component(hass, "http", {})
+    assert await async_setup_component(hass, "frontend", {})
+    await hass.async_block_till_done()
+    os.makedirs(folder, exist_ok=True)                                 # created later in the run: changes nothing
+    assert REAL_LOCAL_SERVED(hass) is had_www

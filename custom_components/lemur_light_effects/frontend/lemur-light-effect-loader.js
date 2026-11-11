@@ -1,4 +1,4 @@
-/*! Lemur Light Effect Card loader v1.8.2 | GPL-3.0 */
+/*! Lemur Light Effect Card loader v1.8.3 | GPL-3.0 */
 // The small file Home Assistant loads on every page (v1.8.1). A copy is also kept in config/www as a dashboard
 // resource (v1.8.2, resources.py), so it may run from two addresses: the second one does nothing. It loads the card file and, when that fails, tries again.
 //
@@ -21,7 +21,7 @@
 (function () {
   var W = window;
   if (W.__LEMUR_LEC_LOADER) return;   // the spare copy of this file: the first one is already at work
-  var MAIN = '/lemur_light_effects/lemur-light-effect-card.js?v=1.8.2';
+  var MAIN = '/lemur_light_effects/lemur-light-effect-card.js?v=1.8.3';
   var TAG = 'lemur-light-effect-card';
   var OURS = { 'lemur-light-effect-card': 1, 'lemur-phone-button': 1, 'lemur-phone-fullscreen-button': 1, 'lemur-fullscreen-button': 1, 'lemur-window-button': 1 };
   var TRIES = 3, WAIT = 1500, TIMER_ROUNDS = 6, ALL_ROUNDS = 10, ROUND_GAP = 20000, AGAIN = [10000, 20000, 30000], LATE = 1500, HEALS = 3;

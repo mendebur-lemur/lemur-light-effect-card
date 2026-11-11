@@ -13,8 +13,9 @@ Rules shared with Lemur Home Dashboard (lemur-ortak/ORTAK.md), which writes to t
 - only our own rows are touched: those whose address starts with /local/lemur_light_effects/ or /lemur_light_effects/
 - one row; a new version updates it instead of adding one; nothing is written when nothing changed
 - dashboards kept in YAML are left alone
-- Home Assistant serves /local only when the www folder was there at start: if we had to create it, the row is
-  added at the next start (otherwise every page would get a 404)
+- Home Assistant serves /local only when the www folder was there at start. Whether it does is read from its routes,
+  not from the folder (the other integration may have just created it); if not, the row is added at the next start
+  (otherwise every page would get a 404)
 - removed only when the integration is removed (not on reload), together with the copy and our own folder
 - nothing here may stop the set-up: on any surprise it logs one line and goes on
 """
@@ -39,12 +40,26 @@ def _www(hass: HomeAssistant) -> str:
     return hass.config.path("www")
 
 
+def _local_served(hass: HomeAssistant) -> bool | None:
+    """Does Home Assistant serve /local in this run? None when that cannot be seen.
+
+    It registers /local at start only when the www folder was there then. The folder alone says nothing: another
+    integration (Lemur Home Dashboard does the same) may have created it a moment ago, in this very run.
+    """
+    try:
+        return any(getattr(r, "canonical", None) == "/local" for r in hass.http.app.router.resources())
+    except Exception:  # noqa: BLE001 - a Home Assistant that keeps its routes elsewhere
+        return None
+
+
 def _copy(hass: HomeAssistant) -> bool:
-    """Keep the copy of the loader in www up to date. True when Home Assistant serves it (www was there at start)."""
+    """Keep the copy of the loader in www up to date. True when Home Assistant serves it in this run."""
     www = _www(hass)
     if not os.path.isdir(www):
         hass.data[f"{DOMAIN}_www_new"] = True   # for the rest of this run, also after a reload of the integration
-    served = not hass.data.get(f"{DOMAIN}_www_new")
+    served = _local_served(hass)
+    if served is None:
+        served = not hass.data.get(f"{DOMAIN}_www_new")
     folder = os.path.join(www, DOMAIN)
     os.makedirs(folder, exist_ok=True)
     with open(os.path.join(os.path.dirname(__file__), "frontend", LOADER_FILE), "rb") as f:

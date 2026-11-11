@@ -1,6 +1,12 @@
 // What's new, shown once in the control panel after an update (and from Settings → Version).
 // Newest first. Keep each line short; the full notes are on GitHub. Languages other than tr fall back to en.
 const CHANGES = [
+  { v: '1.8.2',
+    tr: ['Home Assistant yeniden başlarken, entegrasyon henüz hazır değilken açılan panolarda kartlar artık kendiliğinden geliyor. Bunun için küçük yükleyici dosyasının bir kopyası www klasöründe tutulur ve pano kaynaklarına bir satır eklenir (Ayarlar → Panolar → Kaynaklar); entegrasyon kaldırılınca ikisi de silinir.'],
+    en: ['Cards now appear by themselves on dashboards opened while Home Assistant is restarting and the integration is not ready yet. For this a copy of the small loader file is kept in the www folder and one row is added to the dashboard resources (Settings → Dashboards → Resources); both are removed with the integration.'],
+    de: ['Karten erscheinen jetzt von selbst auf Dashboards, die geöffnet werden, während Home Assistant neu startet und die Integration noch nicht bereit ist. Dafür liegt eine Kopie der kleinen Ladedatei im Ordner www, und in den Dashboard-Ressourcen steht eine Zeile (Einstellungen → Dashboards → Ressourcen); beides wird mit der Integration entfernt.'],
+    es: ['Las tarjetas ahora aparecen solas en los paneles abiertos mientras Home Assistant se reinicia y la integración aún no está lista. Para ello se guarda una copia del pequeño cargador en la carpeta www y se añade una fila a los recursos del panel (Ajustes → Paneles de control → Recursos); ambas se eliminan con la integración.'],
+    fr: ['Les cartes apparaissent maintenant d’elles-mêmes sur les tableaux de bord ouverts pendant que Home Assistant redémarre et que l’intégration n’est pas encore prête. Pour cela, une copie du petit fichier de chargement est conservée dans le dossier www et une ligne est ajoutée aux ressources du tableau de bord (Paramètres → Tableaux de bord → Ressources) ; les deux sont supprimées avec l’intégration.'] },
   { v: '1.8.1',
     tr: ['Kartın dosyası ilk açılışta inemezse (yavaş ağ, yeni açılan tablet, yeniden başlatmanın hemen sonrası) artık kendiliğinden yeniden deneniyor; kartlar ve bu panel sayfayı yenilemeden yerine geliyor.',
       'Home Assistant yeniden başlarken açık kalan ekranlar ortak düzeni ve canlı güncellemeleri kendiliğinden geri alıyor.'],

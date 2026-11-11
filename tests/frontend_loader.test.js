@@ -66,7 +66,7 @@ test('error cards that do not go away: three rebuilds at most, and the page is n
 test('a file that never comes: a fixed number of requests, also with network and page events', async () => {
   const p = page(() => false);
   await p.run(10 * 60000);
-  assert.strictEqual(p.scripts.length, 12);                       // 3 rounds by timer, 4 requests each
+  assert.strictEqual(p.scripts.length, 24);                       // 6 rounds by timer, 4 requests each
   for (let i = 0; i < 100; i++) { await p.fire('window', 'online'); await p.fire('document', 'visibilitychange'); await p.fire('window', 'location-changed'); await p.run(30000); }
   assert.strictEqual(p.scripts.length, 40);                       // 10 rounds in all
   assert.strictEqual(p.st().rounds, 10); assert.strictEqual(p.window.reloads, 0);

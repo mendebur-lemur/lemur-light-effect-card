@@ -317,7 +317,7 @@ All options are available in the visual editor. The control panel settings set t
 
 Hidden, entity-category and light-group entities are skipped automatically.
 
-The integration stores the shared data (room tabs, favorites, room selections, hidden effects, last effect, recently used, icons) in `.storage/lemur_light_effects`. Uploaded icons are saved in `config/lemur_light_effects_icons/`. Without the integration, you can load the card as a plain resource (`/lemur_light_effects/lemur-light-effect-card.js` or a copy under `/local`; copy `lemur-icons.json` next to it). Its data is then saved only in that browser.
+The integration stores the shared data (room tabs, favorites, room selections, hidden effects, last effect, recently used, icons) in `.storage/lemur_light_effects`. Uploaded icons are saved in `config/lemur_light_effects_icons/`. Without the integration, you can load the card as a plain resource (`/lemur_light_effects/lemur-light-effect-card.js` or a copy under `/local`; copy `lemur-icons.json` next to it). Its data is then saved only in that browser. So that dashboards opened while Home Assistant is still starting also get the cards, the integration keeps a copy of its small loader in `config/www/lemur_light_effects/` and adds one row for it under Settings → Dashboards → Resources; both are removed with the integration (dashboards kept in YAML are left alone).
 
 ## How effects are grouped
 

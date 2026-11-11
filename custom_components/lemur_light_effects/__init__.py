@@ -31,6 +31,7 @@ from homeassistant.helpers.storage import Store
 from . import engine
 from .runtime import Runtime
 from .voice import async_setup_voice
+from .resources import async_register as async_register_resource, async_remove as async_remove_resource
 from .const import (
     LOADER_FILE,
     DOMAIN,
@@ -213,6 +214,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         add_extra_js_url(hass, loader)
         add_extra_js_url(hass, loader + "&b=1")
         hass.data[f"{DOMAIN}_files"] = True
+    # a page opened before this point has none of our code: the loader is also a dashboard resource (resources.py)
+    await async_register_resource(hass)
     await data.async_load()
     hass.data[DOMAIN] = data
     data.runtime = Runtime(hass, data)
@@ -238,6 +241,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     data.voice = await async_setup_voice(hass, data)
     return True
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """The integration was removed: our dashboard resource and its copy in www go too."""
+    await async_remove_resource(hass)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

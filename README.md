@@ -318,7 +318,7 @@ Bütün seçenekler görsel düzenleyicide de var. Kontrol panelindeki ayarlar b
 
 Gizli, kategori atanmış ve grup ışıkları otomatik atlanır.
 
-Ortak veriler (oda sekmeleri, favoriler, oda seçimleri, gizlenen efektler, son efekt, son kullanılanlar, simgeler) `.storage/lemur_light_effects` içinde, yüklenen simgeler `config/lemur_light_effects_icons/` klasöründe tutulur. Entegrasyon olmadan kartı düz kaynak olarak da yükleyebilirsin (`/lemur_light_effects/lemur-light-effect-card.js` ya da `/local` altındaki bir kopya; `lemur-icons.json` dosyasını da yanına kopyala); bu durumda veriler yalnızca o tarayıcıda saklanır.
+Ortak veriler (oda sekmeleri, favoriler, oda seçimleri, gizlenen efektler, son efekt, son kullanılanlar, simgeler) `.storage/lemur_light_effects` içinde, yüklenen simgeler `config/lemur_light_effects_icons/` klasöründe tutulur. Entegrasyon olmadan kartı düz kaynak olarak da yükleyebilirsin (`/lemur_light_effects/lemur-light-effect-card.js` ya da `/local` altındaki bir kopya; `lemur-icons.json` dosyasını da yanına kopyala); bu durumda veriler yalnızca o tarayıcıda saklanır. Home Assistant açılırken açılan panolarda da kartlar gelsin diye entegrasyon küçük yükleyicisinin bir kopyasını `config/www/lemur_light_effects/` klasöründe tutar ve Ayarlar → Panolar → Kaynaklar listesine onun için bir satır ekler; entegrasyon kaldırılınca ikisi de silinir (YAML ile yönetilen panolara dokunulmaz).
 
 ## Efektler nasıl gruplanıyor?
 

@@ -1,5 +1,6 @@
-/*! Lemur Light Effect Card loader v1.8.1 | GPL-3.0 */
-// The small file Home Assistant loads on every page (v1.8.1). It loads the card file and, when that fails, tries again.
+/*! Lemur Light Effect Card loader v1.8.2 | GPL-3.0 */
+// The small file Home Assistant loads on every page (v1.8.1). A copy is also kept in config/www as a dashboard
+// resource (v1.8.2, resources.py), so it may run from two addresses: the second one does nothing. It loads the card file and, when that fails, tries again.
 //
 // Why: Home Assistant imports an integration's file once. If that one download fails (slow network, a tablet waking up,
 // right after a restart) the cards stay as "Custom element doesn't exist" and the panel stays empty until the user
@@ -8,8 +9,10 @@
 //
 // What it does:
 // - loads the card file; a failed download is tried again 3 times (after 1.5, 3 and 4.5 s). That is one round.
-// - a later round starts after 30 s, when the network comes back, when the tab is shown again or on a page change:
-//   at most 3 rounds by timer and 10 in total, never more often than one round per 20 s.
+// - later rounds start by themselves 10, 20 and then every 30 s after a failed round (6 rounds by timer, about 3
+//   minutes: long enough for a Home Assistant that is still starting, v1.8.2), and when the network comes back, the
+//   tab is shown again or the page changes (never more often than one such round per 20 s). 10 rounds, 40 requests
+//   in all, then it stops.
 // - once the card file is there Home Assistant replaces its error cards by itself. Only when the file came late or
 //   needed another try, this file looks for error cards of our own cards that are still shown and asks Home Assistant
 //   to build them again (the public "ll-rebuild" event), at most 3 times. It never reloads the page (the rule since
@@ -18,10 +21,10 @@
 (function () {
   var W = window;
   if (W.__LEMUR_LEC_LOADER) return;   // the spare copy of this file: the first one is already at work
-  var MAIN = '/lemur_light_effects/lemur-light-effect-card.js?v=1.8.1';
+  var MAIN = '/lemur_light_effects/lemur-light-effect-card.js?v=1.8.2';
   var TAG = 'lemur-light-effect-card';
   var OURS = { 'lemur-light-effect-card': 1, 'lemur-phone-button': 1, 'lemur-phone-fullscreen-button': 1, 'lemur-fullscreen-button': 1, 'lemur-window-button': 1 };
-  var TRIES = 3, WAIT = 1500, TIMER_ROUNDS = 3, ALL_ROUNDS = 10, ROUND_GAP = 20000, AGAIN = 30000, LATE = 1500, HEALS = 3;
+  var TRIES = 3, WAIT = 1500, TIMER_ROUNDS = 6, ALL_ROUNDS = 10, ROUND_GAP = 20000, AGAIN = [10000, 20000, 30000], LATE = 1500, HEALS = 3;
   var st = W.__LEMUR_LEC_LOADER = { t0: Date.now(), requests: 0, fails: 0, rounds: 0, heals: 0, late: false, loading: null, lastRound: 0, done: false };
 
   function ready() { try { return !!W.customElements.get(TAG); } catch (e) { return false; } }
@@ -55,7 +58,7 @@
     st.loading.then(function () { st.loading = null; loaded(); }, function (e) {
       st.loading = null;
       try { console.warn('LEMUR', e && e.message); } catch (x) { /* no console */ }
-      if (st.rounds < TIMER_ROUNDS) setTimeout(function () { more(true); }, AGAIN);
+      if (st.rounds < TIMER_ROUNDS) setTimeout(function () { more(true); }, AGAIN[Math.min(st.rounds - 1, AGAIN.length - 1)]);
     });
     return st.loading;
   }
@@ -64,7 +67,7 @@
   function more(timer) {
     if (ready() || st.loading) return;
     if (st.rounds >= (timer ? TIMER_ROUNDS : ALL_ROUNDS)) return;
-    if (Date.now() - st.lastRound < ROUND_GAP) return;
+    if (!timer && Date.now() - st.lastRound < ROUND_GAP) return;
     round();
   }
 
